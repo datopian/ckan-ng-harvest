@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Agriculture",
+        "url": "http://www.usda.gov/data.json"
+    },
+    
+    {
+        "name": "Energy",
+        "url": "http://www.energy.gov/data.json"
+    },
+
+    {
+        "name": "Agriculture II",
+        "url": "https://enterprisecontent-usfs.opendata.arcgis.com/data.json"
+    },
+
+    {
+        "name": "Healt",
+        "url": "https://healthdata.gov/data.json"
+    },
+
+    {
+        "name": "Healt II",
+        "url": "https://raw.githubusercontent.com/gbinal/data/master/datasets/hhs_cas.json"
+    }
+]
