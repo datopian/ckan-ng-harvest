@@ -1,5 +1,5 @@
-from dataflows import Flow, printer, dump_to_path
-from functions import get_data_json_from_url, clean_duplicated_identifiers, list_parents
+from dataflows import Flow, printer, dump_to_path, checkpoint
+from functions import get_data_json_from_url, clean_duplicated_identifiers, list_parents_and_childs
 import json
 
 resources_path = 'list-resources.json'  # High priority data.json file
@@ -12,7 +12,18 @@ url = json_resources[0]['url']
 Flow(
     get_data_json_from_url(url),
     clean_duplicated_identifiers,
-    # list_parents,
-    # printer(num_rows=1), # , tablefmt='html')
     dump_to_path(f'datapackages/package_{name}'),
+    checkpoint('data-json-cleaned-duplicates'),
+    # printer(num_rows=1), # , tablefmt='html')
+    
 ).process()[1]
+
+"""
+# learcn how to ...
+
+# continue working
+Flow(
+    checkpoint('data-json-cleaned-duplicates'),
+    list_parents_and_childs,
+).process()[1]
+"""

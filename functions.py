@@ -47,13 +47,25 @@ def get_data_json_from_url(url):
         if c < 10:
             logger.debug(' - Dataset: {}'.format(dataset['title']))
 
-def list_parents(row):
+def list_parents_and_childs(package):
     # get a list of datasets with "isPartOf" and his childs.
     # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L145
+
+    package.pkg.add_resource('parent_identifiers')
+    yield package.pkg
+
+    package.pkg.add_resource('child_identifiers')
+    yield package.pkg
+
+    resources = iter(package)
+    # learn how to do this
+    """
     if row.get('isPartOf', None):
-        dh.parent_identifiers.append(row['isPartOf'])
-        dh.child_identifiers.append(row['identifier'])
+        parent_identifiers.append(row['isPartOf'])
+        child_identifiers.append(row['identifier'])
         logger.debug('{} is part of {}'.fortmat(row['identifier'], row['isPartOf']))
+    """
+    yield from resources
 
 
 def clean_duplicated_identifiers(rows):
