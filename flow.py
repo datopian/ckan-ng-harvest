@@ -6,6 +6,7 @@ resources_path = 'list-resources.json'  # High priority data.json file
 resources_file = open(resources_path, 'r')
 json_resources = json.load(resources_file)
 
+# try the first one
 name = json_resources[0]['name']
 url = json_resources[0]['url']
 
@@ -19,7 +20,7 @@ Flow(
 ).process()[1]
 
 """
-# learcn how to ...
+# learn how to https://github.com/datahq/dataflows/blob/master/TUTORIAL.md
 
 # continue working
 Flow(
