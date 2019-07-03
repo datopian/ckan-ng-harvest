@@ -1,26 +1,31 @@
 [
     {
         "name": "Agriculture",
-        "url": "http://www.usda.gov/data.json"
+        "url": "http://www.usda.gov/data.json",
+        "identifier": "50ca39af-9ddb-466d-8cf3-84d67a204346"
     },
     
     {
         "name": "Energy",
-        "url": "http://www.energy.gov/data.json"
+        "url": "http://www.energy.gov/data.json",
+        "identifier": "8d4de31c-979c-4b50-be6b-ea3c72453ff6"
     },
 
     {
         "name": "Agriculture II",
-        "url": "https://enterprisecontent-usfs.opendata.arcgis.com/data.json"
+        "url": "https://enterprisecontent-usfs.opendata.arcgis.com/data.json",
+        "identifier": "11cd07d8-f5a7-4207-9852-6160e09ff240"
     },
 
     {
         "name": "Healt",
-        "url": "https://healthdata.gov/data.json"
+        "url": "https://healthdata.gov/data.json",
+        "identifier": "15c538b5-31a0-474e-8ba5-c85ee421cb4d"
     },
 
     {
         "name": "Healt II",
-        "url": "https://raw.githubusercontent.com/gbinal/data/master/datasets/hhs_cas.json"
+        "url": "https://raw.githubusercontent.com/gbinal/data/master/datasets/hhs_cas.json",
+        "identifier": "6ecff745-213b-4114-8230-3a6aed46a149"
     }
 ]
