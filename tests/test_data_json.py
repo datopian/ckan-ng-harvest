@@ -46,7 +46,7 @@ class DataJSONTestClass(unittest.TestCase):
         ret, errors = dj.validate_json()
         self.assertFalse(ret)  # no schema
     
-    def test_validate_json1(self):
+    def test_validate_json2(self):
 
         dj = DataJSON()
         
