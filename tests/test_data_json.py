@@ -47,15 +47,25 @@ class DataJSONTestClass(unittest.TestCase):
         self.assertFalse(ret)  # no schema
     
     def test_validate_json2(self):
-
+        # data.json without errors
         dj = DataJSON()
         
         dj.url = f'{base_url}/usda.gov.data.json'
         ret, error = dj.download_data_json()
         ret, error = dj.load_data_json()
         ret, errors = dj.validate_json()
-        self.assertFalse(ret)  # no schema
-        self.assertEqual(22, len(errors))  # 22 schema errors
-
-    
         
+        self.assertTrue(ret)  # schema works without errors
+        self.assertEqual(None, errors)
+
+    def test_validate_json3(self):
+        # data.json with some errors
+        dj = DataJSON()
+        
+        dj.url = f'{base_url}/healthdata.gov.data.json'
+        ret, error = dj.download_data_json()
+        ret, error = dj.load_data_json()
+        ret, errors = dj.validate_json()
+        
+        self.assertFalse(ret)  # schema works but has errors
+        self.assertEqual(1, len(errors))  # 1 schema errors

@@ -84,8 +84,8 @@ class DataJSON:
             errors += schema_errors
         
         # validate with jsonschema lib
-        # many data.json are not extrictly valid, we use as if they
-        is_valid = True
+        # many data.json are not extrictly valid, we use as if they are
+        
         try:
             jss.validate(instance=self.data_json, schema=self.schema.json_content)
         except Exception as e:
@@ -95,11 +95,10 @@ class DataJSON:
         #read datasets by now, even in error
         self.datasets = self.data_json['dataset']
 
-        is_valid = len(errors) == 0
-        
-        if not is_valid:
+        if len(errors) > 0:
             return False, errors
-        return True, None
+        else:
+            return True, None
     
     def validate_schema(self):
 

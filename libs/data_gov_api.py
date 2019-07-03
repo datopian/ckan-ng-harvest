@@ -11,7 +11,8 @@ class CKANPortalAPI:
     user_agent = 'ckan-portal-filter'
     package_list_url = '/api/3/action/package_list'  # redirect to package_search (?)
     package_search_url = '/api/3/action/package_search'  # iterate with start and rows GET params
-    package_list = None  
+    package_list = None
+    total_packages = 0
 
     def __init__(self, base_url='https://catalog.data.gov'):  # default data.gov
         self.base_url = base_url
@@ -64,6 +65,7 @@ class CKANPortalAPI:
             facet_results = result['facets']
             results = result['results']
             real_results_count = len(results)
+            self.total_packages += real_results_count
             logger.debug(f'{real_results_count} results')
 
             if real_results_count == 0:
