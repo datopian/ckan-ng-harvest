@@ -21,11 +21,5 @@
         "name": "Healt",
         "url": "https://healthdata.gov/data.json",
         "identifier": "15c538b5-31a0-474e-8ba5-c85ee421cb4d"
-    },
-
-    {
-        "name": "Healt II",
-        "url": "https://raw.githubusercontent.com/gbinal/data/master/datasets/hhs_cas.json",
-        "identifier": "6ecff745-213b-4114-8230-3a6aed46a149"
     }
 ]

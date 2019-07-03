@@ -70,8 +70,7 @@ class CKANPortalAPI:
                 url = None
             else:
                 start += rows
-                
-            yield(results)
+                yield(results)
 
 
 if __name__ == '__main__':

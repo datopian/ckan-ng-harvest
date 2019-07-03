@@ -18,48 +18,50 @@ resources_path = 'list-resources.json'  # High priority data.json file.
 resources_file = open(resources_path, 'r')
 json_resources = json.load(resources_file)
 
-# try the first one
-data_json_to_process = json_resources[1]
-name = data_json_to_process['name']  # Nice name of the source
-url = data_json_to_process['url']  # data.json final URL
-source_identifier = data_json_to_process['identifier']  # harves source id at CKAN
-
-Flow(
-    get_data_json_from_url(url),
-    clean_duplicated_identifiers,
-
-    dump_to_path(f'datapackages/{name}/datajson'),
-    # printer(num_rows=1), # , tablefmt='html')
+# process al harvest sources
+for data_json_to_process in json_resources:
     
-).process()[1]
+    name = data_json_to_process['name']  # Nice name of the source
+    url = data_json_to_process['url']  # data.json final URL
+    source_identifier = data_json_to_process['identifier']  # harves source id at CKAN
 
+    # get resources from data.json file
+    Flow(
+        get_data_json_from_url(url),
+        clean_duplicated_identifiers,
 
-Flow(
-    get_actual_ckan_resources_from_api(harvest_source_id=source_identifier),
-    
-    dump_to_path(f'datapackages/{name}/dataapi'),
-    # printer(num_rows=1), # , tablefmt='html')
-    
-).process()[1]
+        dump_to_path(f'datapackages/{name}/datajson'),
+        # printer(num_rows=1), # , tablefmt='html')
+        
+    ).process()[1]
 
-"""
-# merge both
-Flow(
-    
-    # define parents and childs identifiers https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L145
-    # define catalog_extras https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L153
+    # get actual resources at data.gov from API
+    Flow(
+        get_actual_ckan_resources_from_api(harvest_source_id=source_identifier),
+        
+        dump_to_path(f'datapackages/{name}/dataapi'),
+        # printer(num_rows=1), # , tablefmt='html')
+        
+    ).process()[1]
 
-    # Iterate ALL Harvest Objects at CKAN instance https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L164
-        # and list which still exist https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L174
-        # create a separate list for which are parents
-    
-    # detect which was demoted and which was promoted to parent
-    # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L179
-    # error if one opackage is parent and child (identifier is part of both lists) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L198
+    """
+    # merge both
+    Flow(
+        
+        # define parents and childs identifiers https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L145
+        # define catalog_extras https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L153
 
-    # detect new parents (this one who are parents in data.json but not before) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L202
+        # Iterate ALL Harvest Objects at CKAN instance https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L164
+            # and list which still exist https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L174
+            # create a separate list for which are parents
+        
+        # detect which was demoted and which was promoted to parent
+        # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L179
+        # error if one opackage is parent and child (identifier is part of both lists) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L198
 
-    # delete all no longer in the remote catalog https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L322
+        # detect new parents (this one who are parents in data.json but not before) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L202
 
-).process()[1]
-"""
+        # delete all no longer in the remote catalog https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L322
+
+    ).process()[1]
+    """
