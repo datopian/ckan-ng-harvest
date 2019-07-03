@@ -2,16 +2,7 @@ from urllib.request import urlopen
 import json
 from libs.data_json import JSONSchema, DataJSON
 from libs.data_gov_api import CKANPortalAPI
-
-import logging
-logger = logging.getLogger(__name__)
-
-c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler('harvest.log')
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-logger.setLevel(logging.DEBUG)
-
+from logs import logger
 
 def get_data_json_from_url(url):
     datajson = DataJSON()
