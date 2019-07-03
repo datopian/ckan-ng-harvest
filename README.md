@@ -27,3 +27,10 @@ PAGE 3 from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
 3369 total resources
 
 ```
+
+
+### Tests
+
+```
+python -m unittest discover -s tests -v
+```

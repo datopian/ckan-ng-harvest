@@ -50,6 +50,10 @@ class DataJSON:
         except Exception as e:
             error = 'ERROR Donwloading data: {} [{}]'.format(self.url, e)
             return False, error
+        
+        if req.status_code >= 400:
+            error = '{} HTTP error: {}'.format(self.url, req.status_code)
+            return False, error
             
         self.raw_data_json = req.content
         return True, None
@@ -69,6 +73,10 @@ class DataJSON:
         
         if self.data_json is None:
             return False, 'No data json available'
+        
+        if not self.data_json.get('describedBy', False):
+            return False, 'Missing describedBy KEY'
+            
         schema_definition_url = self.data_json['describedBy']
         self.schema = JSONSchema(url=schema_definition_url)
         ok, schema_errors = self.validate_schema()
