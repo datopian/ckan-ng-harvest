@@ -39,7 +39,7 @@ def get_data_json_from_url(url):
     else:
         logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
     
-    logger.debug('JSONSchema: {}'.format(json.dumps(datajson.schema.json_content, indent=4)))
+    # logger.debug('JSONSchema: {}'.format(json.dumps(datajson.schema.json_content, indent=4)))
 
     c = 0
     for dataset in datajson.datasets: 

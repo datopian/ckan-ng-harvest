@@ -19,7 +19,7 @@ resources_file = open(resources_path, 'r')
 json_resources = json.load(resources_file)
 
 # try the first one
-data_json_to_process = json_resources[0]
+data_json_to_process = json_resources[1]
 name = data_json_to_process['name']  # Nice name of the source
 url = data_json_to_process['url']  # data.json final URL
 source_identifier = data_json_to_process['identifier']  # harves source id at CKAN
@@ -29,7 +29,6 @@ Flow(
     clean_duplicated_identifiers,
 
     dump_to_path(f'datapackages/{name}/datajson'),
-    # checkpoint('data-json-cleaned-duplicates'),
     # printer(num_rows=1), # , tablefmt='html')
     
 ).process()[1]

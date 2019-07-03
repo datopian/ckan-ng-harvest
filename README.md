@@ -8,8 +8,6 @@ python3 flow.py
 Downloaded OK
 JSON OK
 Validate OK: 1580 datasets
-
-res_1:
  - Dataset: Department of Agriculture Congressional Logs for Fiscal Year 2014
  - Dataset: Department of Agriculture Enterprise Data Inventory
  - Dataset: Department of Agriculture Secretary's Calendar Schedule
@@ -19,7 +17,13 @@ res_1:
  - Dataset: USDA Bureau IT Leadership Directory
  - Dataset: USDA Governance Boards
  - Dataset: USDA Help Desk Support Data Asset
-
-0 duplicates deleted. 10 OK
+0 duplicates deleted. 1580 OK
+Extracting from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
+PAGE 1 from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
+2161 total resources
+PAGE 2 from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
+3369 total resources
+PAGE 3 from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
+3369 total resources
 
 ```
