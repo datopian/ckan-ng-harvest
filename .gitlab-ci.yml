@@ -1,0 +1,11 @@
+image: alpine:latest
+
+pages:
+  stage: deploy
+  script:
+  - echo 'Hello CI'
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
