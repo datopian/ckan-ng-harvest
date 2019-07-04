@@ -2,6 +2,8 @@ import json
 import requests
 import logging
 logger = logging.getLogger(__name__)
+import os
+
 
 class CKANPortalAPI:
     """ API and data from data.gov 
@@ -74,7 +76,51 @@ class CKANPortalAPI:
             else:
                 start += rows
                 yield(results)
+        
+    def get_all_packages(self, harvest_source_id=None):
+        self.package_list = []
+        self.total_pages = 0  
+        for packages in self.search_packages(harvest_source_id=harvest_source_id):
+            self.package_list += packages
+            self.total_pages += 1
 
+    def read_local_packages(self, path):
+        if not os.path.isfile(path):
+            return False, "File not exists"
+        packages_file = open(path, 'r')
+        try:
+            self.package_list = json.load(packages_file)
+        except Exception as e:
+            return False, "Error parsin json: {}".format(e)
+        return True, None
+    
+    def count_resources(self):
+        """ read all datasets and count resources """
+        total = 0
+        for dataset in self.package_list:
+            resources = dataset.get('resources', [])
+            total += len(resources)
+        return total
+    
+    def remove_duplicated_identifiers(self):
+        unique_identifiers = []
+        self.duplicates = []
+
+        for dataset in self.package_list:
+            idf = dataset['id']
+            if idf not in unique_identifiers:
+                unique_identifiers.append(idf)
+            else:
+                self.duplicates.append(idf)
+                self.package_list.remove(dataset)
+                
+        return self.duplicates
+
+    def save_packages_list(self, path):
+        dmp = json.dumps(self.package_list, indent=2)
+        f = open(path, 'w')
+        f.write(dmp)
+        f.close()
 
 if __name__ == '__main__':
 

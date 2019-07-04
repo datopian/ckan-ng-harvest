@@ -1,7 +1,5 @@
 """
 Get updated list of resources from a data.json file
-Get the actual list of resources in data.gov
-Compare both and upgrade data.gov 
 """
 
 from functions import get_data_json_from_url, get_data_json_from_file
