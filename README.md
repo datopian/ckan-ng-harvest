@@ -2,6 +2,23 @@
 
 Read and process [data.json](data.json.md) resources files.  
 
+Usage _process_data_json_:
+
+```
+python3 process_data_json.py -h
+usage: process_data_json.py [-h] [--url URL] [--name NAME] [--force_download]
+                            [--request_timeout REQUEST_TIMEOUT]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --url URL             URL of the data.json
+  --name NAME           Name of the resource (for generate the containing
+                        folder)
+  --force_download      Force download or just use local data.json prevously
+                        downloaded
+  --request_timeout REQUEST_TIMEOUT
+                        Request data.json URL timeout
+```
 
 Energy data.json
 ```
@@ -40,7 +57,34 @@ Validate FAILED: 1766 datasets
 Readed 1766 datasets including 3938 resources. 57 duplicated identifiers removed
 ```
 
-Getting CKAN packages via _harvest_source_id_
+
+# Getting CKAN packages via _harvest_source_id_
+
+Usage _process_ckan_api_:
+
+```
+python3 process_ckan_api.py -h
+usage: process_ckan_api.py [-h] [--ckan_base_url CKAN_BASE_URL] [--name NAME]
+                           [--harvest_source_id HARVEST_SOURCE_ID]
+                           [--force_download]
+                           [--request_timeout REQUEST_TIMEOUT]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --ckan_base_url CKAN_BASE_URL
+                        URL of the data.json
+  --name NAME           Name of the resource (for generate the containing
+                        folder)
+  --harvest_source_id HARVEST_SOURCE_ID
+                        Source ID for filter CKAN API
+  --force_download      Force download or just use local data.json prevously
+                        downloaded
+  --request_timeout REQUEST_TIMEOUT
+                        Request data.json URL timeout
+
+```
+
+Example
 
 ```
 python3 process_ckan_api.py --name treasury --harvest_source_id de90314a-7c7d-4aff-bd84-87b134bba13d
