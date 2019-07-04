@@ -92,7 +92,7 @@ Downloading
 Readed 278 datasets including 322 resources. 0 duplicated identifiers removed
 ```
 
-Trying with DataFlows
+## Experimental: Trying with DataFlows
 
 ```
 python3 flow.py
@@ -125,4 +125,17 @@ PAGE 3 from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
 
 ```
 python -m unittest discover -s tests -v
+
+test_load_from_url (test_data_ckan_api.CKANPortalAPITestClass) ... API packages search page 1
+ok
+test_load_from_url (test_data_json.DataJSONTestClass) ... ok
+test_read_json (test_data_json.DataJSONTestClass) ... ok
+test_validate_json1 (test_data_json.DataJSONTestClass) ... ok
+test_validate_json2 (test_data_json.DataJSONTestClass) ... ok
+test_validate_json3 (test_data_json.DataJSONTestClass) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 45.506s
+
+OK
 ```
