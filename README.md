@@ -40,6 +40,14 @@ Validate FAILED: 1766 datasets
 Readed 1766 datasets including 3938 resources. 57 duplicated identifiers removed
 ```
 
+Getting CKAN packages via _harvest_source_id_
+
+```
+python3 process_ckan_api.py --name treasury --harvest_source_id de90314a-7c7d-4aff-bd84-87b134bba13d
+Downloading
+Readed 278 datasets including 322 resources. 0 duplicated identifiers removed
+```
+
 Trying with DataFlows
 
 ```
