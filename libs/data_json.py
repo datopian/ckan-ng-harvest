@@ -169,7 +169,7 @@ class DataJSON:
         f.write(dmp)
         f.close()
 
-    def save_data_packages(self, path):
+    def save_datasets_as_data_packages(self, path):
         """ save the source data.json file """
         for dataset in self.datasets:
             idf = dataset['identifier']
