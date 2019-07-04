@@ -20,8 +20,9 @@ url = args.url  # data.json final URL
 
 base_data_folder = 'data'
 local_folder = os.path.join(base_data_folder, args.name)
-if not os.path.isdir(local_folder):
-    os.makedirs(local_folder)
+packages_folder_path = os.path.join(local_folder, 'datapackages')
+if not os.path.isdir(packages_folder_path):
+    os.makedirs(packages_folder_path)
 
 data_json_path = os.path.join(local_folder, 'data.json')
 data_json_errors_path = os.path.join(local_folder, 'data_json_errors.json')
@@ -46,3 +47,7 @@ total_duplicates = len(duplicates)
 datajson.save_duplicates(path=duplicates_path)
 
 logger.info(f'Readed {total_datasets} datasets including {total_resources} resources. {total_duplicates} duplicated identifiers removed')
+
+logger.info('creating datapackages')
+datajson.save_datasets_as_data_packages(folder_path=packages_folder_path)
+

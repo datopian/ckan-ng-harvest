@@ -7,7 +7,8 @@ import requests
 import jsonschema as jss
 import json
 import os
-from datapackage import Package
+from datapackage import Package, Resource
+from slugify import slugify
 
 
 class JSONSchema:
@@ -169,12 +170,25 @@ class DataJSON:
         f.write(dmp)
         f.close()
 
-    def save_datasets_as_data_packages(self, path):
+    def save_datasets_as_data_packages(self, folder_path):
         """ save the source data.json file """
         for dataset in self.datasets:
-            idf = dataset['identifier']
-            if idf not in unique_identifiers:
-                unique_identifiers.append(idf)
-            else:
-                duplicates.append(idf)
-                self.datasets.remove(dataset)
+            package = Package()
+            
+            #TODO check this, I'm learning datapackages
+            resource = Resource({'data': dataset})
+            resource.infer()  #adds "name": "inline"
+
+            #FIXME identifier uses incompables characthers as paths (e.g. /).
+            # could exist duplicates paths from different resources
+            idf = slugify(dataset['identifier'])  
+            
+            resource_path = os.path.join(folder_path, f'resource_{idf}.json')
+            if not resource.valid:
+                raise Exception('Invalid resource')
+            
+            resource.save(resource_path) 
+
+            package.add_resource(descriptor=resource.descriptor)
+            package_path = os.path.join(folder_path, f'pkg_{idf}.zip')
+            package.save(target=package_path)
