@@ -6,10 +6,13 @@ process Data JSON files
 import requests
 import jsonschema as jss
 import json
+import os
+from datapackage import Package
+
 
 class JSONSchema:
     """ a JSON Schema definition for validating data.json files """
-    json_content = None  # schema content
+    json_content = None  # schema content 
     valid_schemas = {  # schemas we know
                 "https://project-open-data.cio.gov/v1.1/schema": '1.1',
                 }
@@ -39,6 +42,8 @@ class DataJSON:
     data_json = None  # JSON readed from data.json file
 
     datasets = []  # all datasets described in data.json
+    validation_errors = []
+    duplicates = []  # list of datasets with the same identifier
 
     def download_data_json(self, timeout=30):
         """ download de data.json file """
@@ -56,6 +61,13 @@ class DataJSON:
             return False, error
             
         self.raw_data_json = req.content
+        return True, None
+    
+    def read_local_data_json(self, data_json_path):
+        if not os.path.isfile(data_json_path):
+            return False, "File not exists"
+        data_json_file = open(data_json_path, 'r')
+        self.raw_data_json = data_json_file.read()
         return True, None
     
     def load_data_json(self):
@@ -94,7 +106,7 @@ class DataJSON:
         
         #read datasets by now, even in error
         self.datasets = self.data_json['dataset']
-
+        self.validation_errors = errors
         if len(errors) > 0:
             return False, errors
         else:
@@ -117,23 +129,26 @@ class DataJSON:
 
         return len(errors) == 0, errors
 
-    def normalize_datasets(self):
-        """ Transfor data.json datasets in a standar CKAN-compatible OUT """
-        ret = {'datasets': []}
+    def remove_duplicated_identifiers(self):
+        unique_identifiers = []
         
         for dataset in self.datasets:
-            normalized_dataset = {'title': dataset['title'],
-                    'description': dataset['description']}
-            ret['datasets'].append(normalized_dataset)
-        return ret
-
-    def save_datasets(self, path):
-        """ save the data package json file. Normalize the data """
-
-        dmp = json.dumps(self.normalize_datasets(), indent=2)
-        f = open(path, 'w')
-        f.write(dmp)
-        f.close()
+            idf = dataset['identifier']
+            if idf not in unique_identifiers:
+                unique_identifiers.append(idf)
+            else:
+                self.duplicates.append(idf)
+                self.datasets.remove(dataset)
+                
+        return self.duplicates
+    
+    def count_resources(self):
+        """ read all datasets and count resources """
+        total = 0
+        for dataset in self.datasets:
+            distribution = dataset.get('distribution', [])
+            total += len(distribution)
+        return total
     
     def save_data_json(self, path):
         """ save the source data.json file """
@@ -141,3 +156,25 @@ class DataJSON:
         f = open(path, 'w')
         f.write(dmp)
         f.close()
+    
+    def save_validation_errors(self, path):
+        dmp = json.dumps(self.validation_errors, indent=2)
+        f = open(path, 'w')
+        f.write(dmp)
+        f.close()
+    
+    def save_duplicates(self, path):
+        dmp = json.dumps(self.duplicates, indent=2)
+        f = open(path, 'w')
+        f.write(dmp)
+        f.close()
+
+    def save_data_packages(self, path):
+        """ save the source data.json file """
+        for dataset in self.datasets:
+            idf = dataset['identifier']
+            if idf not in unique_identifiers:
+                unique_identifiers.append(idf)
+            else:
+                duplicates.append(idf)
+                self.datasets.remove(dataset)

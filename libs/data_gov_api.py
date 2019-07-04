@@ -11,6 +11,7 @@ class CKANPortalAPI:
     user_agent = 'ckan-portal-filter'
     package_list_url = '/api/3/action/package_list'  # redirect to package_search (?)
     package_search_url = '/api/3/action/package_search'  # iterate with start and rows GET params
+    package_search_harvested_packages_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'
     package_list = None
     total_packages = 0
 

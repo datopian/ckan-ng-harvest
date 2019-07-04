@@ -31,14 +31,36 @@ def get_data_json_from_url(url):
         logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
     
     # logger.debug('JSONSchema: {}'.format(json.dumps(datajson.schema.json_content, indent=4)))
+    return datajson
 
-    c = 0
-    for dataset in datajson.datasets: 
-        yield(dataset)
+def get_data_json_from_file(data_json_path):
+    datajson = DataJSON()
 
-        c += 1  # just log some datasets
-        if c < 10:
-            logger.debug(' - Dataset: {}'.format(dataset['title']))
+    ret, info = datajson.read_local_data_json(data_json_path=data_json_path)
+    
+    ret, info = datajson.load_data_json()
+    if not ret:
+        error = 'Error loading JSON data: {}'.format(info)
+        logger.error(error)
+        raise Exception(error)
+        
+    logger.info('JSON OK')
+    ret, errors = datajson.validate_json()
+    if not ret:
+        total_errors = len(errors)
+        logger.error('{} Errors validating data'.format(total_errors))
+        error = errors[0]
+        if len(error) > 70: # too long and vervose errors
+            error = error[:70]
+        logger.error('Error 1/{} validating data:\n\t{}'.format(total_errors, error))
+        # continue  # USE invalid too
+        logger.info('Validate FAILED: {} datasets'.format(len(datajson.datasets)))
+    else:
+        logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
+    
+    # logger.debug('JSONSchema: {}'.format(json.dumps(datajson.schema.json_content, indent=4)))
+    
+    return datajson
 
 def list_parents_and_childs(package):
     # get a list of datasets with "isPartOf" and his childs.

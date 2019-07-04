@@ -2,6 +2,44 @@
 
 Read and process [data.json](data.json.md) resources files.  
 
+
+Energy data.json
+```
+python3 harvest.py --name energy-data --url http://www.energy.gov/data.json
+
+Downloading http://www.energy.gov/data.json
+Downloaded OK
+JSON OK
+Validate OK: 5009 datasets
+Readed 5009 datasets including 5425 resources. 1251 duplicated identifiers removed
+```
+
+Agiculture data.json
+
+```
+python3 harvest.py --name agriculture --url http://www.usda.gov/data.json
+
+Downloading http://www.usda.gov/data.json
+Downloaded OK
+JSON OK
+Validate OK: 1580 datasets
+Readed 1580 datasets including 3408 resources. 0 duplicated identifiers removed
+```
+
+Healt data.json (with errors)
+
+```
+python3 harvest.py --name healt --url https://healthdata.gov/data.jsonUsing data.json prevously downloaded: data/healt/data.json
+JSON OK
+1 Errors validating data
+Error 1/1 validating data:
+	Error validating JsonSchema: 'programCode' is a required property
+
+Fai
+Validate FAILED: 1766 datasets
+Readed 1766 datasets including 3938 resources. 57 duplicated identifiers removed
+```
+
 ```
 python3 flow.py
 
