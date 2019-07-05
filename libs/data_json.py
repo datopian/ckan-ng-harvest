@@ -171,7 +171,7 @@ class DataJSON:
         f.close()
 
     def save_datasets_as_data_packages(self, folder_path):
-        """ save the source data.json file """
+        """ save each dataset from a data.json source as _datapackage_ """
         for dataset in self.datasets:
             package = Package()
             
@@ -181,6 +181,7 @@ class DataJSON:
 
             #FIXME identifier uses incompables characthers as paths (e.g. /).
             # could exist duplicates paths from different resources
+            # use BASE64 or hashes
             idf = slugify(dataset['identifier'])  
             
             resource_path = os.path.join(folder_path, f'resource_{idf}.json')
