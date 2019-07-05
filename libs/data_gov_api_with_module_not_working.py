@@ -19,7 +19,7 @@ class CKANPortalAPI:
     def get_user_agent(self):
         return f'{self.user_agent} {self.version}'
     
-    def search_packages(self, start=0, rows=1000, harvest_source_id=None):
+    def search_harvest_packages(self, start=0, rows=1000, harvest_source_id=None):
         """ search packages
             "rows" is the page size.
             You could search for an specific harvest_source_id """
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     harvest_source_id = '50104281-92a3-4534-9d38-141bc82276c5'  # NYC JSON
     harvest_source_id = 'afb32af7-87ba-4f27-ae5c-f0d4d0e039dc'  # CFPB JSON
     
-    results = cpa.search_packages(start=100, rows=5, harvest_source_id=harvest_source_id)
+    results = cpa.search_harvest_packages(start=100, rows=5, harvest_source_id=harvest_source_id)
     print(results)
 
     f = open('tmp_results.json', 'w')

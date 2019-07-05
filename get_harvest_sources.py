@@ -1,5 +1,5 @@
 """
-Get the actual list of resources in data.gov
+Get the actual list of harvest sources (data.json or another)
 """
 from libs.data_gov_api import CKANPortalAPI
 from functions import get_actual_ckan_resources_from_api
@@ -9,17 +9,16 @@ from logs import logger
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--ckan_base_url", type=str, default='https://catalog.data.gov', help="URL of the data.json")
-parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
-parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter CKAN API")
+parser.add_argument("--name", type=str, default='DataGov', help="Name of the resource (for generate the containing folder)")
 parser.add_argument("--force_download", action='store_true',
                                         help="Force download or just use local data.json prevously downloaded")
-parser.add_argument("--request_timeout", type=int, default=90, help="Request data.json URL timeout")
+parser.add_argument("--request_timeout", type=int, default=90, help="Request URL timeout")
 args = parser.parse_args()
 
-name = args.name  # Nice name of the source
+name = args.name  # Nice name of the source 
 
 base_data_folder = 'data'
-local_folder = os.path.join(base_data_folder, args.name)
+local_folder = os.path.join(base_data_folder, args.name, 'harvest_sources')
 packages_folder_path = os.path.join(local_folder, 'datapackages')
 if not os.path.isdir(packages_folder_path):
     os.makedirs(packages_folder_path)
@@ -29,12 +28,12 @@ api_results_path = os.path.join(local_folder, 'api_results.json')
 # duplicates_path = os.path.join(local_folder, 'api_duplicates.json')
 
 # ----------------------------------------------------
-# Get data.json if not here (or force)
+# Get sources list if not here (or force)
 # ----------------------------------------------------
 if not os.path.isfile(api_results_path) or args.force_download:
-    logger.info('Downloading')
+    logger.info('Downloading harvest sources')
     cpa = CKANPortalAPI(base_url=args.ckan_base_url)
-    cpa.get_all_packages(harvest_source_id=args.harvest_source_id)
+    cpa.get_all_packages(harvest_type='harvest')
     cpa.save_packages_list(path=api_results_path)
 else:
     logger.info(f'Using data.json prevously downloaded: {api_results_path}')

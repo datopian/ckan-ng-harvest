@@ -62,6 +62,9 @@ def get_data_json_from_file(data_json_path):
     
     return datajson
 
+def validate_headers():
+    pass
+
 def list_parents_and_childs(package):
     # get a list of datasets with "isPartOf" and his childs.
     # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L145
@@ -105,7 +108,7 @@ def get_actual_ckan_resources_from_api(harvest_source_id=None):
     resources = 0
     
     page = 0
-    for packages in cpa.search_packages(harvest_source_id=harvest_source_id):
+    for packages in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
         # getting resources in pages of packages
         page += 1
         logger.info('PAGE {} from harvest source id: {}'.format(page, harvest_source_id))

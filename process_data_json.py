@@ -42,6 +42,7 @@ else:
 datajson.save_validation_errors(path=data_json_errors_path)
 total_datasets = len(datajson.datasets)
 total_resources = datajson.count_resources()
+logger.info('cleaning datasets')
 duplicates = datajson.remove_duplicated_identifiers()
 total_duplicates = len(duplicates)
 datajson.save_duplicates(path=duplicates_path)

@@ -15,7 +15,10 @@ class CKANPortalAPI:
     user_agent = 'ckan-portal-filter'
     package_list_url = '/api/3/action/package_list'  # redirect to package_search (?)
     package_search_url = '/api/3/action/package_search'  # iterate with start and rows GET params
-    package_search_harvested_packages_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'
+
+    # search for harvest sources
+    package_search_harvested_sources_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'  # all the sources in a CKAN instance (959 results in data.gov)
+    package_search_harvested_datajson_sources_url = '/api/3/action/package_search?q=%28type:harvest%20source_type:datajson%29&rows=1000'  # just the data.json harvest sources in a CKAN instance (144 results in data.gov)
     package_list = None
     total_packages = 0
 
@@ -26,7 +29,9 @@ class CKANPortalAPI:
         headers = {'User-Agent': f'{self.user_agent} {self.version}'}
         return headers
 
-    def search_packages(self, rows=1000, harvest_source_id=None):
+    def search_harvest_packages(self, rows=1000, harvest_source_id=None,  # just one harvest source
+                                                    harvest_type=None,  # harvest for harvest sources
+                                                    source_type=None):  # datajson for 
         """ search packages
             "rows" is the page size.
             You could search for an specific harvest_source_id """
@@ -43,6 +48,14 @@ class CKANPortalAPI:
             params = {'start': start, 'rows': rows}  # , 'sort': sort}
             if harvest_source_id is not None:
                 params['q'] = f'harvest_source_id:{harvest_source_id}'
+            elif harvest_type is not None:
+                if source_type is not None:
+                    params['source_type'] = source_type
+                    params['q'] = f'(type:{harvest_type} source_type:{source_type})'
+                else:
+                    params['q'] = f'(type:{harvest_type})'
+            
+            
                 
             logger.debug(f'Searching {url} PAGE:{page} start:{start}, rows:{rows} with params: {params}')
             
@@ -79,10 +92,14 @@ class CKANPortalAPI:
                 start += rows
                 yield(results)
         
-    def get_all_packages(self, harvest_source_id=None):
+    def get_all_packages(self, harvest_source_id=None,  # just one harvest source
+                                harvest_type=None,  # 'harvest' for harvest sources
+                                source_type=None):
         self.package_list = []
         self.total_pages = 0  
-        for packages in self.search_packages(harvest_source_id=harvest_source_id):
+        for packages in self.search_harvest_packages(harvest_source_id=harvest_source_id,
+                                                    harvest_type=harvest_type,
+                                                    source_type=source_type):
             self.package_list += packages
             self.total_pages += 1
 
@@ -168,7 +185,7 @@ if __name__ == '__main__':
     
     for harvest_source_id in harvest_source_ids:
         page = 0
-        for packages in cpa.search_packages(harvest_source_id=harvest_source_id):
+        for packages in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
             page += 1
             for package in packages:
                 pkg_resources = len(package['resources'])

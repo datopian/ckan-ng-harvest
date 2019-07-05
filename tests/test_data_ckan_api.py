@@ -15,7 +15,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         resources = 0
         
         page = 0
-        for packages in cpa.search_packages(harvest_source_id=harvest_source_id):
+        for packages in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
             page += 1
             print(f'API packages search page {page}')
             self.assertGreater(cpa.total_packages, 0)  # has resources in the first page
