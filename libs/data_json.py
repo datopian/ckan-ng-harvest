@@ -184,12 +184,12 @@ class DataJSON:
             # use BASE64 or hashes
             idf = slugify(dataset['identifier'])  
             
-            resource_path = os.path.join(folder_path, f'resource_{idf}.json')
+            resource_path = os.path.join(folder_path, f'resource_data_json_{idf}.json')
             if not resource.valid:
                 raise Exception('Invalid resource')
             
             resource.save(resource_path) 
 
             package.add_resource(descriptor=resource.descriptor)
-            package_path = os.path.join(folder_path, f'pkg_{idf}.zip')
+            package_path = os.path.join(folder_path, f'pkg_data_json_{idf}.zip')
             package.save(target=package_path)

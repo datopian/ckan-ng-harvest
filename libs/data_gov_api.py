@@ -3,6 +3,8 @@ import requests
 import logging
 logger = logging.getLogger(__name__)
 import os
+from datapackage import Package, Resource
+from slugify import slugify
 
 
 class CKANPortalAPI:
@@ -121,6 +123,31 @@ class CKANPortalAPI:
         f = open(path, 'w')
         f.write(dmp)
         f.close()
+    
+    def save_datasets_as_data_packages(self, folder_path):
+        """ save each dataset from a data.json source as _datapackage_ """
+        for dataset in self.package_list:
+            package = Package()
+            
+            #TODO check this, I'm learning datapackages
+            resource = Resource({'data': dataset})
+            resource.infer()  #adds "name": "inline"
+
+            #FIXME identifier uses incompables characthers as paths (e.g. /).
+            # could exist duplicates paths from different resources
+            # use BASE64 or hashes
+            idf = slugify(dataset['id'])  
+            
+            resource_path = os.path.join(folder_path, f'resource_ckan_api_{idf}.json')
+            if not resource.valid:
+                raise Exception('Invalid resource')
+            
+            resource.save(resource_path) 
+
+            package.add_resource(descriptor=resource.descriptor)
+            package_path = os.path.join(folder_path, f'pkg_ckan_api_{idf}.zip')
+            package.save(target=package_path)
+
 
 if __name__ == '__main__':
 
@@ -148,7 +175,7 @@ if __name__ == '__main__':
                 resources += pkg_resources
 
             if len(packages) > 0:
-                f = open(f'tmp_results_{harvest_source_id}_{page}.json', 'w')
+                f = open(f'data/ckan_api_tmp_results_{harvest_source_id}_{page}.json', 'w')
                 f.write(json.dumps(packages, indent=2))
                 f.close()
 

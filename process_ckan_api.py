@@ -20,8 +20,9 @@ name = args.name  # Nice name of the source
 
 base_data_folder = 'data'
 local_folder = os.path.join(base_data_folder, args.name)
-if not os.path.isdir(local_folder):
-    os.makedirs(local_folder)
+packages_folder_path = os.path.join(local_folder, 'datapackages')
+if not os.path.isdir(packages_folder_path):
+    os.makedirs(packages_folder_path)
 
 api_results_path = os.path.join(local_folder, 'api_results.json')
 # api_errors_path = os.path.join(local_folder, 'api_errors.json')
@@ -47,3 +48,6 @@ duplicates = cpa.remove_duplicated_identifiers()
 total_duplicates = len(duplicates)
 
 logger.info(f'Readed {total_datasets} datasets including {total_resources} resources. {total_duplicates} duplicated identifiers removed')
+
+logger.info('creating datapackages')
+cpa.save_datasets_as_data_packages(folder_path=packages_folder_path)
