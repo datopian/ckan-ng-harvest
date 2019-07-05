@@ -3,6 +3,8 @@ import json
 from libs.data_json import JSONSchema, DataJSON
 from libs.data_gov_api import CKANPortalAPI
 from logs import logger
+import os
+
 
 def get_data_json_from_url(url):
     datajson = DataJSON()

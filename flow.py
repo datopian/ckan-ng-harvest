@@ -10,7 +10,7 @@ Using:
 
 from dataflows import Flow, printer, dump_to_path, checkpoint
 from datapackage import Package
-from functions import (get_data_json_from_url, validate_headers, clean_duplicated_identifiers,
+from functions import (get_data_json_from_url, clean_duplicated_identifiers,
                         list_parents_and_childs, get_actual_ckan_resources_from_api)
 import json
 import os
@@ -42,7 +42,6 @@ for data_json_to_process in json_resources:
         # get resources from data.json file
         Flow(
             get_data_json_from_url(url),
-            validate_headers,
             clean_duplicated_identifiers,
 
             dump_to_path(datajson_package_folder_path),

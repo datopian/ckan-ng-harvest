@@ -42,6 +42,7 @@ class DataJSON:
     raw_data_json = None  # raw downloaded text
     data_json = None  # JSON readed from data.json file
 
+    headers = None
     datasets = []  # all datasets described in data.json
     validation_errors = []
     duplicates = []  # list of datasets with the same identifier
