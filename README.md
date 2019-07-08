@@ -146,7 +146,7 @@ Downloading
 Readed 278 datasets including 322 resources. 0 duplicated identifiers removed
 ```
 
-## Experimental: Trying with DataFlows
+## Old version using DataFlows
 
 ```
 python3 flow.py
