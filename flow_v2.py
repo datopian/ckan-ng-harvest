@@ -35,7 +35,7 @@ if not os.path.isdir(datajson_package_folder_path):
 
 Flow(
     # not working (why?) 
-    # load(load_source=url, name='datajson', datasets='datastes'),
+    # load(load_source=url, name='datajson'),
     get_data_json_from_url(url, name=name, path=data_folder_path),  # I like to split headers and ['dataset'] in two resources. Valid the headers from one side and process the ['dataset'] as rows independently. It's a good idea?
     update_resource('res_1', name='datajson'),
     
