@@ -55,46 +55,6 @@ def clean_duplicated_identifiers(rows):
     logger.info('{} duplicates deleted. {} OK'.format(len(duplicates), processed))
 
 
-def rename_datajson_package(package):
-    package.pkg.descriptor['resources'][0]['name'] = 'datajson'
-    yield package.pkg
-    yield from package
-
-
-def rename_ckanapi_package(package):
-    package.pkg.descriptor['resources'][1]['name'] = 'ckanapi'
-    yield package.pkg
-    yield from package
-    
-    """
-    resources = iter(package)
-    if resources:
-        yield from resources
-    or
-    yield from package
-
-    error:
-
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/base/datastream_processor.py", line 62, in <genexpr>
-        res_iter = (ResourceWrapper(self.get_res(current_dp, rw.res.name), rw.it)
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/base/datastream_processor.py", line 65, in <genexpr>
-        res_iter = (it if isinstance(it, ResourceWrapper) else ResourceWrapper(res, it)
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/helpers/iterable_loader.py", line 117, in process_resources
-        yield from super(iterable_loader, self).process_resources(resources)
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/base/datastream_processor.py", line 41, in process_resources
-        for res in resources:
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/base/datastream_processor.py", line 62, in <genexpr>
-        res_iter = (ResourceWrapper(self.get_res(current_dp, rw.res.name), rw.it)
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/base/datastream_processor.py", line 65, in <genexpr>
-        res_iter = (it if isinstance(it, ResourceWrapper) else ResourceWrapper(res, it)
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/base/datastream_processor.py", line 41, in process_resources
-        for res in resources:
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/base/datastream_processor.py", line 63, in <genexpr>
-        for rw in res_iter_)
-    File "/home/hudson/envs/data_json_etl/lib/python3.6/site-packages/dataflows/base/datastream_processor.py", line 54, in get_res
-        assert ret is not None
-    """
-
 def validate_headers():
     pass
 
@@ -109,7 +69,12 @@ def log_package_info(package):
     logger.info(f'Package: {package}')
     resources = package.pkg.descriptor['resources']
     for resource in resources:
-        nice_resource = json.dumps(resource, indent=4)
+        # nice_resource = json.dumps(resource, indent=4)
+        # short vesion
+        nice_resource = {'name': resource['name'],
+                            'path': resource['path'],
+                            'profile': resource['profile'],
+                            'fields': resource['schema']['fields'][0]}
         logger.info(f' - Resource: {nice_resource}')
 
     
