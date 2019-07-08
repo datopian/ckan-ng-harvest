@@ -3,14 +3,17 @@ from logs import logger
 import os
 import requests
 from libs.data_gov_api import CKANPortalAPI
+from libs.data_json import DataJSON
+from datapackage import Package, Resource
+from slugify import slugify
 
 
-def get_data_json_from_url(url):
+def get_data_json_from_url(url, name, path):
     logger.info(f'Geting data.json from {url}')
     try:
         req = requests.get(url, timeout=90)
     except Exception as e:
-        error = 'ERROR Donwloading data: {} [{}]'.format(self.url, e)
+        error = 'ERROR Donwloading data: {} [{}]'.format(url, e)
         logger.error(error)
         return None
 
@@ -34,16 +37,29 @@ def get_data_json_from_url(url):
         logger.error('No dataset key')
         return None
 
-    ret = data_json['dataset']
-    logger.info('{} datasets'.format(len(ret)))
+    logger.info('{} datasets finded'.format(len(data_json['dataset'])))
 
-    return ret
+    dmp = json.dumps(data_json, indent=2)
+    f = open(os.path.join(path, 'data.json'), 'w')
+    f.write(dmp)
+    f.close()
+
+    # the real dataset list
+    for dataset in data_json['dataset']:
+        yield(dataset)
+
+    # is this better in this case?
+    # return data_json['dataset']
+
 
 def clean_duplicated_identifiers(rows):
     logger.info('Cleaning duplicates')
     unique_identifiers = []
     duplicates = []
     processed = 0
+    resource = rows.res
+    logger.error('Rows from resource_ {}'.format(resource.name))
+    
     for row in rows:
         if row['identifier'] not in unique_identifiers:
             unique_identifiers.append(row['identifier'])
@@ -51,16 +67,13 @@ def clean_duplicated_identifiers(rows):
             processed += 1
         else:
             duplicates.append(row['identifier'])
-            logger.error('Duplicated {}'.format(row['identifier']))
+            # do not log all duplicates. Sometimes they are too many.
+            if len(duplicates) < 10:
+                logger.error('Duplicated {}'.format(row['identifier']))
+            elif len(duplicates) == 10:
+                logger.error('... more duplicates not shown')
     logger.info('{} duplicates deleted. {} OK'.format(len(duplicates), processed))
 
-
-def validate_headers():
-    pass
-
-
-def split_headers(package):
-    pass
 
 def log_package_info(package):
     logger.info('--------------------------------')
@@ -87,7 +100,6 @@ def dbg_packages(package):
     yield from package
     
 
-
 def get_actual_ckan_resources_from_api(harvest_source_id=None):
     logger.info('Extracting from harvest source id: {}'.format(harvest_source_id))
     cpa = CKANPortalAPI()
@@ -103,4 +115,29 @@ def get_actual_ckan_resources_from_api(harvest_source_id=None):
             resources += pkg_resources
             yield(package)
 
-        logger.info('{} total resources'.format(resources))
+    logger.info('{} total resources in harvest source id: {}'.format(resources, harvest_source_id))
+
+
+def save_dict_as_data_packages(data, path, identifier_field):
+    """ save dict resource as data package """
+    logger.info(f'Saving DP at folder {path}. Identifier: {identifier_field}. DATA: {data}')
+    package = Package()
+    
+    #TODO check this, I'm learning datapackages
+    resource = Resource({'data': data})
+    resource.infer()  #adds "name": "inline"
+
+    #FIXME identifier uses incompables characthers as paths (e.g. /).
+    # could exist duplicates paths from different resources
+    # use BASE64 or hashes
+    idf = slugify(data[identifier_field])  
+    
+    resource_path = os.path.join(path, f'resource_data_json_{idf}.json')
+    if not resource.valid:
+        raise Exception('Invalid resource')
+    
+    resource.save(resource_path) 
+
+    package.add_resource(descriptor=resource.descriptor)
+    package_path = os.path.join(path, f'pkg_data_json_{idf}.zip')
+    package.save(target=package_path)
