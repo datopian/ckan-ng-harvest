@@ -6,9 +6,11 @@ from libs.data_gov_api import CKANPortalAPI
 from libs.data_json import DataJSON
 from datapackage import Package, Resource
 from slugify import slugify
+import config
+import base64
 
 
-def get_data_json_from_url(url, name, path):
+def get_data_json_from_url(url, name, data_json_path):
     logger.info(f'Geting data.json from {url}')
     try:
         req = requests.get(url, timeout=90)
@@ -40,7 +42,7 @@ def get_data_json_from_url(url, name, path):
     logger.info('{} datasets finded'.format(len(data_json['dataset'])))
 
     dmp = json.dumps(data_json, indent=2)
-    f = open(os.path.join(path, 'data.json'), 'w')
+    f = open(data_json_path, 'w')
     f.write(dmp)
     f.close()
 
@@ -65,6 +67,9 @@ def clean_duplicated_identifiers(rows):
             unique_identifiers.append(row['identifier'])
             yield(row)
             processed += 1
+            # save as data package
+            save_dict_as_data_packages(data=row, path=config.get_data_packages_folder_path(), 
+                                        prefix='data-json', identifier_field='identifier')
         else:
             duplicates.append(row['identifier'])
             # do not log all duplicates. Sometimes they are too many.
@@ -100,7 +105,7 @@ def dbg_packages(package):
     yield from package
     
 
-def get_actual_ckan_resources_from_api(harvest_source_id=None):
+def get_actual_ckan_resources_from_api(harvest_source_id, results_json_path):
     logger.info('Extracting from harvest source id: {}'.format(harvest_source_id))
     cpa = CKANPortalAPI()
     resources = 0
@@ -114,30 +119,35 @@ def get_actual_ckan_resources_from_api(harvest_source_id=None):
             pkg_resources = len(package['resources'])
             resources += pkg_resources
             yield(package)
+            save_dict_as_data_packages(data=package, path=config.get_data_packages_folder_path(), 
+                                        prefix='ckan-result', identifier_field='id')
 
     logger.info('{} total resources in harvest source id: {}'.format(resources, harvest_source_id))
+    cpa.save_packages_list(path=results_json_path)
 
 
-def save_dict_as_data_packages(data, path, identifier_field):
+def save_dict_as_data_packages(data, path, prefix, identifier_field):
     """ save dict resource as data package """
-    logger.info(f'Saving DP at folder {path}. Identifier: {identifier_field}. DATA: {data}')
+    # logger.info(f'Saving DP at folder {path}. Identifier: {identifier_field}. DATA: {data}')
     package = Package()
     
     #TODO check this, I'm learning datapackages
     resource = Resource({'data': data})
     resource.infer()  #adds "name": "inline"
-
-    #FIXME identifier uses incompables characthers as paths (e.g. /).
-    # could exist duplicates paths from different resources
-    # use BASE64 or hashes
-    idf = slugify(data[identifier_field])  
-    
-    resource_path = os.path.join(path, f'resource_data_json_{idf}.json')
     if not resource.valid:
         raise Exception('Invalid resource')
-    
-    resource.save(resource_path) 
+
+    identifier = data[identifier_field]
+    bytes_identifier = identifier.encode('utf-8')
+    encoded = base64.b64encode(bytes_identifier)
+    encoded_identifier = str(encoded, "utf-8")
+
+    # resource_path = os.path.join(path, f'{prefix}_{encoded_identifier}.json')
+    # resource.save(resource_path) 
 
     package.add_resource(descriptor=resource.descriptor)
-    package_path = os.path.join(path, f'pkg_data_json_{idf}.zip')
-    package.save(target=package_path)
+    package_path = os.path.join(path, f'{prefix}_{encoded_identifier}.json')
+
+    # no not rewrite if exists
+    if not os.path.isfile(package_path):
+        package.save(target=package_path)

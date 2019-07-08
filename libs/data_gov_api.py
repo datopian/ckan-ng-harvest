@@ -19,7 +19,7 @@ class CKANPortalAPI:
     # search for harvest sources
     package_search_harvested_sources_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'  # all the sources in a CKAN instance (959 results in data.gov)
     package_search_harvested_datajson_sources_url = '/api/3/action/package_search?q=%28type:harvest%20source_type:datajson%29&rows=1000'  # just the data.json harvest sources in a CKAN instance (144 results in data.gov)
-    package_list = None
+    package_list = []
     total_packages = 0
 
     def __init__(self, base_url='https://catalog.data.gov'):  # default data.gov
@@ -90,6 +90,7 @@ class CKANPortalAPI:
                 url = None
             else:
                 start += rows
+                self.package_list += results
                 yield(results)
         
     def get_all_packages(self, harvest_source_id=None,  # just one harvest source
@@ -100,7 +101,7 @@ class CKANPortalAPI:
         for packages in self.search_harvest_packages(harvest_source_id=harvest_source_id,
                                                     harvest_type=harvest_type,
                                                     source_type=source_type):
-            self.package_list += packages
+            
             self.total_pages += 1
 
     def read_local_packages(self, path):

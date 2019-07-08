@@ -18,25 +18,27 @@ from functions_v2 import (get_data_json_from_url,
                             get_actual_ckan_resources_from_api,
                             dbg_packages
                             )
+import config
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--url", type=str, help="URL of the data.json")
+parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
+parser.add_argument("--force_download", action='store_true',
+                                        help="Force download or just use local data.json prevously downloaded")
+parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter CKAN API")
 
-name = 'Energy'
-url = 'http://www.energy.gov/data.json'
-source_identifier = '8d4de31c-979c-4b50-be6b-ea3c72453ff6'
+args = parser.parse_args()
 
-# name = 'Agriculture'
-# url = 'http://www.usda.gov/data.json'
-# source_identifier = '50ca39af-9ddb-466d-8cf3-84d67a204346'
-
-data_folder_path = f'data/{name}'
-datajson_package_folder_path = f'{data_folder_path}/datapackages'
-
-if not os.path.isdir(datajson_package_folder_path):
-    os.makedirs(datajson_package_folder_path)
+config.SOURCE_NAME = args.name  # Nice name of the source
+config.SOURCE_ID = args.harvest_source_id
+config.SOURCE_URL = args.url  # data.json final URL
 
 Flow(
-    # not working (why?) 
-    # load(load_source=url, name='datajson'),
-    get_data_json_from_url(url, name=name, path=data_folder_path),  # I like to split headers and ['dataset'] in two resources. Valid the headers from one side and process the ['dataset'] as rows independently. It's a good idea?
+    # not working (why?) => load(load_source=url, name='datajson'),
+    get_data_json_from_url(config.SOURCE_URL, name=config.SOURCE_NAME,
+                            data_json_path=config.get_datajson_cache_path()),  
+    
+    # I like to split _headers_ and ['dataset'] as two different resources. Then valid the headers from one side and process the ['dataset'] as rows independently. It's a good idea?
     update_resource('res_1', name='datajson'),
     
     clean_duplicated_identifiers,  # when a processor has a _rows_ param, How do you know from which resource specifically the rows should be processed?
@@ -45,12 +47,13 @@ Flow(
     dbg_packages,  # get info about packaghes
 
     # add other resource to this process. The packages list from data.gov
-    get_actual_ckan_resources_from_api(harvest_source_id=source_identifier),
+    get_actual_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID,
+                                        results_json_path=config.get_ckan_results_cache_path()),
     update_resource('res_2', name='ckanapi'),
     
     dbg_packages,  # get info about updated packaghes
     
-    # dump_to_path(datajson_package_folder_path),
+    dump_to_path(config.get_base_path()),
     # printer(num_rows=1), # , tablefmt='html')
     
 ).process()[1]

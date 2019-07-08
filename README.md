@@ -1,7 +1,33 @@
 # Harvesting data.json files
 
-Read and process [data.json](data.json.md) resources files.  
+The harvest process includes:
+ - Read a [data.json](data.json.md) resource file from an external resource I want to harvest.
+ - Validate and save these results.
+ - Read the previous resources harvested for that particular source (via the harvest_source_id)
+ - Compare both resources and list the differences.
+ - Update the CKAN installation with these updates 
 
+
+Process using [dataflows](https://github.com/datahq/dataflows) and [datapackages](https://github.com/frictionlessdata/datapackage-py):  
+
+Usage flow_v2 script
+
+```
+usage: flow_v2.py [-h] [--url URL] [--name NAME] [--force_download]
+                  [--harvest_source_id HARVEST_SOURCE_ID]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --url URL             URL of the data.json
+  --name NAME           Name of the resource (for generate the containing
+                        folder)
+  --force_download      Force download or just use local data.json prevously
+                        downloaded
+  --harvest_source_id HARVEST_SOURCE_ID
+                        Source ID for filter CKAN API
+```
+
+Another way of dealing with the problem: without dataflows
 Usage _process_data_json_:
 
 ```
