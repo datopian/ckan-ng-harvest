@@ -27,6 +27,34 @@ optional arguments:
                         Source ID for filter CKAN API
 ```
 
+Sample results
+
+```
+$ python3 flow_v2.py --url http://www.usda.gov/data.json --name agriculture --harvest_source_id 50ca39af-9ddb-466d-8cf3-84d67a204346
+Geting data.json from http://www.usda.gov/data.json
+OK http://www.usda.gov/data.json
+VALID JSON
+1580 datasets finded
+--------------------------------
+Package processor
+Package: <dataflows.base.package_wrapper.PackageWrapper object at 0x7f49e66769b0>
+ - Resource: {'name': 'datajson', 'path': 'res_1.csv', 'profile': 'tabular-data-resource', 'fields': {'name': 'identifier', 'type': 'string', 'format': 'default'}}
+--------------------------------
+Extracting from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
+PAGE 1 from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
+--------------------------------
+Package processor
+Package: <dataflows.base.package_wrapper.PackageWrapper object at 0x7f49e4da16a0>
+ - Resource: {'name': 'datajson', 'path': 'res_1.csv', 'profile': 'tabular-data-resource', 'fields': {'name': 'identifier', 'type': 'string', 'format': 'default'}}
+ - Resource: {'name': 'ckanapi', 'path': 'res_2.csv', 'profile': 'tabular-data-resource', 'fields': {'name': 'license_title', 'type': 'string', 'format': 'default'}}
+--------------------------------
+Cleaning duplicates
+Rows from resource_ datajson
+0 duplicates deleted. 1580 OK
+PAGE 2 from harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
+3369 total resources in harvest source id: 50ca39af-9ddb-466d-8cf3-84d67a204346
+```
+
 Another way of dealing with the problem: without dataflows
 Usage _process_data_json_:
 
