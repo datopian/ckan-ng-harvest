@@ -89,10 +89,13 @@ def log_package_info(package):
     for resource in resources:
         # nice_resource = json.dumps(resource, indent=4)
         # short vesion
+
+        # some times there are no fields
+        fields = [] if len(resource['schema']['fields']) == 0 else resource['schema']['fields'][0]
         nice_resource = {'name': resource['name'],
                             'path': resource['path'],
                             'profile': resource['profile'],
-                            # 'fields': resource['schema']['fields'][0]
+                            'fields': fields
                             }
         logger.info(f' - Resource: {nice_resource}')
 
@@ -152,3 +155,13 @@ def save_dict_as_data_packages(data, path, prefix, identifier_field):
     # no not rewrite if exists
     if not os.path.isfile(package_path):
         package.save(target=package_path)
+
+def compare_resources(package):
+    # get both resources and compare usin identifier.
+
+    
+
+
+    
+    yield package.pkg
+    yield from package

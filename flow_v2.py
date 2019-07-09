@@ -16,7 +16,8 @@ from logs import logger
 from functions_v2 import (get_data_json_from_url, 
                             clean_duplicated_identifiers,
                             get_actual_ckan_resources_from_api,
-                            dbg_packages
+                            dbg_packages,
+                            compare_resources
                             )
 import config
 import argparse
@@ -53,6 +54,12 @@ Flow(
     
     dbg_packages,  # get info about updated packaghes
     
+    # Compare both resources
+    # In data.json the datasets have the identifier field: "identifier": "USDA-ERS-00071" 
+    # In CKAN API results the datasets have the same identifier at "extras" list: {"key": "identifier", "value": "USDA-ERS-00071"},
+
+    compare_resources,
+
     dump_to_path(config.get_base_path()),
     # printer(num_rows=1), # , tablefmt='html')
     
