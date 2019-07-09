@@ -1,7 +1,13 @@
 # Actual Harvest process
 
 The current harvest process lives in a group of CKAN extensions.
-Some notes.  
+[Some notes at HackMD](https://hackmd.io/WwUfJozQQMu1I5EFcauhOg?both#datajson-harvester).  
+
+## Some code notes
+
+#### load_remote_catalog
+Read a data.json URL.  
+https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_datajson.py#L21
 
 #### Define parents and childs identifiers 
 
