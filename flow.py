@@ -11,7 +11,7 @@ Using:
 from dataflows import Flow, printer, dump_to_path, checkpoint
 from datapackage import Package
 from functions import (get_data_json_from_url, clean_duplicated_identifiers,
-                        list_parents_and_childs, get_actual_ckan_resources_from_api)
+                        list_parents_and_childs, get_current_ckan_resources_from_api)
 import json
 import os
 from logs import logger
@@ -65,7 +65,7 @@ for data_json_to_process in json_resources:
     else:
         # get actual resources at data.gov from API
         Flow(
-            get_actual_ckan_resources_from_api(harvest_source_id=source_identifier),
+            get_current_ckan_resources_from_api(harvest_source_id=source_identifier),
             
             dump_to_path(dataapi_package_folder_path),
             # printer(num_rows=1), # , tablefmt='html')

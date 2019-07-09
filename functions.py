@@ -104,7 +104,7 @@ def clean_duplicated_identifiers(rows):
 
 
 
-def get_actual_ckan_resources_from_api(harvest_source_id=None):
+def get_current_ckan_resources_from_api(harvest_source_id=None):
     logger.info('Extracting from harvest source id: {}'.format(harvest_source_id))
     cpa = CKANPortalAPI()
     resources = 0

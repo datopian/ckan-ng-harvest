@@ -60,7 +60,7 @@ def clean_duplicated_identifiers(rows):
     duplicates = []
     processed = 0
     resource = rows.res
-    logger.error('Rows from resource_ {}'.format(resource.name))
+    logger.error('Rows from resource {}'.format(resource.name))
     
     for row in rows:
         if row['identifier'] not in unique_identifiers:
@@ -109,7 +109,7 @@ def dbg_packages(package):
     yield from package
     
 
-def get_actual_ckan_resources_from_api(harvest_source_id, results_json_path):
+def get_current_ckan_resources_from_api(harvest_source_id, results_json_path):
     logger.info('Extracting from harvest source id: {}'.format(harvest_source_id))
     cpa = CKANPortalAPI()
     resources = 0
@@ -130,6 +130,22 @@ def get_actual_ckan_resources_from_api(harvest_source_id, results_json_path):
     cpa.save_packages_list(path=results_json_path)
 
 
+# we need a way to save as file using an unique identifier
+#TODO check if base64 is the best idea
+def encode_identifier(identifier):
+    bytes_identifier = identifier.encode('utf-8')
+    encoded = base64.b64encode(bytes_identifier)
+    encoded_identifier = str(encoded, 'utf-8')
+
+    return encoded_identifier
+
+def decode_identifier(encoded_identifier):
+    decoded_bytes = base64.b64decode(encoded_identifier)
+    decoded_str = str(decoded_bytes, 'utf-8')
+
+    return decoded_str
+
+
 def save_dict_as_data_packages(data, path, prefix, identifier_field):
     """ save dict resource as data package """
     # logger.info(f'Saving DP at folder {path}. Identifier: {identifier_field}. DATA: {data}')
@@ -141,11 +157,8 @@ def save_dict_as_data_packages(data, path, prefix, identifier_field):
     if not resource.valid:
         raise Exception('Invalid resource')
 
-    identifier = data[identifier_field]
-    bytes_identifier = identifier.encode('utf-8')
-    encoded = base64.b64encode(bytes_identifier)
-    encoded_identifier = str(encoded, "utf-8")
-
+    encoded_identifier = encode_identifier(identifier=data[identifier_field])
+    
     # resource_path = os.path.join(path, f'{prefix}_{encoded_identifier}.json')
     # resource.save(resource_path) 
 
@@ -156,12 +169,61 @@ def save_dict_as_data_packages(data, path, prefix, identifier_field):
     if not os.path.isfile(package_path):
         package.save(target=package_path)
 
-def compare_resources(package):
+def compare_resources(data_packages_path):
     # get both resources and compare usin identifier.
 
     
 
+    def rows_processor(rows):
+        # Calculate minimum statistics
+        total = 0
 
-    
-    yield package.pkg
-    yield from package
+        no_extras = 0
+        no_identifier_key_found = 0
+        deleted = 0
+        finded = 0
+
+        for row in rows:
+            total += 1
+            # check for identifier
+            ckan_id = row['id']
+            extras = row.get('extras', False)
+            if not extras:
+                #TODO learn why. 
+                logger.error(f'No extras! dataset: {ckan_id}')
+                no_extras += 1
+                continue
+            
+            identifier = None
+            for extra in extras:
+                if extra['key'] == 'identifier':
+                    identifier = extra['value']
+            
+            if identifier is None:
+                logger.error(f'No identifier! dataset: {ckan_id}')
+                no_identifier_key_found += 1
+                continue
+            
+            encoded_identifier = encode_identifier(identifier)
+            expected_filename = f'data-json_{encoded_identifier}.json'
+            expected_path = os.path.join(data_packages_path, expected_filename)
+
+            if not os.path.isfile(expected_path):
+                logger.info(f'Dataset: {ckan_id} not in DATA.JSON. It was deleted?: {expected_path}')
+                deleted += 1
+                continue
+
+            finded += 1
+            package = Package(expected_path)
+            # logger.info(f'Dataset: {ckan_id} Finded as data package at {expected_path}')
+
+            #TODO continue, compare both sides
+
+        stats = f"""Total processed: {total}. 
+                    {no_extras} fail extras. 
+                    {no_identifier_key_found} fail identifier key.
+                    {deleted} deleted.
+                    {finded} datasets finded."""
+        logger.info(stats)
+
+    return rows_processor
