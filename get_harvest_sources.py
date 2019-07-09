@@ -9,16 +9,13 @@ from logs import logger
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--ckan_base_url", type=str, default='https://catalog.data.gov', help="URL of the data.json")
-parser.add_argument("--name", type=str, default='DataGov', help="Name of the resource (for generate the containing folder)")
 parser.add_argument("--force_download", action='store_true',
                                         help="Force download or just use local data.json prevously downloaded")
 parser.add_argument("--request_timeout", type=int, default=90, help="Request URL timeout")
 args = parser.parse_args()
 
-name = args.name  # Nice name of the source 
-
 base_data_folder = 'data'
-local_folder = os.path.join(base_data_folder, args.name, 'harvest_sources')
+local_folder = os.path.join(base_data_folder, 'harvest_sources')
 packages_folder_path = os.path.join(local_folder, 'datapackages')
 if not os.path.isdir(packages_folder_path):
     os.makedirs(packages_folder_path)
@@ -33,7 +30,7 @@ api_results_path = os.path.join(local_folder, 'api_results.json')
 if not os.path.isfile(api_results_path) or args.force_download:
     logger.info('Downloading harvest sources')
     cpa = CKANPortalAPI(base_url=args.ckan_base_url)
-    cpa.get_all_packages(harvest_type='harvest')
+    cpa.get_all_packages(harvest_type='harvest', source_type='datajson')
     cpa.save_packages_list(path=api_results_path)
 else:
     logger.info(f'Using data.json prevously downloaded: {api_results_path}')

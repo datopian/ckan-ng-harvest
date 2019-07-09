@@ -92,7 +92,8 @@ def log_package_info(package):
         nice_resource = {'name': resource['name'],
                             'path': resource['path'],
                             'profile': resource['profile'],
-                            'fields': resource['schema']['fields'][0]}
+                            # 'fields': resource['schema']['fields'][0]
+                            }
         logger.info(f' - Resource: {nice_resource}')
 
     

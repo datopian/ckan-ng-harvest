@@ -21,5 +21,11 @@
         "name": "Healt",
         "url": "https://healthdata.gov/data.json",
         "identifier": "15c538b5-31a0-474e-8ba5-c85ee421cb4d"
+    },
+
+    {
+        "name": "Education",
+        "url": "https://www2.ed.gov/data.json",
+        "identifier": "5dbeaed9-d6b1-4f96-be25-63b14804ca7b"
     }
 ]

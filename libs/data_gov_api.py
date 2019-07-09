@@ -5,6 +5,7 @@ logger = logging.getLogger(__name__)
 import os
 from datapackage import Package, Resource
 from slugify import slugify
+import base64
 
 
 class CKANPortalAPI:
@@ -50,7 +51,6 @@ class CKANPortalAPI:
                 params['q'] = f'harvest_source_id:{harvest_source_id}'
             elif harvest_type is not None:
                 if source_type is not None:
-                    params['source_type'] = source_type
                     params['q'] = f'(type:{harvest_type} source_type:{source_type})'
                 else:
                     params['q'] = f'(type:{harvest_type})'
@@ -151,19 +151,19 @@ class CKANPortalAPI:
             resource = Resource({'data': dataset})
             resource.infer()  #adds "name": "inline"
 
-            #FIXME identifier uses incompables characthers as paths (e.g. /).
-            # could exist duplicates paths from different resources
-            # use BASE64 or hashes
-            idf = slugify(dataset['id'])  
+            identifier = dataset['id']
+            bytes_identifier = identifier.encode('utf-8')
+            encoded = base64.b64encode(bytes_identifier)
+            encoded_identifier = str(encoded, "utf-8")  
             
-            resource_path = os.path.join(folder_path, f'resource_ckan_api_{idf}.json')
+            resource_path = os.path.join(folder_path, f'resource_ckan_api_{encoded_identifier}.json')
             if not resource.valid:
                 raise Exception('Invalid resource')
             
             resource.save(resource_path) 
 
             package.add_resource(descriptor=resource.descriptor)
-            package_path = os.path.join(folder_path, f'pkg_ckan_api_{idf}.zip')
+            package_path = os.path.join(folder_path, f'pkg_ckan_api_{encoded_identifier}.zip')
             package.save(target=package_path)
 
 
