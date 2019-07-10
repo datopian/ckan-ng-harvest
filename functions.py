@@ -155,6 +155,9 @@ def decode_identifier(encoded_identifier):
 def save_dict_as_data_packages(data, path, prefix, identifier_field):
     """ save dict resource as data package """
     # logger.info(f'Saving DP at folder {path}. Identifier: {identifier_field}. DATA: {data}')
+
+    #TODO check if ckanext-datapackager is useful for import or export resources: https://github.com/frictionlessdata/ckanext-datapackager
+
     package = Package()
     
     #TODO check this, I'm learning datapackages
