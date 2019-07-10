@@ -27,15 +27,19 @@ def get_data_json_from_url(url, name, data_json_path):
     logger.info(f'OK {url}')
 
     try:
-        data_json = json.loads(req.content) 
+        data_json = json.loads(req.content)
     except Exception as e:
         error = 'ERROR parsing JSON data: {}'.format(e)
         logger.error(error)
         raise
 
-    #TODO validate with jsonschema as in lib/data_json.py
-    #TODO check and re-use a ckanext-datajson validator: https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
-    #TODO check how ckanext-datajson uses jsonschema. One example (there are more) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L368
+    # TODO validate with jsonschema as in lib/data_json.py
+    # TODO check and re-use a ckanext-datajson validator:
+    # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
+
+    # TODO check how ckanext-datajson uses jsonschema.
+    #   One example (there are more)
+    #   https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L368
 
     logger.info(f'VALID JSON')
 
@@ -59,7 +63,8 @@ def get_data_json_from_url(url, name, data_json_path):
 
 
 def clean_duplicated_identifiers(rows):
-    """ clean duplicated identifiers on data.json source and save as datapackages the unique ones """
+    """ clean duplicated identifiers on data.json source
+        and save as datapackages the unique ones """
 
     logger.info('Cleaning duplicates')
     unique_identifiers = []
@@ -67,14 +72,15 @@ def clean_duplicated_identifiers(rows):
     processed = 0
     # resource = rows.res
     # logger.error('Rows from resource {}'.format(resource.name))
-    
+
     for row in rows:
         if row['identifier'] not in unique_identifiers:
             unique_identifiers.append(row['identifier'])
             yield(row)
             processed += 1
             # save as data package
-            save_dict_as_data_packages(data=row, path=config.get_data_packages_folder_path(), 
+            save_dict_as_data_packages(data=row,
+                                        path=config.get_data_packages_folder_path(),
                                         prefix='data-json', identifier_field='identifier')
         else:
             duplicates.append(row['identifier'])
@@ -105,7 +111,7 @@ def log_package_info(package):
                             }
         logger.info(f' - Resource: {nice_resource}')
 
-    
+
     logger.info('--------------------------------')
 
 def dbg_packages(package):
@@ -113,13 +119,13 @@ def dbg_packages(package):
 
     yield package.pkg
     yield from package
-    
+
 
 def get_current_ckan_resources_from_api(harvest_source_id, results_json_path):
     logger.info('Extracting from harvest source id: {}'.format(harvest_source_id))
     cpa = CKANPortalAPI()
     resources = 0
-    
+
     page = 0
     for packages in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
         # getting resources in pages of packages
@@ -129,21 +135,23 @@ def get_current_ckan_resources_from_api(harvest_source_id, results_json_path):
             pkg_resources = len(package['resources'])
             resources += pkg_resources
             yield(package)
-            save_dict_as_data_packages(data=package, path=config.get_data_packages_folder_path(), 
-                                        prefix='ckan-result', identifier_field='id')
+            save_dict_as_data_packages(data=package, path=config.get_data_packages_folder_path(),
+                                       prefix='ckan-result',
+                                       identifier_field='id')
 
     logger.info('{} total resources in harvest source id: {}'.format(resources, harvest_source_id))
     cpa.save_packages_list(path=results_json_path)
 
 
 # we need a way to save as file using an unique identifier
-#TODO check if base64 is the best idea
+# TODO check if base64 is the best idea
 def encode_identifier(identifier):
     bytes_identifier = identifier.encode('utf-8')
     encoded = base64.b64encode(bytes_identifier)
     encoded_identifier = str(encoded, 'utf-8')
 
     return encoded_identifier
+
 
 def decode_identifier(encoded_identifier):
     decoded_bytes = base64.b64decode(encoded_identifier)
@@ -154,22 +162,22 @@ def decode_identifier(encoded_identifier):
 
 def save_dict_as_data_packages(data, path, prefix, identifier_field):
     """ save dict resource as data package """
-    # logger.info(f'Saving DP at folder {path}. Identifier: {identifier_field}. DATA: {data}')
-
-    #TODO check if ckanext-datapackager is useful for import or export resources: https://github.com/frictionlessdata/ckanext-datapackager
+    # TODO check if ckanext-datapackager is useful for import
+    # or export resources:
+    # https://github.com/frictionlessdata/ckanext-datapackager
 
     package = Package()
-    
-    #TODO check this, I'm learning datapackages
+
+    # TODO check this, I'm learning datapackages.
     resource = Resource({'data': data})
-    resource.infer()  #adds "name": "inline"
+    resource.infer()  # adds "name": "inline"
     if not resource.valid:
         raise Exception('Invalid resource')
 
     encoded_identifier = encode_identifier(identifier=data[identifier_field])
-    
+
     # resource_path = os.path.join(path, f'{prefix}_{encoded_identifier}.json')
-    # resource.save(resource_path) 
+    # resource.save(resource_path)
 
     package.add_resource(descriptor=resource.descriptor)
     package_path = os.path.join(path, f'{prefix}_{encoded_identifier}.json')
@@ -177,6 +185,7 @@ def save_dict_as_data_packages(data, path, prefix, identifier_field):
     # no not rewrite if exists
     if not os.path.isfile(package_path):
         package.save(target=package_path)
+
 
 def compare_resources(data_packages_path):
     # get both resources and compare them using their identifiers.
@@ -198,38 +207,42 @@ def compare_resources(data_packages_path):
             ckan_id = row['id']
             extras = row.get('extras', False)
             if not extras:
-                #TODO learn why. 
+                # TODO learn why.
                 logger.error(f'No extras! dataset: {ckan_id}')
                 no_extras += 1
                 continue
-            
+
             identifier = None
             for extra in extras:
                 if extra['key'] == 'identifier':
                     identifier = extra['value']
-            
+
             if identifier is None:
-                logger.error(f'No identifier (extras[].key.identifier not exists). Dataset.id: {ckan_id}')
+                logger.error(f'''No identifier
+                                (extras[].key.identifier not exists).
+                                Dataset.id: {ckan_id}''')
                 no_identifier_key_found += 1
                 continue
-            
+
             encoded_identifier = encode_identifier(identifier)
             expected_filename = f'data-json_{encoded_identifier}.json'
             expected_path = os.path.join(data_packages_path, expected_filename)
 
             if not os.path.isfile(expected_path):
-                logger.info(f'Dataset: {ckan_id} not in DATA.JSON. It was deleted?: {expected_path}')
+                logger.info((f'Dataset: {ckan_id} not in DATA.JSON.'
+                             f'It was deleted?: {expected_path}'))
                 deleted += 1
                 continue
 
             finded += 1
             package = Package(expected_path)
-            # logger.info(f'Dataset: {ckan_id} Finded as data package at {expected_path}')
+            # logger.info(f'Dataset: {ckan_id}
+            # Finded as data package at {expected_path}')
 
-            #TODO continue, compare both sides
+            # TODO continue, compare both sides
 
-        stats = f"""Total processed: {total}. 
-                    {no_extras} fail extras. 
+        stats = f"""Total processed: {total}.
+                    {no_extras} fail extras.
                     {no_identifier_key_found} fail identifier key.
                     {deleted} deleted.
                     {finded} datasets finded."""
