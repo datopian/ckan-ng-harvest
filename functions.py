@@ -179,7 +179,7 @@ def save_dict_as_data_packages(data, path, prefix, identifier_field):
         package.save(target=package_path)
 
 def compare_resources(data_packages_path):
-    # get both resources and compare usin identifier.
+    # get both resources and compare them using their identifiers.
 
     def rows_processor(rows):
         # Calculate minimum statistics
