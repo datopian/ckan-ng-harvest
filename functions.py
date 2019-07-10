@@ -55,6 +55,8 @@ def get_data_json_from_url(url, name, data_json_path):
 
 
 def clean_duplicated_identifiers(rows):
+    """ clean duplicated identifiers on data.json source and save as datapackages the unique ones """
+
     logger.info('Cleaning duplicates')
     unique_identifiers = []
     duplicates = []
@@ -182,6 +184,8 @@ def compare_resources(data_packages_path):
         finded = 0
 
         for row in rows:
+            yield(row)  # all row passes
+
             total += 1
             # check for identifier
             ckan_id = row['id']
@@ -198,7 +202,7 @@ def compare_resources(data_packages_path):
                     identifier = extra['value']
             
             if identifier is None:
-                logger.error(f'No identifier! dataset: {ckan_id}')
+                logger.error(f'No identifier (extras[].key.identifier not exists). Dataset.id: {ckan_id}')
                 no_identifier_key_found += 1
                 continue
             
