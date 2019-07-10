@@ -33,6 +33,8 @@ def get_data_json_from_url(url, name, data_json_path):
         logger.error(error)
         raise
 
+    #TODO validate with jsonschema as in lib/data_json.py
+
     logger.info(f'VALID JSON')
 
     if not data_json.get('dataset', False):
