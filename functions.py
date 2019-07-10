@@ -35,6 +35,7 @@ def get_data_json_from_url(url, name, data_json_path):
 
     #TODO validate with jsonschema as in lib/data_json.py
     #TODO check and re-use a ckanext-datajson validator: https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
+    #TODO check how ckanext-datajson uses jsonschema. One example (there are more) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L368
 
     logger.info(f'VALID JSON')
 

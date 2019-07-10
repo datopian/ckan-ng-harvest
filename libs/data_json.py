@@ -117,6 +117,9 @@ class DataJSON:
             return True, None
     
     def validate_schema(self):
+        """ validate using jsonschema lib """
+
+        #TODO check how ckanext-datajson uses jsonschema. One example (there are more) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L368
 
         # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L120
         errors = []
