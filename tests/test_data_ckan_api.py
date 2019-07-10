@@ -7,7 +7,9 @@ from libs.data_gov_api import CKANPortalAPI
 base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
 
 class CKANPortalAPITestClass(unittest.TestCase):
-    """ test a real CKAN API. #TODO test a real CKAN instance with real resource will be expensive but real test """
+    """ test a real CKAN API. 
+        #TODO test a local CKAN instance with real resource will be expensive but real test 
+        """
 
     def test_load_from_url(self):
         cpa = CKANPortalAPI()

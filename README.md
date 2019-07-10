@@ -11,10 +11,10 @@ Current process: [using ckan extensions](harvest-in-ckanext.md).
 
 Process using [dataflows](https://github.com/datahq/dataflows) and [datapackages](https://github.com/frictionlessdata/datapackage-py):  
 
-Usage flow_v2 script
+Usage flow script
 
 ```
-usage: flow_v2.py [-h] [--url URL] [--name NAME] [--force_download]
+usage: flow.py [-h] [--url URL] [--name NAME] [--force_download]
                   [--harvest_source_id HARVEST_SOURCE_ID]
 
 optional arguments:
@@ -31,7 +31,7 @@ optional arguments:
 Sample results
 
 ```
-$ python3 flow_v2.py --url http://www.usda.gov/data.json --name agriculture --harvest_source_id 50ca39af-9ddb-466d-8cf3-84d67a204346
+$ python3 flow.py --url http://www.usda.gov/data.json --name agriculture --harvest_source_id 50ca39af-9ddb-466d-8cf3-84d67a204346
 Geting data.json from http://www.usda.gov/data.json
 OK http://www.usda.gov/data.json
 VALID JSON
@@ -68,7 +68,7 @@ Total processed: 1570.
 
 ### Other example
 ```
-$ python3 flow_v2.py --url http://www.energy.gov/data.json --name energy --harvest_source_id 8d4de31c-979c-4b50-be6b-ea3c72453ff6
+$ python3 flow.py --url http://www.energy.gov/data.json --name energy --harvest_source_id 8d4de31c-979c-4b50-be6b-ea3c72453ff6
 Geting data.json from http://www.energy.gov/data.json
 OK http://www.energy.gov/data.json
 VALID JSON

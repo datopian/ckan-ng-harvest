@@ -8,92 +8,74 @@ Using:
  - DataPackages: https://frictionlessdata.io/data-packages/ + https://github.com/frictionlessdata/datapackage-py
 """
 
-from dataflows import Flow, printer, dump_to_path, checkpoint
-from datapackage import Package
-from functions import (get_data_json_from_url, clean_duplicated_identifiers,
-                        list_parents_and_childs, get_current_ckan_resources_from_api)
+from dataflows import Flow, printer, dump_to_path, load, update_resource
+# from dataflows.join import join_with_self
 import json
 import os
 from logs import logger
+from functions import (get_data_json_from_url, 
+                            clean_duplicated_identifiers,
+                            get_current_ckan_resources_from_api,
+                            dbg_packages,
+                            compare_resources
+                            )
+import config
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--url", type=str, help="URL of the data.json")
+parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
+parser.add_argument("--force_download", action='store_true',
+                                        help="Force download or just use local data.json prevously downloaded")
+parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter CKAN API")
 
-resources_path = 'list-resources.json'  # High priority data.json file. 
-#TODO get full list from https://catalog.data.gov/api/3/action/package_search?q=%28type:harvest%29&rows=1000
-resources_file = open(resources_path, 'r')
-json_resources = json.load(resources_file)
+args = parser.parse_args()
 
-# process al harvest sources
-for data_json_to_process in json_resources:
+config.SOURCE_NAME = args.name  # Nice name of the source
+config.SOURCE_ID = args.harvest_source_id
+config.SOURCE_URL = args.url  # data.json final URL
+
+Flow(  # part 
+    # not working (why?) => load(load_source=url, name='datajson'),
+    get_data_json_from_url(config.SOURCE_URL, name=config.SOURCE_NAME,
+                            data_json_path=config.get_datajson_cache_path()),  
     
-    name = data_json_to_process['name']  # Nice name of the source
-    url = data_json_to_process['url']  # data.json final URL
-    source_identifier = data_json_to_process['identifier']  # harves source id at CKAN
-
-    # ----------------------------------------------------
-    # Get data.json
-    # ----------------------------------------------------
-    datajson_package_folder_path = f'datapackages/{name}/datajson'
-    datajson_package_file_path = f'{datajson_package_folder_path}/datapackage.json'
-    # just download one time
-    if os.path.isfile(datajson_package_file_path):
-        logger.info(f'\n-----------------------\n{name}\nData JSON already exist: ignored download')
-        datajson_package = Package(datajson_package_file_path)
-    else:
-
-        # get resources from data.json file
-        Flow(
-            get_data_json_from_url(url),
-            clean_duplicated_identifiers,
-
-            dump_to_path(datajson_package_folder_path),
-            # printer(num_rows=1), # , tablefmt='html')
-            
-        ).process()[1]
-
-        datajson_package = Package(datajson_package_file_path)
-
-    # ----------------------------------------------------
-    # Get resources from API
-    # ----------------------------------------------------
-
-    dataapi_package_folder_path = f'datapackages/{name}/dataapi'
-    dataapi_package_file_path = f'{dataapi_package_folder_path}/datapackage.json'
+    # I like to split _headers_ and ['dataset'] as two different resources. Then valid the headers from one side and process the ['dataset'] as rows independently. It's a good idea?
+    update_resource('res_1', name='datajson'),
     
-    # just download one time
-    if os.path.isfile(dataapi_package_file_path):
-        logger.info(f'\n-----------------------\n{name}\nData API already exist: ignored download')
-        dataapi_package = Package(dataapi_package_file_path)
-    else:
-        # get actual resources at data.gov from API
-        Flow(
-            get_current_ckan_resources_from_api(harvest_source_id=source_identifier),
-            
-            dump_to_path(dataapi_package_folder_path),
-            # printer(num_rows=1), # , tablefmt='html')
-            
-        ).process()[1]
+    clean_duplicated_identifiers,  # remove duplicates 
+    # also save datapackages at (config.get_data_packages_folder_path) 'data/NAME/data-packages/*.json
 
-        dataapi_package = Package(dataapi_package_file_path)
+    #TODO analyze for replace "clean_duplicated" with "join_with_self" standar processor: join_with_self(source_name, source_key, target_name, fields),
+    # https://github.com/datahq/dataflows/blob/master/PROCESSORS.md#joinpy
+    
+    dbg_packages,  # debug info about packages
 
-        
+    # if we want a full data package for this list:
+    # dump_to_path(config.get_base_path()),
+).process()[1]
 
-    """
-    # merge both
-    Flow(
-        
-        # define parents and childs identifiers https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L145
-        # define catalog_extras https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L153
+logger.info('---------------')
+logger.info('Second part')
+logger.info('---------------')
 
-        # Iterate ALL Harvest Objects at CKAN instance https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L164
-            # and list which still exist https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L174
-            # create a separate list for which are parents
-        
-        # detect which was demoted and which was promoted to parent
-        # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L179
-        # error if one opackage is parent and child (identifier is part of both lists) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L198
+# this could be a second flow file (maybe for split the process in parts)
+data_packages_path = config.get_data_packages_folder_path()
 
-        # detect new parents (this one who are parents in data.json but not before) https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L202
+Flow(
+    # add other resource to this process. The packages list from data.gov
+    get_current_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID,
+                                        results_json_path=config.get_ckan_results_cache_path()),
+    update_resource('res_1', name='ckanapi'),
+    
+    dbg_packages,  # get info about updated packaghes
+    
+    # Compare both resources
+    # In data.json the datasets have the identifier field: "identifier": "USDA-ERS-00071" 
+    # In CKAN API results the datasets have the same identifier at "extras" list: {"key": "identifier", "value": "USDA-ERS-00071"},
 
-        # delete all no longer in the remote catalog https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L322
+    compare_resources(data_packages_path=data_packages_path),
 
-    ).process()[1]
-    """
+    # dump_to_path(config.get_base_path()),
+    # printer(num_rows=1), # , tablefmt='html')
+    
+).process()[1]
