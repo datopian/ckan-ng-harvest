@@ -2,7 +2,7 @@
 Tests all functions used in flow file
 """
 import unittest
-
+import config
 from functions import (get_data_json_from_url, 
                             clean_duplicated_identifiers,
                             get_current_ckan_resources_from_api,
@@ -49,3 +49,10 @@ class FunctionsTestClass(unittest.TestCase):
         ret = get_data_json_from_url(url=url, name='Do-not-exists', data_json_path='data')
         for dataset in get_data_json_from_url(url=url, name='Good data.json', data_json_path=path):
             self.assertIsInstance(dataset, dict)
+    
+    def test_clean_duplicated_identifiers_bad_field(self):
+        rows = [{'bad_field_identifier': 'ya/&54'}]
+
+        with self.assertRaises(KeyError):
+            for dataset in clean_duplicated_identifiers(rows):
+                self.assertIsInstance(dataset, dict)

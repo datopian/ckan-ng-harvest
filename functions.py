@@ -59,8 +59,8 @@ def clean_duplicated_identifiers(rows):
     unique_identifiers = []
     duplicates = []
     processed = 0
-    resource = rows.res
-    logger.error('Rows from resource {}'.format(resource.name))
+    # resource = rows.res
+    # logger.error('Rows from resource {}'.format(resource.name))
     
     for row in rows:
         if row['identifier'] not in unique_identifiers:
