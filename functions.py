@@ -17,12 +17,12 @@ def get_data_json_from_url(url, name, data_json_path):
     except Exception as e:
         error = 'ERROR Donwloading data: {} [{}]'.format(url, e)
         logger.error(error)
-        return None
+        raise
 
     if req.status_code >= 400:
         error = '{} HTTP error: {}'.format(url, req.status_code)
         logger.error(error)
-        return None
+        raise Exception('Http Error')
 
     logger.info(f'OK {url}')
 
@@ -31,13 +31,13 @@ def get_data_json_from_url(url, name, data_json_path):
     except Exception as e:
         error = 'ERROR parsing JSON data: {}'.format(e)
         logger.error(error)
-        return None
+        raise
 
     logger.info(f'VALID JSON')
 
     if not data_json.get('dataset', False):
         logger.error('No dataset key')
-        return None
+        raise Exception('Valid but invalid JSON')
 
     logger.info('{} datasets finded'.format(len(data_json['dataset'])))
 

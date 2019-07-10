@@ -13,66 +13,39 @@ from functions import (get_data_json_from_url,
 
 base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
 
-class DataJSONTestClass(unittest.TestCase):
+class FunctionsTestClass(unittest.TestCase):
 
-    def test_load_from_url(self):
-        dj = DataJSON()
+    def test_404_get_data_json(self):
+        url = f'{base_url}/DO-NOT-EXISTS.json'
+        path = 'data/data1.json'
+        with self.assertRaises(Exception):
+            for dataset in get_data_json_from_url(url=url, name='Do-not-exists', data_json_path=path):
+                print(dataset)
         
-        ret, error = dj.download_data_json()
-        self.assertFalse(ret)  # No URL
-        
-        dj.url = f'{base_url}/DO-NOT-EXISTS.json'
-        ret, error = dj.download_data_json()
-        self.assertFalse(ret)  # URL do not exists (404)
+            
+    def test_bad_get_data_json(self):
+        url = f'{base_url}/bad.json'
+        path = 'data/data2.json'
+        with self.assertRaises(Exception):
+            for dataset in get_data_json_from_url(url=url, name='Bad JSON', data_json_path=path):
+                print(dataset)
 
-        dj.url = f'{base_url}/bad.json'
-        ret, error = dj.download_data_json()
-        self.assertTrue(ret)  # URL exists but it's a bad JSON, do not fails, it's downloadable (OK)
+    def test_empty_get_data_json(self):
+        url = f'{base_url}/good-but-not-data.json'
+        path = 'data/data3.json'
+        with self.assertRaises(Exception):
+            for dataset in get_data_json_from_url(url=url, name='Empty JSON', data_json_path=path):
+                print(dataset)
 
-    def test_read_json(self):
-        dj = DataJSON()
-        
-        dj.url = f'{base_url}/bad.json'
-        ret, error = dj.download_data_json()
+    def test_good_get_data_json(self):
+        url = f'{base_url}/usda.gov.data.json'
+        path = 'data/data4.json'
+        for dataset in get_data_json_from_url(url=url, name='Good data.json', data_json_path=path):
+            self.assertIsInstance(dataset, dict)
 
-        ret, error = dj.load_data_json()
-        self.assertFalse(ret)  # it's a bad JSON
-
-        dj.url = f'{base_url}/good-but-not-data.json'
-        ret, error = dj.download_data_json()
-        ret, error = dj.load_data_json()
-        self.assertTrue(ret)  # it's a good JSON
-
-    def test_validate_json1(self):
-
-        dj = DataJSON()
-        
-        dj.url = f'{base_url}/good-but-not-data.json'
-        ret, error = dj.download_data_json()
-        ret, error = dj.load_data_json()
-        ret, errors = dj.validate_json()
-        self.assertFalse(ret)  # no schema
-    
-    def test_validate_json2(self):
-        # data.json without errors
-        dj = DataJSON()
-        
-        dj.url = f'{base_url}/usda.gov.data.json'
-        ret, error = dj.download_data_json()
-        ret, error = dj.load_data_json()
-        ret, errors = dj.validate_json()
-        
-        self.assertTrue(ret)  # schema works without errors
-        self.assertEqual(None, errors)
-
-    def test_validate_json3(self):
-        # data.json with some errors
-        dj = DataJSON()
-        
-        dj.url = f'{base_url}/healthdata.gov.data.json'
-        ret, error = dj.download_data_json()
-        ret, error = dj.load_data_json()
-        ret, errors = dj.validate_json()
-        
-        self.assertFalse(ret)  # schema works but has errors
-        self.assertEqual(1, len(errors))  # 1 schema errors
+    def test_goodwitherrors_get_data_json(self):
+        url = f'{base_url}/healthdata.gov.data.json'
+        path = 'data/data5.json'
+        ret = get_data_json_from_url(url=url, name='Do-not-exists', data_json_path='data')
+        for dataset in get_data_json_from_url(url=url, name='Good data.json', data_json_path=path):
+            self.assertIsInstance(dataset, dict)
