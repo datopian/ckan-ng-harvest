@@ -18,24 +18,27 @@ class FunctionsTestClass(unittest.TestCase):
     def test_404_get_data_json(self):
         url = f'{base_url}/DO-NOT-EXISTS.json'
         path = 'data/data1.json'
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception) as context:
             for dataset in get_data_json_from_url(url=url, name='Do-not-exists', data_json_path=path):
                 print(dataset)
+        self.assertTrue('Http Error' in str(context.exception))
         
-            
+
     def test_bad_get_data_json(self):
         url = f'{base_url}/bad.json'
         path = 'data/data2.json'
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception) as context:
             for dataset in get_data_json_from_url(url=url, name='Bad JSON', data_json_path=path):
                 print(dataset)
+        self.assertTrue('Expecting property name enclosed in double quotes: line 3 column 5 (char 25)' in str(context.exception))
 
     def test_empty_get_data_json(self):
         url = f'{base_url}/good-but-not-data.json'
         path = 'data/data3.json'
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception) as context:
             for dataset in get_data_json_from_url(url=url, name='Empty JSON', data_json_path=path):
                 print(dataset)
+        self.assertTrue('Valid but invalid JSON' in str(context.exception))
 
     def test_good_get_data_json(self):
         url = f'{base_url}/usda.gov.data.json'

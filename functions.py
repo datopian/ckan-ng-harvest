@@ -15,7 +15,7 @@ def get_data_json_from_url(url, name, data_json_path):
     try:
         req = requests.get(url, timeout=90)
     except Exception as e:
-        error = 'ERROR Donwloading data: {} [{}]'.format(url, e)
+        error = 'ERROR Downloading data: {} [{}]'.format(url, e)
         logger.error(error)
         raise
 
@@ -47,7 +47,7 @@ def get_data_json_from_url(url, name, data_json_path):
         logger.error('No dataset key')
         raise Exception('Valid but invalid JSON')
 
-    logger.info('{} datasets finded'.format(len(data_json['dataset'])))
+    logger.info('{} datasets found'.format(len(data_json['dataset'])))
 
     dmp = json.dumps(data_json, indent=2)
     f = open(data_json_path, 'w')
