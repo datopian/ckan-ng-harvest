@@ -4,6 +4,7 @@ import os
 import requests
 from libs.data_gov_api import CKANPortalAPI
 from libs.data_json import DataJSON
+from libs.datajsonvalidator import do_validation
 from datapackage import Package, Resource
 from slugify import slugify
 import config
@@ -36,6 +37,14 @@ def get_data_json_from_url(url, name, data_json_path):
     # TODO validate with jsonschema as in lib/data_json.py
     # TODO check and re-use a ckanext-datajson validator:
     # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
+    errors = []
+    try:
+        do_validation([data_json], errors, None)
+    except Exception as e:
+        errors.append(("Internal Error", ["Something bad happened: " + e]))
+    if len(errors) > 0:
+        for error in errors:
+            logger.error(error)
 
     # TODO check how ckanext-datajson uses jsonschema.
     #   One example (there are more)
