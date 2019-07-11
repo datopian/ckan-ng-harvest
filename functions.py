@@ -39,9 +39,9 @@ def get_data_json_from_url(url, name, data_json_path):
     # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
     errors = []
     try:
-        do_validation([data_json], errors, None)
+        do_validation(data_json['dataset'], errors)
     except Exception as e:
-        errors.append(("Internal Error", ["Something bad happened: " + e]))
+        errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
     if len(errors) > 0:
         for error in errors:
             logger.error(error)

@@ -94,7 +94,7 @@ omb_burueau_codes = set()
 
 
 # main function for validation
-def do_validation(doc, errors_array, seen_identifiers):
+def do_validation(doc, errors_array):
     errs = {}
 
     if type(doc) != list:
@@ -157,13 +157,8 @@ def do_validation(doc, errors_array, seen_identifiers):
             check_required_string_field(item, "description", 1, dataset_name, errs)
 
             # identifier #required
-            if check_required_string_field(item, "identifier", 1, dataset_name, errs):
-                if item["identifier"] in seen_identifiers:
-                    add_error(errs, 5, "Invalid Required Field Value",
-                              "The dataset identifier \"%s\" is used more than once." % item["identifier"],
-                              dataset_name)
-                seen_identifiers.add(item["identifier"])
-
+            check_required_string_field(item, "identifier", 1, dataset_name, errs)
+    
             # keyword # required
             if isinstance(item.get("keyword"), str):
                 if not is_redacted(item.get("keyword")):
