@@ -5,9 +5,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CKANPortalAPI:
-    """ API and data from data.gov 
+    """ API and data from data.gov
         API SPECS: https://docs.ckan.org/en/latest/api/index.html """
-    
+
     version = '0.02-alpha'
     user_agent = 'ckan-portal-filter'
     remote_ckan = None
@@ -18,22 +18,21 @@ class CKANPortalAPI:
 
     def get_user_agent(self):
         return f'{self.user_agent} {self.version}'
-    
+
     def search_harvest_packages(self, start=0, rows=1000, harvest_source_id=None):
         """ search packages
             "rows" is the page size.
             You could search for an specific harvest_source_id """
 
-        
         search_params = {'rows': rows, 'start': start}
         if harvest_source_id is not None:
+            # this filter is not working
             search_params['q'] = f'harvest_source_id:{harvest_source_id}'
-            
+
         logger.info(f'search with params: {search_params}')
         self.last_search_params = search_params
         results = self.remote_ckan.action.package_search(**search_params)
-        # no funciona results = self.remote_ckan.action.package_search(rows=5)
-        
+
         return results
 
 
@@ -52,7 +51,7 @@ if __name__ == '__main__':
     harvest_source_id = 'de90314a-7c7d-4aff-bd84-87b134bba13d'  # Treasury JSON
     harvest_source_id = '50104281-92a3-4534-9d38-141bc82276c5'  # NYC JSON
     harvest_source_id = 'afb32af7-87ba-4f27-ae5c-f0d4d0e039dc'  # CFPB JSON
-    
+
     results = cpa.search_harvest_packages(start=100, rows=5, harvest_source_id=harvest_source_id)
     print(results)
 
