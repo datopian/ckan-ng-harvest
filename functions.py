@@ -222,8 +222,8 @@ def compare_resources(data_packages_path):
                     identifier = extra['value']
 
             if identifier is None:
-                logger.error('No identifier'
-                             '(extras[].key.identifier not exists).'
+                logger.error('No identifier '
+                             '(extras[].key.identifier not exists). '
                              'Dataset.id: {}'.format(ckan_id))
                 no_identifier_key_found += 1
                 continue
@@ -247,8 +247,7 @@ def compare_resources(data_packages_path):
             # logger.info(f'Dataset: {ckan_id}
             # Finded as data package at {expected_path}')
 
-            # TODO continue, compare both sides
-            # analyze this: https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/harvesters/base.py#L229
+            # TODO analyze this: https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/harvesters/base.py#L229
 
             # compare dates
             # at data.json: "modified": "2019-06-27 12:41:27",
@@ -265,6 +264,7 @@ def compare_resources(data_packages_path):
             seconds = diff_times.total_seconds()
             logger.info(f'Seconds: {seconds} data.json:{data_json_modified} ckan:{ckan_json_modified})')
 
+            # Since we have a Naive data we are not sure
             if abs(seconds) > 86400:  # more than a day
                 warning = None if seconds > 0 else 'Data.json is older than CKAN'
                 task = {'action': 'update',
