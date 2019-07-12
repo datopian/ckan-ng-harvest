@@ -264,7 +264,7 @@ def compare_resources(data_packages_path):
             seconds = diff_times.total_seconds()
             logger.info(f'Seconds: {seconds} data.json:{data_json_modified} ckan:{ckan_json_modified})')
 
-            # Since we have a Naive data we are not sure
+            # TODO analyze this since we have a Naive data we are not sure
             if abs(seconds) > 86400:  # more than a day
                 warning = None if seconds > 0 else 'Data.json is older than CKAN'
                 task = {'action': 'update',
