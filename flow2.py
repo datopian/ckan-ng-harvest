@@ -9,7 +9,7 @@ import os
 from logs import logger
 from functions import dbg_packages
 from functions2 import (get_current_ckan_resources_from_api,
-                       compare_resources
+                        compare_resources
                        )
 
 import config
@@ -31,7 +31,7 @@ Flow(
     # add other resource to this process. The packages list from data.gov
     get_current_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID,
                                         results_json_path=config.get_ckan_results_cache_path()),
-    update_resource('res_1', name='ckanapi'),
+
 
     dbg_packages,  # get info about updated packaghes
 
@@ -41,9 +41,7 @@ Flow(
 
     compare_resources(data_packages_path=data_packages_path),
 
-    # dump_to_path(config.get_base_path()),
+    dump_to_path(config.get_base_path()),
     # printer(num_rows=1), # , tablefmt='html')
 
 ).process()[1]
-
-

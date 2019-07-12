@@ -38,7 +38,8 @@ def get_current_ckan_resources_from_api(harvest_source_id, results_json_path):
 
 
 def compare_resources(data_packages_path):
-    # get both resources and compare them using their identifiers.
+    # get the ckan results and compare it to data.json previous results
+    # return a row for each comparasion
 
     def rows_processor(rows):
         # Calculate minimum statistics
@@ -49,10 +50,7 @@ def compare_resources(data_packages_path):
         deleted = 0
         finded = 0
 
-        results = []
-
         for row in rows:
-            yield(row)  # all row passes
 
             total += 1
             # check for identifier
@@ -61,6 +59,10 @@ def compare_resources(data_packages_path):
             if not extras:
                 # TODO learn why.
                 logger.error(f'No extras! dataset: {ckan_id}')
+                result = {'action': 'error',
+                          'ckan_id': ckan_id,
+                          'reason': 'The CKAN dataset does not have the property "extras"'}
+                yield(result)
                 no_extras += 1
                 continue
 
@@ -74,6 +76,10 @@ def compare_resources(data_packages_path):
                              '(extras[].key.identifier not exists). '
                              'Dataset.id: {}'.format(ckan_id))
                 no_identifier_key_found += 1
+                result = {'action': 'error',
+                          'ckan_id': ckan_id,
+                          'reason': 'The CKAN dataset does not have an "identifier"'}
+                yield(result)
                 continue
 
             encoded_identifier = encode_identifier(identifier)
@@ -84,10 +90,10 @@ def compare_resources(data_packages_path):
                 logger.info((f'Dataset: {ckan_id} not in DATA.JSON.'
                              f'It was deleted?: {expected_path}'))
                 deleted += 1
-                task = {'action': 'delete',
-                        'ckan_id': ckan_id,
-                        'reason': 'It no longer exists in the data.json source'}
-                results.append(task)
+                result = {'action': 'delete',
+                          'ckan_id': ckan_id,
+                          'reason': 'It no longer exists in the data.json source'}
+                yield(result)
                 continue
 
             finded += 1
@@ -110,49 +116,59 @@ def compare_resources(data_packages_path):
 
             diff_times = data_json_modified - ckan_json_modified
             seconds = diff_times.total_seconds()
-            logger.info(f'Seconds: {seconds} data.json:{data_json_modified} ckan:{ckan_json_modified})')
+            # logger.info(f'Seconds: {seconds} data.json:{data_json_modified} ckan:{ckan_json_modified})')
 
             # TODO analyze this since we have a Naive data we are not sure
             if abs(seconds) > 86400:  # more than a day
-                warning = None if seconds > 0 else 'Data.json is older than CKAN'
-                task = {'action': 'update',
-                        'ckan_id': ckan_id,
-                        'new_data': data_json_data,
-                        'reason': 'Changed: ~{seconds} seconds difference',
-                        'warnings': [warning]}
+                warning = '' if seconds > 0 else 'Data.json is older than CKAN'
+                result = {'action': 'update',
+                          'ckan_id': ckan_id,
+                          'new_data': data_json_data,
+                          'reason': f'Changed: ~{seconds} seconds difference. {warning}'
+                          }
 
-                results.append(task)
+                yield(result)
             else:
-                task = {'action': 'ignore',
-                        'ckan_id': ckan_id,
-                        'new_data': None,  # do not need this data_json_data,
-                        'reason': 'Changed: ~{seconds} seconds difference'}
-                results.append(task)
+                result = {'action': 'ignore',
+                          'ckan_id': ckan_id,
+                          'new_data': None,  # do not need this data_json_data,
+                          'reason': 'Changed: ~{seconds} seconds difference'}
+                yield(result)
 
-            # Delete the data.json files
+            # Delete the data.json file
             os.remove(expected_path)
+
+        news = 0
+        for name in glob.glob(f'{data_packages_path}/data-json_*.json'):
+            news += 1
+            package = Package(name)
+            data_json = package.get_resource('inline')
+            data_json_data = data_json.source
+
+            result = {'action': 'add',
+                      'ckan_id': None,
+                      'new_data': data_json_data,
+                      'reason': 'Not found in the CKAN results'}
+
+            yield(result)
 
         stats = f"""Total processed: {total}.
                     {no_extras} fail extras.
                     {no_identifier_key_found} fail identifier key.
                     {deleted} deleted.
-                    {finded} datasets finded."""
+                    {finded} datasets finded,
+                    {news} new datasets."""
 
         logger.info(stats)
 
     return rows_processor
 
 
-# TODO add the missing json files as new datasets
-def add_new_resources(data_packages_path):
-    results = []
-    # Get all missing (new) data.json datasets
-    for name in glob.glob(f'{data_packages_path}/data-json_*.json'):
-        print(f'New resource {name}')
-
-        task = {'action': 'add',
-                'ckan_id': None,
-                'new_data': data_json_data,
-                'reason': 'Changed: ~{seconds} difference'}
-
-        results.append(task)
+"""
+def save_final_compare_results(path):
+    path = f'{path}/final_compare_results.json'
+    dmp = json.dumps(results, indent=2)
+    f = open(path, 'w')
+    f.write(dmp)
+    f.close()
+"""
