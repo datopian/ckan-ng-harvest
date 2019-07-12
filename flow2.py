@@ -27,12 +27,22 @@ config.SOURCE_NAME = args.name  # Nice name of the source
 config.SOURCE_ID = args.harvest_source_id
 data_packages_path = args.data_packages_path
 
+# estructure for comparasion results
+results = [{'action': '',
+           'ckan_id': '',
+           'new_data': {},
+           'reason': ''
+           }]
+
 Flow(
     # add other resource to this process. The packages list from data.gov
     get_current_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID,
                                         results_json_path=config.get_ckan_results_cache_path()),
 
 
+    results,  # adds a new resourse here
+    update_resource('res_1', name='ckan_results'),
+    update_resource('res_2', name='comparasion_results'),
     dbg_packages,  # get info about updated packaghes
 
     # Compare both resources
