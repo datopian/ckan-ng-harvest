@@ -79,18 +79,21 @@ REDACTED_REGEX = re.compile(
     r'^(\[\[REDACTED).*?(\]\])$'
 )
 
+BUREAU_CODE_URL = "https://project-open-data.cio.gov/data/omb_bureau_codes.csv"
 import lepl.apps.rfc3696
 
 email_validator = lepl.apps.rfc3696.Email()
 
 # load the OMB bureau codes on first load of this module
-import urllib
+import urllib.request
 import csv
+import codecs
 
 omb_burueau_codes = set()
-# TODO uncomment
-# for row in csv.DictReader(urllib.urlopen("https://project-open-data.cio.gov/data/omb_bureau_codes.csv")):
-#     omb_burueau_codes.add(row["Agency Code"] + ":" + row["Bureau Code"])
+ftpstream = urllib.request.urlopen(BUREAU_CODE_URL)
+csvfile = csv.DictReader(codecs.iterdecode(ftpstream, 'utf-8'))
+for row in csvfile:
+    omb_burueau_codes.add(row["Agency Code"] + ":" + row["Bureau Code"])
 
 
 # main function for validation
@@ -135,7 +138,7 @@ def do_validation(doc, errors_array):
                         elif bc not in omb_burueau_codes:
                             add_error(errs, 5, "Invalid Required Field Value",
                                       "The bureau code \"%s\" was not found in our list "
-                                      "(https://project-open-data.cio.gov/data/omb_bureau_codes.csv)." % bc,
+                                      % BUREAU_CODE_URL % bc,
                                       dataset_name)
 
             # contactPoint # required
