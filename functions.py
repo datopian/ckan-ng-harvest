@@ -8,6 +8,8 @@ from datapackage import Package, Resource
 from slugify import slugify
 import config
 import base64
+from dateutil.parser import parse
+import glob
 
 
 def get_data_json_from_url(url, name, data_json_path):
@@ -246,12 +248,63 @@ def compare_resources(data_packages_path):
             # Finded as data package at {expected_path}')
 
             # TODO continue, compare both sides
+            # analyze this: https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/harvesters/base.py#L229
+
+            # compare dates
+            # at data.json: "modified": "2019-06-27 12:41:27",
+            # at ckan results: "metadata_modified": "2019-07-02T17:20:58.334748",
+
+            data_json = package.get_resource('inline')
+            data_json_data = data_json.source
+            data_json_modified = parse(data_json_data['modified'])  # It's a naive date
+
+            ckan_json = row
+            ckan_json_modified = parse(ckan_json['metadata_modified'])
+
+            diff_times = data_json_modified - ckan_json_modified
+            seconds = diff_times.total_seconds()
+            logger.info(f'Seconds: {seconds} data.json:{data_json_modified} ckan:{ckan_json_modified})')
+
+            if abs(seconds) > 86400:  # more than a day
+                warning = None if seconds > 0 else 'Data.json is older than CKAN'
+                task = {'action': 'update',
+                        'ckan_id': ckan_id,
+                        'new_data': data_json_data,
+                        'reason': 'Changed: ~{seconds} difference',
+                        'warnings': [warning]}
+
+                results.append(task)
+            else:
+                task = {'action': 'ignore',
+                        'ckan_id': ckan_id,
+                        'new_data': data_json_data,
+                        'reason': 'Changed: ~{seconds} difference'}
+                results.append(task)
+
+            # Delete the data.json files
+            os.remove(expected_path)
 
         stats = f"""Total processed: {total}.
                     {no_extras} fail extras.
                     {no_identifier_key_found} fail identifier key.
                     {deleted} deleted.
                     {finded} datasets finded."""
+
         logger.info(stats)
 
     return rows_processor
+
+
+# TODO add the missing json files as new datasets
+def add_new_resources(data_packages_path):
+    results = []
+    # Get all missing (new) data.json datasets
+    for name in glob.glob(f'{data_packages_path}/data-json_*.json'):
+        print(f'New resource {name}')
+
+        task = {'action': 'add',
+                'ckan_id': None,
+                'new_data': data_json_data,
+                'reason': 'Changed: ~{seconds} difference'}
+
+        results.append(task)
