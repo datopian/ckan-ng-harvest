@@ -15,9 +15,7 @@ import os
 from logs import logger
 from functions import (get_data_json_from_url,
                        clean_duplicated_identifiers,
-                       get_current_ckan_resources_from_api,
                        dbg_packages,
-                       compare_resources
                        )
 
 import config
@@ -32,11 +30,10 @@ parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter 
 args = parser.parse_args()
 
 config.SOURCE_NAME = args.name  # Nice name of the source
-config.SOURCE_ID = args.harvest_source_id
 config.SOURCE_URL = args.url  # data.json final URL
 
-Flow(  # part
-    # not working (why?) => load(load_source=url, name='datajson'),
+Flow(
+
     get_data_json_from_url(config.SOURCE_URL, name=config.SOURCE_NAME,
                             data_json_path=config.get_datajson_cache_path()),
 
@@ -55,28 +52,7 @@ Flow(  # part
     # dump_to_path(config.get_base_path()),
 ).process()[1]
 
-logger.info('---------------')
-logger.info('Second part')
-logger.info('---------------')
-
-# this could be a second flow file (maybe for split the process in parts)
-data_packages_path = config.get_data_packages_folder_path()
-
-Flow(
-    # add other resource to this process. The packages list from data.gov
-    get_current_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID,
-                                        results_json_path=config.get_ckan_results_cache_path()),
-    update_resource('res_1', name='ckanapi'),
-
-    dbg_packages,  # get info about updated packaghes
-
-    # Compare both resources
-    # In data.json the datasets have the identifier field: "identifier": "USDA-ERS-00071"
-    # In CKAN API results the datasets have the same identifier at "extras" list: {"key": "identifier", "value": "USDA-ERS-00071"},
-
-    compare_resources(data_packages_path=data_packages_path),
-
-    # dump_to_path(config.get_base_path()),
-    # printer(num_rows=1), # , tablefmt='html')
-
-).process()[1]
+logger.info('To continue this: python3 flow2.py '
+            f'--name {config.SOURCE_NAME} '
+            f'--data_packages_path {config.get_data_packages_folder_path()} '
+            f'--harvest_source_id {args.harvest_source_id}')
