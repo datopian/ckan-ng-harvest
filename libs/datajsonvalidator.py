@@ -113,7 +113,7 @@ def do_validation(doc, errors_array):
             dataset_name = "dataset %d" % (i + 1)
 
             # title
-            if check_required_string_field(item, "title", 1, dataset_name, errs):
+            if check_required_string_field(item, "title", 2, dataset_name, errs):
                 dataset_name = '"%s"' % item.get("title", "").strip()
 
             # accessLevel # required
