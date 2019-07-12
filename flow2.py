@@ -9,7 +9,8 @@ import os
 from logs import logger
 from functions import dbg_packages
 from functions2 import (get_current_ckan_resources_from_api,
-                        compare_resources
+                        # compare_resources,
+                        pkg_processor
                        )
 
 import config
@@ -27,20 +28,11 @@ config.SOURCE_NAME = args.name  # Nice name of the source
 config.SOURCE_ID = args.harvest_source_id
 data_packages_path = args.data_packages_path
 
-# estructure for comparasion results
-results = [{'action': '',
-           'ckan_id': '',
-           'new_data': {},
-           'reason': ''
-           }]
-
 Flow(
     # add other resource to this process. The packages list from data.gov
     get_current_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID,
                                         results_json_path=config.get_ckan_results_cache_path()),
 
-
-    results,  # adds a new resourse here
     update_resource('res_1', name='ckan_results'),
     update_resource('res_2', name='comparasion_results'),
     dbg_packages,  # get info about updated packaghes
@@ -49,7 +41,8 @@ Flow(
     # In data.json the datasets have the identifier field: "identifier": "USDA-ERS-00071"
     # In CKAN API results the datasets have the same identifier at "extras" list: {"key": "identifier", "value": "USDA-ERS-00071"},
 
-    compare_resources(data_packages_path=data_packages_path),
+    # compare_resources(data_packages_path=data_packages_path),
+    pkg_processor,
 
     dump_to_path(config.get_base_path()),
     # printer(num_rows=1), # , tablefmt='html')

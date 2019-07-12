@@ -13,8 +13,9 @@ def get_base_path():
 
     if not os.path.isdir(base_path):
         os.makedirs(base_path)
-    
+
     return base_path
+
 
 def get_datajson_cache_path():
     """ local path for data.json source file """
@@ -31,5 +32,5 @@ def get_data_packages_folder_path():
     data_packages_folder_path = os.path.join(get_base_path(), 'data-packages')
     if not os.path.isdir(data_packages_folder_path):
         os.makedirs(data_packages_folder_path)
-        
+
     return data_packages_folder_path
