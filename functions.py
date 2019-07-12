@@ -199,6 +199,8 @@ def compare_resources(data_packages_path):
         deleted = 0
         finded = 0
 
+        results = []
+
         for row in rows:
             yield(row)  # all row passes
 
@@ -218,9 +220,9 @@ def compare_resources(data_packages_path):
                     identifier = extra['value']
 
             if identifier is None:
-                logger.error(f'''No identifier
-                                (extras[].key.identifier not exists).
-                                Dataset.id: {ckan_id}''')
+                logger.error('No identifier'
+                             '(extras[].key.identifier not exists).'
+                             'Dataset.id: {}'.format(ckan_id))
                 no_identifier_key_found += 1
                 continue
 
@@ -232,6 +234,10 @@ def compare_resources(data_packages_path):
                 logger.info((f'Dataset: {ckan_id} not in DATA.JSON.'
                              f'It was deleted?: {expected_path}'))
                 deleted += 1
+                task = {'action': 'delete',
+                        'ckan_id': ckan_id,
+                        'reason': 'It no longer exists in the data.json source'}
+                results.append(task)
                 continue
 
             finded += 1
