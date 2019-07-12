@@ -91,5 +91,12 @@ class DataJSONValidatorTestClass(unittest.TestCase):
         DATASET["title"] = "D"
         JSON["dataset"] = DATASET
         errors = validate_data_json([JSON["dataset"]])
-        self.assertTrue('Invalid Field Value' in errors[1][0])
-        self.assertTrue('The \'title\' field is very short (min. 2): "D" (1 locations)' in errors[1][1])
+        self.assertTrue('Invalid Field Value' in errors[2][0])
+        self.assertTrue('The \'title\' field is very short (min. 2): "D" (1 locations)' in errors[2][1])
+
+    def test_access_level_not_empty(self):
+        DATASET["accessLevel"] = ""
+        JSON["dataset"] = DATASET
+        errors = validate_data_json([JSON["dataset"]])
+        self.assertTrue('Missing Required Fields' in errors[1][0])
+        self.assertTrue("The 'accessLevel' field is present but empty. (1 locations)" in errors[1][1])
