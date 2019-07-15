@@ -105,14 +105,16 @@ def log_package_info(package):
         # short vesion
 
         # some times there are no fields
-        fields = [] if len(resource['schema']['fields']) == 0 else resource['schema']['fields'][0]
+        fields = resource['schema']['fields']
+        total_fields = len(fields)
+        path = resource.get('path', None)
         nice_resource = {'name': resource['name'],
-                            'path': resource['path'],
-                            'profile': resource['profile'],
-                            'fields': fields
-                            }
+                         'path': path,
+                         'profile': resource['profile'],
+                         'total_fields': total_fields,
+                         'fields': fields
+                         }
         logger.info(f' - Resource: {nice_resource}')
-
 
     logger.info('--------------------------------')
 

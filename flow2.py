@@ -9,8 +9,8 @@ import os
 from logs import logger
 from functions import dbg_packages
 from functions2 import (get_current_ckan_resources_from_api,
-                        # compare_resources,
-                        pkg_processor
+                        add_results_resource,
+                        compare_resources
                        )
 
 import config
@@ -34,15 +34,16 @@ Flow(
                                         results_json_path=config.get_ckan_results_cache_path()),
 
     update_resource('res_1', name='ckan_results'),
-    update_resource('res_2', name='comparasion_results'),
+    dbg_packages,  # get info about updated packaghes
+    add_results_resource,
     dbg_packages,  # get info about updated packaghes
 
     # Compare both resources
     # In data.json the datasets have the identifier field: "identifier": "USDA-ERS-00071"
-    # In CKAN API results the datasets have the same identifier at "extras" list: {"key": "identifier", "value": "USDA-ERS-00071"},
+    # In CKAN API results the datasets have the same identifier at "extras" list: {"key": "identifier", "value": "USDA-ERS-00071"}
 
-    # compare_resources(data_packages_path=data_packages_path),
-    pkg_processor,
+
+    compare_resources,
 
     dump_to_path(config.get_base_path()),
     # printer(num_rows=1), # , tablefmt='html')

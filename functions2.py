@@ -37,14 +37,8 @@ def get_current_ckan_resources_from_api(harvest_source_id, results_json_path):
     cpa.save_packages_list(path=results_json_path)
 
 
-def pkg_processor(package):
+def add_results_resource(package):
     # create a new resource with all the comparison results
-    # read the previous resource (CKAN API results)
-
-    data_packages_path = config.get_data_packages_folder_path()
-    # merge the 2 resources
-    ckan_results = package.pkg.get_resource('ckan_results')
-    # save resource, not CSV data ... ckan_results.save(target='res_1.csv')
 
     # estructure for comparison results
     result = {'action': '',  # add | ignore | update | delete
@@ -57,9 +51,32 @@ def pkg_processor(package):
     resource.infer()  # adds "name": "inline"
 
     package.pkg.add_resource(resource.descriptor)
-    results = package.pkg.get_resource('comparison_results')
 
-    rows = ckan_results.iter()
+    yield package.pkg
+    yield from package
+
+
+def compare_resources(package):
+    # read the previous resource (CKAN API results)
+
+    results = package.pkg.get_resource(name='comparison_results')
+
+    data_packages_path = config.get_data_packages_folder_path()
+    # merge the 2 resources
+    ckan_results = package.pkg.get_resource(name='ckan_results')
+
+    logger.info(f'CKAN res: {ckan_results.name}: '
+                f'\n\tdescriptor:{ckan_results.descriptor}, '
+                f'\n\theaders:{ckan_results.headers}, '
+                f'\n\tschema:{ckan_results.schema}, '
+                f'\n\tinline:{ckan_results.inline}, '
+                f'\n\ttabular:{ckan_results.tabular} '
+                )
+
+    ckan_results_readed = ckan_results.iter()
+    logger.info(f'CKAN res: {ckan_results_readed}')
+
+    rows = ckan_results_readed
     logger.info(f'ROWS: {rows}')
 
     # Calculate minimum statistics
