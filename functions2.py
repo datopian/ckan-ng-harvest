@@ -66,14 +66,13 @@ def compare_resources(package):
     ckan_results = package.pkg.get_resource(name='ckan_results')
 
     logger.info(f'CKAN res: {ckan_results.name}: '
-                f'\n\tdescriptor:{ckan_results.descriptor}, '
                 f'\n\theaders:{ckan_results.headers}, '
                 f'\n\tschema:{ckan_results.schema}, '
                 f'\n\tinline:{ckan_results.inline}, '
                 f'\n\ttabular:{ckan_results.tabular} '
                 )
 
-    ckan_results_readed = ckan_results.iter()
+    ckan_results_readed = ckan_results.read()
     logger.info(f'CKAN res: {ckan_results_readed}')
 
     rows = ckan_results_readed
