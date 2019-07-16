@@ -136,8 +136,8 @@ def do_validation(doc, errors_array):
                                       dataset_name)
                         elif bc not in omb_burueau_codes:
                             add_error(errs, 5, "Invalid Required Field Value",
-                                      "The bureau code \"%s\" was not found in our list "
-                                      % BUREAU_CODE_URL % bc,
+                                      "The bureau code \"%s\" was not found in our list %s"
+                                      % (bc, BUREAU_CODE_URL),
                                       dataset_name)
 
             # contactPoint # required
