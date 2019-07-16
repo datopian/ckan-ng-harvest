@@ -80,9 +80,8 @@ REDACTED_REGEX = re.compile(
 )
 
 BUREAU_CODE_URL = "https://project-open-data.cio.gov/data/omb_bureau_codes.csv"
-import lepl.apps.rfc3696
 
-email_validator = lepl.apps.rfc3696.Email()
+from validate_email import validate_email
 
 # load the OMB bureau codes on first load of this module
 import urllib.request
@@ -151,7 +150,7 @@ def do_validation(doc, errors_array):
                 if check_required_string_field(cp, "hasEmail", 9, dataset_name, errs):
                     if not is_redacted(cp.get('hasEmail')):
                         email = cp["hasEmail"].replace('mailto:', '')
-                        if not email_validator(email):
+                        if not validate_email(email):
                             add_error(errs, 5, "Invalid Required Field Value",
                                       "The email address \"%s\" is not a valid email address." % email,
                                       dataset_name)

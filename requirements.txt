@@ -5,4 +5,4 @@ python-slugify==3.0.2
 requests==2.22.0
 datapackage==1.6.2
 rfc3987
-lepl
+validate_email
