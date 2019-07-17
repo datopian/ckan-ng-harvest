@@ -12,6 +12,7 @@ import base64
 from dateutil.parser import parse
 import glob
 
+
 def validate_data_json(data_json):
     # Taken from https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
     # TODO send these errors somewhere
@@ -22,61 +23,51 @@ def validate_data_json(data_json):
         errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
     return errors
 
-def get_data_json_from_url(url, name, data_json_path):
+
+def get_data_json_from_url(url):
     logger.info(f'Geting data.json from {url}')
-    try:
-        req = requests.get(url, timeout=90)
-    except Exception as e:
-        error = 'ERROR Downloading data: {} [{}]'.format(url, e)
+
+    datajson = DataJSON()
+    datajson.url = url
+
+    ret, info = datajson.download_data_json(timeout=90)
+    if not ret:
+        error = 'Error getting data: {}'.format(info)
         logger.error(error)
-        raise
+        raise Exception(error)
+    logger.info('Downloaded OK')
 
-    if req.status_code >= 400:
-        error = '{} HTTP error: {}'.format(url, req.status_code)
+    ret, info = datajson.load_data_json()
+    if not ret:
+        error = 'Error loading JSON data: {}'.format(info)
         logger.error(error)
-        raise Exception('Http Error')
+        raise Exception(error)
 
-    logger.info(f'OK {url}')
+    logger.info('JSON OK')
+    ret, info = datajson.validate_json()
+    if not ret:
+        logger.error('Error validating data: {}\n----------------\n'.format(info))
+        # continue  # USE invalid too
+        logger.info('Validate FAILED: {} datasets'.format(len(datajson.datasets)))
+    else:
+        logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
 
-    try:
-        data_json = json.loads(req.content)
-    except Exception as e:
-        error = 'ERROR parsing JSON data: {}'.format(e)
-        logger.error(error)
-        raise
+    # TODO move this as a DataJson function and add it to a validate function validate_data_json(data_json['dataset'])
 
-    # TODO validate with jsonschema as in lib/data_json.py
+    logger.info('VALID JSON, {} datasets found'.format(len(datajson.datasets)))
 
-    validate_data_json(data_json['dataset'])
-
-    # TODO check how ckanext-datajson uses jsonschema.
-    #   One example (there are more)
-    #   https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L368
-
-    logger.info(f'VALID JSON')
-
-    if not data_json.get('dataset', False):
-        logger.error('No dataset key')
-        raise Exception('Valid but invalid JSON')
-
-    logger.info('{} datasets found'.format(len(data_json['dataset'])))
-
-    dmp = json.dumps(data_json, indent=2)
-    f = open(data_json_path, 'w')
-    f.write(dmp)
-    f.close()
+    # save data.json
+    datajson.save_data_json(path=config.get_datajson_cache_path())
+    # save headers errors
+    datajson.save_validation_errors(path=config.get_datajson_headers_validation_errors_path())
 
     # the real dataset list
-    for dataset in data_json['dataset']:
+    for dataset in datajson.datasets:
         yield(dataset)
-
-    # is this better in this case?
-    # return data_json['dataset']
 
 
 def clean_duplicated_identifiers(rows):
-    """ clean duplicated identifiers on data.json source
-        and save as datapackages the unique ones """
+    """ clean duplicated datasets identifiers on data.json source """
 
     logger.info('Cleaning duplicates')
     unique_identifiers = []
@@ -90,10 +81,6 @@ def clean_duplicated_identifiers(rows):
             unique_identifiers.append(row['identifier'])
             yield(row)
             processed += 1
-            # save as data package
-            save_dict_as_data_packages(data=row,
-                                        path=config.get_data_packages_folder_path(),
-                                        prefix='data-json', identifier_field='identifier')
         else:
             duplicates.append(row['identifier'])
             # do not log all duplicates. Sometimes they are too many.
@@ -104,36 +91,13 @@ def clean_duplicated_identifiers(rows):
     logger.info('{} duplicates deleted. {} OK'.format(len(duplicates), processed))
 
 
-def log_package_info(package):
-    logger.info('--------------------------------')
-    logger.info('Package processor')
-
-    logger.info(f'Package: {package}')
-    resources = package.pkg.descriptor['resources']
-    for resource in resources:
-        # nice_resource = json.dumps(resource, indent=4)
-        # short vesion
-
-        # some times there are no fields
-        fields = resource['schema']['fields']
-        total_fields = len(fields)
-        path = resource.get('path', None)
-        nice_resource = {'name': resource['name'],
-                         'path': path,
-                         'profile': resource['profile'],
-                         'total_fields': total_fields,
-                         'fields': fields
-                         }
-        logger.info(f' - Resource: {nice_resource}')
-
-    logger.info('--------------------------------')
-
-
-def dbg_packages(package):
-    log_package_info(package)
-
-    yield package.pkg
-    yield from package
+def validate_datasets(row):
+    # just validate this row dictionary and append a line (if error)
+    # in a CSV file defined in config.py
+    # do not need to yield anything, a row processor just modify a row
+    # example dataflows row processor: https://github.com/datahq/dataflows/blob/master/TUTORIAL.md#learn-how-to-write-your-own-processing-flows
+    # if you need to delete some dataset (on big errors) convert this in a "rows" processor (as clean_duplicates)
+    row = row
 
 
 # we need a way to save as file using an unique identifier
@@ -153,8 +117,9 @@ def decode_identifier(encoded_identifier):
     return decoded_str
 
 
-def save_dict_as_data_packages(data, path, prefix, identifier_field):
-    """ save dict resource as data package """
+def save_as_data_packages(row):
+    """ save dataset from data.json as data package
+        We will use this files as a queue to process later """
     # TODO check if ckanext-datapackager is useful for import
     # or export resources:
     # https://github.com/frictionlessdata/ckanext-datapackager
@@ -162,18 +127,20 @@ def save_dict_as_data_packages(data, path, prefix, identifier_field):
     package = Package()
 
     # TODO check this, I'm learning datapackages.
-    resource = Resource({'data': data})
+    resource = Resource({'data': row})
     resource.infer()  # adds "name": "inline"
     if not resource.valid:
         raise Exception('Invalid resource')
 
-    encoded_identifier = encode_identifier(identifier=data[identifier_field])
+    encoded_identifier = encode_identifier(identifier=row['identifier'])
 
     # resource_path = os.path.join(path, f'{prefix}_{encoded_identifier}.json')
     # resource.save(resource_path)
 
     package.add_resource(descriptor=resource.descriptor)
-    package_path = os.path.join(path, f'{prefix}_{encoded_identifier}.json')
+    folder = config.get_data_packages_folder_path()
+    filename = f'data-json-{encoded_identifier}.json'
+    package_path = os.path.join(folder, filename)
 
     # no not rewrite if exists
     if not os.path.isfile(package_path):

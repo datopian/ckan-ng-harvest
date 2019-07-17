@@ -15,7 +15,8 @@ import os
 from logs import logger
 from functions import (get_data_json_from_url,
                        clean_duplicated_identifiers,
-                       dbg_packages,
+                       validate_datasets,
+                       save_as_data_packages,
                        )
 
 import config
@@ -33,23 +34,19 @@ config.SOURCE_NAME = args.name  # Nice name of the source
 config.SOURCE_URL = args.url  # data.json final URL
 
 Flow(
-
-    get_data_json_from_url(config.SOURCE_URL, name=config.SOURCE_NAME,
-                            data_json_path=config.get_datajson_cache_path()),
-
-    # I like to split _headers_ and ['dataset'] as two different resources. Then valid the headers from one side and process the ['dataset'] as rows independently. It's a good idea?
+    # get data.json and yield all datasets
+    # validate headers and save the validation errors
+    get_data_json_from_url(url=config.SOURCE_URL),
     update_resource('res_1', name='datajson'),
 
-    clean_duplicated_identifiers,  # remove duplicates
-    # also save datapackages at (config.get_data_packages_folder_path) 'data/NAME/data-packages/*.json
+    # remove duplicates
+    clean_duplicated_identifiers,
 
-    # TODO analyze for replace "clean_duplicated" with "join_with_self" standar processor: join_with_self(source_name, source_key, target_name, fields),
-    # https://github.com/datahq/dataflows/blob/master/PROCESSORS.md#joinpy
+    # validate each dataset
+    validate_datasets,
 
-    dbg_packages,  # debug info about packages
-
-    # if we want a full data package for this list:
-    # dump_to_path(config.get_base_path()),
+    # save each as data package as
+    save_as_data_packages,
 ).process()[1]
 
 logger.info('To continue this: python3 flow2.py '
