@@ -2,19 +2,19 @@
 continue from flow.py
 """
 
-from dataflows import Flow, printer, dump_to_path, load, update_resource
+import argparse
 # from dataflows.join import join_with_self
 import json
 import os
-from logs import logger
-from functions import dbg_packages
-from functions2 import (get_current_ckan_resources_from_api,
-                        add_results_resource,
-                        compare_resources
-                       )
+
+from dataflows import Flow, dump_to_path, load, printer, update_resource
 
 import config
-import argparse
+from functions import dbg_packages
+from functions2 import (add_results_resource, compare_resources,
+                        get_current_ckan_resources_from_api)
+from logs import logger
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
 parser.add_argument("--force_download", action='store_true',

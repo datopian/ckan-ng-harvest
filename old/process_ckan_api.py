@@ -2,7 +2,6 @@
 Get the actual list of resources in data.gov
 """
 from libs.data_gov_api import CKANPortalAPI
-from functions import get_current_ckan_resources_from_api
 import json
 import os
 from logs import logger

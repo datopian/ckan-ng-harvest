@@ -2,14 +2,9 @@
 Tests all functions used in flow file
 """
 import unittest
-import config
-from functions import (get_data_json_from_url, 
-                            clean_duplicated_identifiers,
-                            get_current_ckan_resources_from_api,
-                            dbg_packages,
-                            compare_resources
-                            )
 
+import config
+from functions import clean_duplicated_identifiers, get_data_json_from_url
 
 base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
 
@@ -63,5 +58,3 @@ class FunctionsDuplicatesTestClass(unittest.TestCase):
 
         self.assertEqual(total_ok, 2)
         self.assertEqual(total_duplicates, 1)
-    
-        
