@@ -4,7 +4,7 @@ import os
 import requests
 from libs.data_gov_api import CKANPortalAPI
 from libs.data_json import DataJSON
-from libs.datajsonvalidator import do_validation
+from libs.data_json import DataJSONDataset
 from datapackage import Package, Resource
 from slugify import slugify
 import config
@@ -18,7 +18,8 @@ def validate_data_json(data_json):
     # TODO send these errors somewhere
     errors = []
     try:
-        do_validation(data_json, errors)
+        data_validator = DataJSONDataset()
+        data_validator.validate_dataset(data_json, errors)
     except Exception as e:
         errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
     return errors
@@ -98,8 +99,7 @@ def validate_datasets(row):
     # do not need to yield anything, a row processor just modify a row
     # example dataflows row processor: https://github.com/datahq/dataflows/blob/master/TUTORIAL.md#learn-how-to-write-your-own-processing-flows
     # if you need to delete some dataset (on big errors) convert this in a "rows" processor (as clean_duplicates)
-    errors = validate_data_json(row)
-    print(errors)
+    validate_data_json(row)
     row = row
 
 
