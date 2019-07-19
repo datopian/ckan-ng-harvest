@@ -13,8 +13,9 @@ import glob
 from functions import encode_identifier
 
 
-def get_current_ckan_resources_from_api(harvest_source_id, results_json_path):
-    logger.info('Extracting from harvest source id: {}'.format(harvest_source_id))
+def get_current_ckan_resources_from_api(harvest_source_id):
+    results_json_path = config.get_ckan_results_cache_path()
+    logger.info(f'Extracting from harvest source id: {harvest_source_id}')
     cpa = CKANPortalAPI()
     resources = 0
 
@@ -37,46 +38,15 @@ def get_current_ckan_resources_from_api(harvest_source_id, results_json_path):
     cpa.save_packages_list(path=results_json_path)
 
 
-def add_results_resource(package):
-    # create a new resource with all the comparison results
+def compare_resources(rows):
+    """ read the previous resource (CKAN API results)
+        Yield any comparison result
+        """
 
-    # estructure for comparison results
-    result = {'action': '',  # add | ignore | update | delete
-              'ckan_id': '',  # id on CKAN instance
-              'new_data': {},  # dataset from data.json
-              'reason': ''  # just text explaining why to do the "action"
-              }
-
-    resource = Resource({'name': 'comparison_results', 'data': [result]})
-    resource.infer()  # adds "name": "inline"
-
-    package.pkg.add_resource(resource.descriptor)
-
-    yield package.pkg
-    yield from package
-
-
-def compare_resources(package):
-    # read the previous resource (CKAN API results)
-
-    results = package.pkg.get_resource(name='comparison_results')
+    res_name = rows.res.name if hasattr(rows, 'res') else 'Fake res testing'
+    logger.info(f'Rows from resource {res_name}')
 
     data_packages_path = config.get_data_packages_folder_path()
-    # merge the 2 resources
-    ckan_results = package.pkg.get_resource(name='ckan_results')
-
-    logger.info(f'CKAN res: {ckan_results.name}: '
-                f'\n\theaders:{ckan_results.headers}, '
-                f'\n\tschema:{ckan_results.schema}, '
-                f'\n\tinline:{ckan_results.inline}, '
-                f'\n\ttabular:{ckan_results.tabular} '
-                )
-
-    ckan_results_readed = ckan_results.read()
-    logger.info(f'CKAN res: {ckan_results_readed}')
-
-    rows = ckan_results_readed
-    logger.info(f'ROWS: {rows}')
 
     # Calculate minimum statistics
     total = 0
@@ -84,12 +54,12 @@ def compare_resources(package):
     no_extras = 0
     no_identifier_key_found = 0
     deleted = 0
-    finded = 0
+    found = 0
 
+    sample_row = None
     for row in rows:
-        logger.info(f'ROW: {row}')
-
         total += 1
+        # logger.info(f'Row: {total}')
         # check for identifier
         ckan_id = row['id']
         extras = row.get('extras', False)
@@ -98,8 +68,10 @@ def compare_resources(package):
             logger.error(f'No extras! dataset: {ckan_id}')
             result = {'action': 'error',
                       'ckan_id': ckan_id,
-                      'reason': 'The CKAN dataset does not have the property "extras"'}
-            results.source.append(result)
+                      'reason': 'The CKAN dataset does not '
+                                'have the "extras" property'}
+            row.update({'comparison_results': result})
+            yield row
             no_extras += 1
             continue
 
@@ -110,33 +82,35 @@ def compare_resources(package):
 
         if identifier is None:
             logger.error('No identifier '
-                            '(extras[].key.identifier not exists). '
-                            'Dataset.id: {}'.format(ckan_id))
+                        '(extras[].key.identifier not exists). '
+                        'Dataset.id: {}'.format(ckan_id))
             no_identifier_key_found += 1
             result = {'action': 'error',
-                        'ckan_id': ckan_id,
-                        'reason': 'The CKAN dataset does not have an "identifier"'}
-            results.source.append(result)
+                    'ckan_id': ckan_id,
+                    'reason': 'The CKAN dataset does not have an "identifier"'}
+            row.update({'comparison_results': result})
+            yield row
             continue
 
         encoded_identifier = encode_identifier(identifier)
-        expected_filename = f'data-json_{encoded_identifier}.json'
+        expected_filename = f'data-json-{encoded_identifier}.json'
         expected_path = os.path.join(data_packages_path, expected_filename)
 
         if not os.path.isfile(expected_path):
             logger.info((f'Dataset: {ckan_id} not in DATA.JSON.'
-                            f'It was deleted?: {expected_path}'))
+                        f'It was deleted?: {expected_path}'))
             deleted += 1
             result = {'action': 'delete',
-                        'ckan_id': ckan_id,
-                        'reason': 'It no longer exists in the data.json source'}
-            results.source.append(result)
+                      'ckan_id': ckan_id,
+                      'reason': 'It no longer exists in the data.json source'}
+            row.update({'comparison_results': result})
+            yield row
             continue
 
-        finded += 1
+        found += 1
         datajson_package = Package(expected_path)
         # logger.info(f'Dataset: {ckan_id}
-        # Finded as data package at {expected_path}')
+        # found as data package at {expected_path}')
 
         # TODO analyze this: https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/harvesters/base.py#L229
 
@@ -155,57 +129,54 @@ def compare_resources(package):
         seconds = diff_times.total_seconds()
         # logger.info(f'Seconds: {seconds} data.json:{data_json_modified} ckan:{ckan_json_modified})')
 
-        # TODO analyze this since we have a Naive data we are not sure
+        # TODO analyze this since we have a Naive date we are not sure
         if abs(seconds) > 86400:  # more than a day
             warning = '' if seconds > 0 else 'Data.json is older than CKAN'
             result = {'action': 'update',
-                        'ckan_id': ckan_id,
-                        'new_data': data_json_data,
-                        'reason': f'Changed: ~{seconds} seconds difference. {warning}'
-                        }
-
-            results.source.append(result)
+                      'ckan_id': ckan_id,
+                      'new_data': data_json_data,
+                      'reason': f'Changed: ~{seconds} seconds difference. {warning}'
+                    }
         else:
             result = {'action': 'ignore',
                       'ckan_id': ckan_id,
                       'new_data': None,  # do not need this data_json_data
                       'reason': 'Changed: ~{seconds} seconds difference'}
-            results.source.append(result)
+        row.update({'comparison_results': result})
+        yield row
+
+        # if sample_row is None:
+        #     sample_row = row
 
         # Delete the data.json file
         os.remove(expected_path)
 
     news = 0
-    for name in glob.glob(f'{data_packages_path}/data-json_*.json'):
+    for name in glob.glob(f'{data_packages_path}/data-json-*.json'):
         news += 1
         package = Package(name)
         data_json = package.get_resource('inline')
         data_json_data = data_json.source
 
         result = {'action': 'add',
-                    'ckan_id': None,
-                    'new_data': data_json_data,
-                    'reason': 'Not found in the CKAN results'}
+                  'ckan_id': None,
+                  'new_data': data_json_data,
+                  'reason': 'Not found in the CKAN results'}
 
-        results.source.append(result)
+        # there is no real row here
+
+        # row = sample_row.update({'comparison_results': result})
+        row = {'comparison_results': result}
+        yield row
+
+        # Delete the data.json file
+        os.remove(name)
 
     stats = f"""Total processed: {total}.
                 {no_extras} fail extras.
                 {no_identifier_key_found} fail identifier key.
                 {deleted} deleted.
-                {finded} datasets finded,
+                {found} datasets found,
                 {news} new datasets."""
 
     logger.info(stats)
-
-    yield package.pkg
-    yield from package
-
-"""
-def save_final_compare_results(path):
-    path = f'{path}/final_compare_results.json'
-    dmp = json.dumps(results, indent=2)
-    f = open(path, 'w')
-    f.write(dmp)
-    f.close()
-"""
