@@ -43,7 +43,8 @@ def compare_resources(rows):
         Yield any comparison result
         """
 
-    logger.info(f'Rows from resource {rows.res.name}')
+    res_name = rows.res.name if hasattr(rows, 'res') else 'Fake res testing'
+    logger.info(f'Rows from resource {res_name}')
 
     data_packages_path = config.get_data_packages_folder_path()
 
@@ -66,8 +67,8 @@ def compare_resources(rows):
             # TODO learn why.
             logger.error(f'No extras! dataset: {ckan_id}')
             result = {'action': 'error',
-                        'ckan_id': ckan_id,
-                        'reason': 'The CKAN dataset does not '
+                      'ckan_id': ckan_id,
+                      'reason': 'The CKAN dataset does not '
                                 'have the "extras" property'}
             row.update({'comparison_results': result})
             yield row
