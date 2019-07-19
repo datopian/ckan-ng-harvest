@@ -1,6 +1,5 @@
 import unittest
 from libs.data_json import DataJSON
-from functions import get_data_json_from_url
 base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
 
 
