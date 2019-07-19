@@ -16,3 +16,9 @@ Ran 6 tests in 45.506s
 
 OK
 ```
+
+Test one file
+
+```
+python -m unittest tests.test_functions -v
+```

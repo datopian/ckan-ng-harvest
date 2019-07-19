@@ -22,6 +22,16 @@ def get_datajson_cache_path():
     return os.path.join(get_base_path(), 'data.json')
 
 
+def get_flow1_data_package_result_path():
+    """ local path for data.json source file """
+    return os.path.join(get_base_path(), 'flow1-data-package-result.json')
+
+
+def get_flow1_datasets_result_path():
+    """ local path for data.json source file """
+    return os.path.join(get_base_path(), 'flow1-datasets-results.json')
+
+
 def get_datajson_headers_validation_errors_path():
     """ local path for data-json-errors.json source file """
     return os.path.join(get_base_path(), 'data-json-headers-errors.json')
