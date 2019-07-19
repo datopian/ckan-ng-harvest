@@ -6,7 +6,6 @@ import argparse
 # from dataflows.join import join_with_self
 import json
 import os
-
 from dataflows import (Flow, dump_to_path, load, printer,
                        update_resource,
                        duplicate, add_field
