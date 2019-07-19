@@ -277,10 +277,12 @@ class DataJSONDataset:
                                        dataset_name)
 
         # description # required
-        self.check_required_string_field(item, "description", 1, dataset_name, errs)
+        self.check_required_string_field(
+            item, "description", 1, dataset_name, errs)
 
         # identifier #required
-        self.check_required_string_field(item, "identifier", 1, dataset_name, errs)
+        self.check_required_string_field(
+            item, "identifier", 1, dataset_name, errs)
 
         # keyword # required
         if isinstance(item.get("keyword"), str):
@@ -574,8 +576,8 @@ class DataJSONDataset:
         if not required and (field_name not in obj or obj[field_name] is None):
             return True  # not required, so OK
         if not self.check_required_field(obj, field_name, str, dataset_name,
-                                    errs):
-                                        return False  # just checking data type
+                                         errs):
+            return False  # just checking data type
         if allow_redacted and self.is_redacted(obj[field_name]):
             return True
         if not rfc3987_url.match(obj[field_name]):
@@ -599,7 +601,7 @@ class DataJSONDataset:
 
     @staticmethod
     def nice_type_name(data_type):
-        if data_type == str or data_type in str:
+        if data_type == str:
             return "string"
         elif data_type == list:
             return "array"
