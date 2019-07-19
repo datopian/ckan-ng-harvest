@@ -67,14 +67,3 @@ class DataJSONTestClass(unittest.TestCase):
 
         self.assertFalse(ret)  # schema works but has errors
         self.assertEqual(1, len(errors))  # 1 schema errors
-
-    def test_get_data_json_from_url(self):
-
-        url = f'{base_url}/good-but-not-data.json'
-
-        total = 0
-        for dataset in get_data_json_from_url(url=url):
-            self.assertIsInstance(dataset, dict)
-            total += 1
-
-        self.assertEqual(total, 1)
