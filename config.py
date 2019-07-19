@@ -27,9 +27,18 @@ def get_flow1_data_package_result_path():
     return os.path.join(get_base_path(), 'flow1-data-package-result.json')
 
 
+def get_flow2_data_package_result_path():
+    """ local path for data.json source file """
+    return os.path.join(get_base_path(), 'flow2-data-package-result.json')
+
+
 def get_flow1_datasets_result_path():
     """ local path for data.json source file """
     return os.path.join(get_base_path(), 'flow1-datasets-results.json')
+
+
+def get_flow2_datasets_result_path():
+    return os.path.join(get_base_path(), 'flow2-datasets-results.json')
 
 
 def get_datajson_headers_validation_errors_path():
@@ -42,6 +51,11 @@ def get_ckan_results_cache_path():
     return os.path.join(get_base_path(), 'ckan-results.json')
 
 
+def get_comparison_results_path():
+    """ local path for data.json source file """
+    return os.path.join(get_base_path(), 'compare-results.csv')
+
+
 def get_data_packages_folder_path():
     """ local path for data.json source file """
     data_packages_folder_path = os.path.join(get_base_path(), 'data-packages')
@@ -49,3 +63,12 @@ def get_data_packages_folder_path():
         os.makedirs(data_packages_folder_path)
 
     return data_packages_folder_path
+
+
+def get_flow2_data_package_folder_path():
+    """ local path for data.json source file """
+    flow2_data_package_folder_path = os.path.join(get_base_path(), 'flow2')
+    if not os.path.isdir(flow2_data_package_folder_path):
+        os.makedirs(flow2_data_package_folder_path)
+
+    return flow2_data_package_folder_path

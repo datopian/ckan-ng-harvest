@@ -37,7 +37,7 @@ res = Flow(
     # get data.json and yield all datasets
     # validate headers and save the validation errors
     get_data_json_from_url(url=config.SOURCE_URL),
-    update_resource('res_1', name='datajson'),
+    update_resource('res_1', name='datajson', path='datajson.csv'),
 
     # remove duplicates
     clean_duplicated_identifiers,
@@ -45,7 +45,7 @@ res = Flow(
     # validate each dataset
     validate_datasets,
 
-    # save each as data package as
+    # save each dataset as data package
     save_as_data_packages,
 ).results()
 
