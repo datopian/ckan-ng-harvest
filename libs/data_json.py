@@ -225,7 +225,6 @@ class DataJSONDataset:
         omb_burueau_codes.add(row["Agency Code"] + ":" + row["Bureau Code"])
 
     def validate_dataset(self, item, errors_array):
-        print(item)
         errs = {}
         # Required
 

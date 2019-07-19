@@ -205,7 +205,6 @@ class DatajsonValidatorTestClass(unittest.TestCase):
         dataset = self.get_dataset()
         dataset["programCode"] = ["005:9"]
         errors = validate_data_json(dataset)
-        print(errors)
         self.assertTrue(
             'Invalid Field Value (Optional Fields)' in errors[0][0])
         self.assertTrue(
@@ -253,7 +252,6 @@ class DatajsonValidatorTestClass(unittest.TestCase):
             }
         ]
         errors = validate_data_json(dataset)
-        print(errors)
         self.assertTrue('Missing Required Fields' in errors[0][0])
         self.assertTrue(
             "The 'mediaType' field is missing. (1 locations)" in errors[0][1])
@@ -275,7 +273,6 @@ class DatajsonValidatorTestClass(unittest.TestCase):
         dataset = self.get_dataset()
         dataset["spatial"] = []
         errors = validate_data_json(dataset)
-        print(errors)
         self.assertTrue(
             'Invalid Field Value (Optional Fields)' in errors[0][0])
         self.assertTrue(
@@ -285,12 +282,110 @@ class DatajsonValidatorTestClass(unittest.TestCase):
         dataset = self.get_dataset()
         dataset["temporal"] = []
         errors = validate_data_json(dataset)
-        print(errors)
         self.assertTrue(
             'Invalid Field Value (Optional Fields)' in errors[0][0])
         self.assertTrue(
             "The field 'temporal' must be a string value if specified. (1 locations)" in errors[0][1])
-    
+
+    def test_accrualPeriodicity_is_valid(self):
+        dataset = self.get_dataset()
+        dataset["accrualPeriodicity"] = "R/P10"
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'accrualPeriodicity' had an invalid value. (1 locations)" in errors[0][1])
+
+    def test_describedByType_is_valid(self):
+        dataset = self.get_dataset()
+        dataset["describedByType"] = "l"
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value' in errors[0][0])
+        self.assertTrue(
+            'The describedByType "l" is invalid. It must be in IANA MIME format. (1 locations)' in errors[0][1])
+
+    def test_isPartOf_is_valid(self):
+        dataset = self.get_dataset()
+        dataset["isPartOf"] = 2
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Required Field Value' in errors[0][0])
+        self.assertTrue(
+            "The 'isPartOf' field must be a string but it has a different datatype (<class 'int'>). (1 locations)" in errors[0][1])
+
+    def test_issued_is_valid(self):
+        dataset = self.get_dataset()
+        dataset["issued"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'issued' is not in a valid format. (1 locations)" in errors[0][1])
+
+    def test_language_is_array(self):
+        dataset = self.get_dataset()
+        dataset["language"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'language' must be an array, if present. (1 locations)" in errors[0][1])
+
+    def test_language_is_valid(self):
+        dataset = self.get_dataset()
+        dataset["language"] = ["a"]
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            'The field \'language\' had an invalid language: "a" (1 locations)' in errors[0][1])
+
+    def test_PrimaryITInvestmentUII_is_valid(self):
+        dataset = self.get_dataset()
+        dataset["PrimaryITInvestmentUII"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'PrimaryITInvestmentUII' must be a string in 023-000000001 format, if present. (1 locations)" in errors[0][1])
+
+    def test_references_is_array(self):
+        dataset = self.get_dataset()
+        dataset["references"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'references' must be an array, if present. (1 locations)" in errors[0][1])
+
+    def test_theme_is_array(self):
+        dataset = self.get_dataset()
+        dataset["theme"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'theme' must be an array. (1 locations)" in errors[0][1])
+
+    def test_theme_items_are_not_empty_strings(self):
+        dataset = self.get_dataset()
+        dataset["theme"] = [""]
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            'A value in the theme array was an empty string. (1 locations)' in errors[0][1])
+
+    def test_theme_items_are_strings(self):
+        dataset = self.get_dataset()
+        dataset["theme"] = [2]
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            'Each value in the theme array must be a string (1 locations)' in errors[0][1])
+
     # TODO test redacted
 
     def get_dataset(self):
