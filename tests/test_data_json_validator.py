@@ -183,7 +183,7 @@ class DatajsonValidatorTestClass(unittest.TestCase):
         errors = validate_data_json(dataset)
         self.assertTrue('Missing Required Fields' in errors[0][0])
         self.assertTrue(
-          "The 'programCode' field is an empty array. (1 locations)" in errors[0][1])
+            "The 'programCode' field is an empty array. (1 locations)" in errors[0][1])
 
     def test_programCode_format(self):
         dataset = self.get_dataset()
@@ -191,7 +191,7 @@ class DatajsonValidatorTestClass(unittest.TestCase):
         errors = validate_data_json(dataset)
         self.assertTrue('Invalid Required Field Value' in errors[0][0])
         self.assertTrue(
-           "The 'programCode' field must be a array but it has a different datatype (string). (1 locations)" in errors[0][1])
+            "The 'programCode' field must be a array but it has a different datatype (string). (1 locations)" in errors[0][1])
 
     def test_programCode_item_is_string(self):
         dataset = self.get_dataset()
@@ -199,24 +199,33 @@ class DatajsonValidatorTestClass(unittest.TestCase):
         errors = validate_data_json(dataset)
         self.assertTrue('Invalid Required Field Value' in errors[0][0])
         self.assertTrue(
-           'Each programCode in the programCode array must be a string (1 locations)' in errors[0][1])
+            'Each programCode in the programCode array must be a string (1 locations)' in errors[0][1])
 
     def test_programCode_item_format(self):
         dataset = self.get_dataset()
         dataset["programCode"] = ["005:9"]
         errors = validate_data_json(dataset)
         print(errors)
-        self.assertTrue('Invalid Field Value (Optional Fields)' in errors[0][0])
         self.assertTrue(
-           'One of programCodes is not in valid format (ex. 018:001): "005:9" (1 locations)' in errors[0][1])
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            'One of programCodes is not in valid format (ex. 018:001): "005:9" (1 locations)' in errors[0][1])
 
-    def test_publisher_not_empty(self):
+    def test_publisher_is_dictionary(self):
         dataset = self.get_dataset()
         dataset["publisher"] = ""
         errors = validate_data_json(dataset)
         self.assertTrue('Invalid Required Field Value' in errors[0][0])
         self.assertTrue(
             "The 'publisher' field must be a <class 'dict'> but it has a different datatype (string). (1 locations)" in errors[0][1])
+
+    def test_publisher_has_name(self):
+        dataset = self.get_dataset()
+        dataset["publisher"] = {}
+        errors = validate_data_json(dataset)
+        self.assertTrue('Missing Required Fields' in errors[0][0])
+        self.assertTrue(
+            "The 'name' field is missing. (1 locations)" in errors[0][1])
 
     def test_dataQuality_is_bool(self):
         dataset = self.get_dataset()
@@ -227,7 +236,7 @@ class DatajsonValidatorTestClass(unittest.TestCase):
         self.assertTrue(
             'The field \'dataQuality\' must be true or false, as a JSON boolean literal (not the string "true" or "false"). (1 locations)' in errors[0][1])
 
-    def test_distribution_not_empty(self):
+    def test_distribution_is_array(self):
         dataset = self.get_dataset()
         dataset["distribution"] = ""
         errors = validate_data_json(dataset)
@@ -235,6 +244,54 @@ class DatajsonValidatorTestClass(unittest.TestCase):
             'Invalid Field Value (Optional Fields)' in errors[0][0])
         self.assertTrue(
             "The field 'distribution' must be an array, if present. (1 locations)" in errors[0][1])
+
+    def test_distribution_required_field_mediaType(self):
+        dataset = self.get_dataset()
+        dataset["distribution"] = [
+            {
+                "downloadURL": "",
+            }
+        ]
+        errors = validate_data_json(dataset)
+        print(errors)
+        self.assertTrue('Missing Required Fields' in errors[0][0])
+        self.assertTrue(
+            "The 'mediaType' field is missing. (1 locations)" in errors[0][1])
+
+    def test_distribution_mediaType(self):
+        dataset = self.get_dataset()
+        dataset["distribution"] = [
+            {
+                "downloadURL": "",
+                "mediaType": "s",
+            }
+        ]
+        errors = validate_data_json(dataset)
+        self.assertTrue('Invalid Field Value' in errors[0][0])
+        self.assertTrue(
+            'The distribution mediaType "s" is invalid. It must be in IANA MIME format. (1 locations)' in errors[0][1])
+
+    def test_spatial_is_string(self):
+        dataset = self.get_dataset()
+        dataset["spatial"] = []
+        errors = validate_data_json(dataset)
+        print(errors)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'spatial' must be a string value if specified. (1 locations)" in errors[0][1])
+
+    def test_temporal_is_string(self):
+        dataset = self.get_dataset()
+        dataset["temporal"] = []
+        errors = validate_data_json(dataset)
+        print(errors)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'temporal' must be a string value if specified. (1 locations)" in errors[0][1])
+    
+    # TODO test redacted
 
     def get_dataset(self):
         return {
