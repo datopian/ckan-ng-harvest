@@ -28,13 +28,21 @@ class FunctionsTestClass(unittest.TestCase):
 
     def test_good_get_data_json(self):
         url = f'{base_url}/usda.gov.data.json'
+        total = 0
         for dataset in get_data_json_from_url(url=url):
             self.assertIsInstance(dataset, dict)
+            total += 1
+
+        self.assertEqual(total, 1580)
 
     def test_goodwitherrors_get_data_json(self):
         url = f'{base_url}/healthdata.gov.data.json'
+        total = 0
         for dataset in get_data_json_from_url(url=url):
             self.assertIsInstance(dataset, dict)
+            total += 1
+
+        self.assertEqual(total, 1762)
 
     def test_clean_duplicated_identifiers_bad_field(self):
         rows = [{'bad_field_identifier': 'ya/&54'}]

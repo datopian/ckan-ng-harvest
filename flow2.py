@@ -10,7 +10,6 @@ import os
 from dataflows import Flow, dump_to_path, load, printer, update_resource
 
 import config
-from functions import dbg_packages
 from functions2 import (add_results_resource, compare_resources,
                         get_current_ckan_resources_from_api)
 from logs import logger
@@ -34,9 +33,8 @@ Flow(
                                         results_json_path=config.get_ckan_results_cache_path()),
 
     update_resource('res_1', name='ckan_results'),
-    dbg_packages,  # get info about updated packaghes
+
     add_results_resource,
-    dbg_packages,  # get info about updated packaghes
 
     # Compare both resources
     # In data.json the datasets have the identifier field: "identifier": "USDA-ERS-00071"

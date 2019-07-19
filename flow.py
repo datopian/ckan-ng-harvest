@@ -18,7 +18,7 @@ from functions import (get_data_json_from_url,
                        validate_datasets,
                        save_as_data_packages,
                        )
-
+from logs import logger
 import config
 import argparse
 parser = argparse.ArgumentParser()
@@ -33,7 +33,7 @@ args = parser.parse_args()
 config.SOURCE_NAME = args.name  # Nice name of the source
 config.SOURCE_URL = args.url  # data.json final URL
 
-Flow(
+res = Flow(
     # get data.json and yield all datasets
     # validate headers and save the validation errors
     get_data_json_from_url(url=config.SOURCE_URL),
@@ -47,9 +47,18 @@ Flow(
 
     # save each as data package as
     save_as_data_packages,
-).process()[1]
+).results()
 
-logger.info('To continue this: python3 flow2.py '
+logger.info('Continue to next step with: python3 flow2.py '
             f'--name {config.SOURCE_NAME} '
             f'--data_packages_path {config.get_data_packages_folder_path()} '
             f'--harvest_source_id {args.harvest_source_id}')
+
+# save results (data package and final datasets results)
+dmp = json.dumps(res[0][0], indent=2)
+f = open(config.get_flow1_datasets_result_path(), 'w')
+f.write(dmp)
+f.close()
+
+pkg = res[1]  # package returned
+pkg.save(config.get_flow1_data_package_result_path())

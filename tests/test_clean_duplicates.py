@@ -4,9 +4,10 @@ Tests all functions used in flow file
 import unittest
 
 import config
-from functions import clean_duplicated_identifiers, get_data_json_from_url
+from functions import clean_duplicated_identifiers
 
 base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
+
 
 class FunctionsDuplicatesTestClass(unittest.TestCase):
 
@@ -16,7 +17,7 @@ class FunctionsDuplicatesTestClass(unittest.TestCase):
         with self.assertRaises(KeyError):
             for dataset in clean_duplicated_identifiers(rows):
                 self.assertIsInstance(dataset, dict)
-    
+
     def test_clean_duplicated_identifiers(self):
         rows = [{'identifier': 'ya/&54'}]
 
@@ -24,7 +25,7 @@ class FunctionsDuplicatesTestClass(unittest.TestCase):
         for dataset in clean_duplicated_identifiers(rows):
             self.assertIsInstance(dataset, dict)
             total_ok += 1
-        
+
         total_duplicates = len(rows) - total_ok
 
         self.assertEqual(total_ok, 1)
@@ -37,12 +38,11 @@ class FunctionsDuplicatesTestClass(unittest.TestCase):
         for dataset in clean_duplicated_identifiers(rows):
             self.assertIsInstance(dataset, dict)
             total_ok += 1
-        
+
         total_duplicates = len(rows) - total_ok
 
         self.assertEqual(total_ok, 1)
         self.assertEqual(total_duplicates, 1)
-    
 
     def test_clean_duplicated_identifiers3(self):
         rows = [{'identifier': 'ya/&54'},
@@ -53,7 +53,7 @@ class FunctionsDuplicatesTestClass(unittest.TestCase):
         for dataset in clean_duplicated_identifiers(rows):
             self.assertIsInstance(dataset, dict)
             total_ok += 1
-        
+
         total_duplicates = len(rows) - total_ok
 
         self.assertEqual(total_ok, 2)
