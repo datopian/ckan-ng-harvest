@@ -163,11 +163,78 @@ class DatajsonValidatorTestClass(unittest.TestCase):
 
     def test_modified_not_empty(self):
         dataset = self.get_dataset()
-        dataset["keyword"] = []
+        dataset["modified"] = ""
         errors = validate_data_json(dataset)
         self.assertTrue('Missing Required Fields' in errors[0][0])
         self.assertTrue(
-            "The 'keyword' field is an empty array. (1 locations)" in errors[0][1])
+            "The 'modified' field is present but empty. (1 locations)" in errors[0][1])
+
+    def test_modified_format(self):
+        dataset = self.get_dataset()
+        dataset["modified"] = "dfsfsdf"
+        errors = validate_data_json(dataset)
+        self.assertTrue('Invalid Required Field Value' in errors[0][0])
+        self.assertTrue(
+            'The field "modified" is not in valid format: "dfsfsdf" (1 locations)' in errors[0][1])
+
+    def test_programCode_not_empty(self):
+        dataset = self.get_dataset()
+        dataset["programCode"] = []
+        errors = validate_data_json(dataset)
+        self.assertTrue('Missing Required Fields' in errors[0][0])
+        self.assertTrue(
+          "The 'programCode' field is an empty array. (1 locations)" in errors[0][1])
+
+    def test_programCode_format(self):
+        dataset = self.get_dataset()
+        dataset["programCode"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue('Invalid Required Field Value' in errors[0][0])
+        self.assertTrue(
+           "The 'programCode' field must be a array but it has a different datatype (string). (1 locations)" in errors[0][1])
+
+    def test_programCode_item_is_string(self):
+        dataset = self.get_dataset()
+        dataset["programCode"] = [2]
+        errors = validate_data_json(dataset)
+        self.assertTrue('Invalid Required Field Value' in errors[0][0])
+        self.assertTrue(
+           'Each programCode in the programCode array must be a string (1 locations)' in errors[0][1])
+
+    def test_programCode_item_format(self):
+        dataset = self.get_dataset()
+        dataset["programCode"] = ["005:9"]
+        errors = validate_data_json(dataset)
+        print(errors)
+        self.assertTrue('Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+           'One of programCodes is not in valid format (ex. 018:001): "005:9" (1 locations)' in errors[0][1])
+
+    def test_publisher_not_empty(self):
+        dataset = self.get_dataset()
+        dataset["publisher"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue('Invalid Required Field Value' in errors[0][0])
+        self.assertTrue(
+            "The 'publisher' field must be a <class 'dict'> but it has a different datatype (string). (1 locations)" in errors[0][1])
+
+    def test_dataQuality_is_bool(self):
+        dataset = self.get_dataset()
+        dataset["dataQuality"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            'The field \'dataQuality\' must be true or false, as a JSON boolean literal (not the string "true" or "false"). (1 locations)' in errors[0][1])
+
+    def test_distribution_not_empty(self):
+        dataset = self.get_dataset()
+        dataset["distribution"] = ""
+        errors = validate_data_json(dataset)
+        self.assertTrue(
+            'Invalid Field Value (Optional Fields)' in errors[0][0])
+        self.assertTrue(
+            "The field 'distribution' must be an array, if present. (1 locations)" in errors[0][1])
 
     def get_dataset(self):
         return {
