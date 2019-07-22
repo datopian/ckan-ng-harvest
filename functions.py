@@ -22,6 +22,16 @@ def validate_data_json(data_json):
         data_validator.validate_dataset(data_json, errors)
     except Exception as e:
         errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
+    filename = f'data-json-errors.log'
+    if os.path.exists(filename):
+        append_write = 'a'
+    else:
+        append_write = 'w'
+    file = open(filename,append_write)
+    file.write("Dataset {}:".format(str(data_json['identifier'])))
+    for e in errors:
+        file.write(str(e))
+    file.close()
     return errors
 
 
