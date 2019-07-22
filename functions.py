@@ -104,13 +104,7 @@ def clean_duplicated_identifiers(rows):
 
 def validate_datasets(row):
     """ validate dataset row by row """
-    # just validate this row dictionary and append a line (if error)
-    # in a CSV file defined in config.py
-    # do not need to yield anything, a row processor just modify a row
-    # example dataflows row processor: https://github.com/datahq/dataflows/blob/master/TUTORIAL.md#learn-how-to-write-your-own-processing-flows
-    # if you need to delete some dataset (on big errors) convert this in a "rows" processor (as clean_duplicates)
     validate_data_json(row)
-    row = row
 
 
 # we need a way to save as file using an unique identifier
