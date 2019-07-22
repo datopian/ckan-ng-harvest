@@ -6,6 +6,10 @@ SOURCE_NAME = ''  # the source nage, e.g. Dep of Agriculture
 SOURCE_ID = ''  # the harvest source id
 SOURCE_URL = ''  # url of the data.json file
 
+CKAN_CATALOG_URL = 'https://catalog.data.gov'
+CKAN_USER = ''
+CKAN_PASS = ''
+
 
 def get_base_path():
     nice_name = slugify(SOURCE_NAME)
