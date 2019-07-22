@@ -12,7 +12,7 @@ from dataflows import (Flow, dump_to_path, load, printer,
                        )
 
 import config
-# from functions3 import -
+from functions3 import write_results_to_ckan, write_final_report
 from logs import logger
 
 parser = argparse.ArgumentParser()
@@ -27,5 +27,7 @@ config.SOURCE_ID = args.harvest_source_id
 data_packages_path = args.data_packages_path
 
 res = Flow(
+    load(load_source=config.get_flow2_datasets_result_path()),
+    write_results_to_ckan,
 
 ).results()
