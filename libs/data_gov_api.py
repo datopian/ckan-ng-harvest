@@ -142,10 +142,12 @@ class CKANPortalAPI:
         f.write(dmp)
         f.close()
 
+
     def create_package_from_data_json(self, dictt):
         """ transform a data.json dataset/package to a CKAN one
             ############
             # check how to map fields: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L444
+            # check the parser: https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/parse_datajson.py#L5
             ############
             Analyze gather vs import stages
             https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L112
