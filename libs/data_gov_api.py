@@ -14,6 +14,7 @@ class CKANPortalAPI:
 
     version = '0.01-alpha'
     user_agent = 'ckan-portal-filter'
+    api_key = None  # needed for some calls
     package_list_url = '/api/3/action/package_list'  # redirect to package_search (?)
     package_search_url = '/api/3/action/package_search'  # iterate with start and rows GET params
     package_create_url = '/api/3/action/package_create'
@@ -23,11 +24,14 @@ class CKANPortalAPI:
     package_list = []
     total_packages = 0
 
-    def __init__(self, base_url='https://catalog.data.gov'):  # default data.gov
+    def __init__(self, base_url='https://catalog.data.gov', api_key=None):  # default data.gov
         self.base_url = base_url
+        self.api_key=api_key
 
-    def get_request_headers(self):
+    def get_request_headers(self, include_api_key=False):
         headers = {'User-Agent': f'{self.user_agent} {self.version}'}
+        if include_api_key:
+            headers['Autorization'] = self.api_key
         return headers
 
     def search_harvest_packages(self, rows=1000, harvest_source_id=None,  # just one harvest source
@@ -54,8 +58,6 @@ class CKANPortalAPI:
                     params['q'] = f'(type:{harvest_type} source_type:{source_type})'
                 else:
                     params['q'] = f'(type:{harvest_type})'
-
-
 
             logger.debug(f'Searching {url} PAGE:{page} start:{start}, rows:{rows} with params: {params}')
 
@@ -218,8 +220,26 @@ class CKANPortalAPI:
 
         """
         url = '{}{}'.format(self.base_url, self.package_create_url)
+        headers = self.get_request_headers(include_api_key=True)
+        params = package
+        try:
+            req = requests.post(url, params=params, headers=headers)
+        except Exception as e:
+            error = 'ERROR creating package: {} [{}]'.format(url, e)
+            raise
 
-        # created_package = response_dict['result']
+        content = req.content
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data: {} [{}]'.format(content, e)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            raise ValueError(error)
+
+        return json_content
 
     def save_datasets_as_data_packages(self, folder_path):
         """ save each dataset source as _datapackage_ """

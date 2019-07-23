@@ -10,26 +10,26 @@ class DataJSONSchema1_1:
             "title": "title",
             "description": "notes",
             "keyword": "tags",
-            "modified": "extras__modified", # ! revision_timestamp
-            "publisher": "extras__publisher", # !owner_org
+            "modified": "extras__modified",  # ! revision_timestamp
+            "publisher": "extras__publisher",  # !owner_org
             "contactPoint": {"fn":"maintainer", "hasEmail":"maintainer_email"},
-            "identifier": "extras__identifier", # !id
+            "identifier": "extras__identifier",  # !id
             "accessLevel": "extras__accessLevel",
 
             "bureauCode": "extras__bureauCode",
             "programCode": "extras__programCode",
             "rights": "extras__rights",
-            "license": "extras__license", # !license_id
-            "spatial": "extras__spatial", # Geometry not valid GeoJSON, not indexing
+            "license": "extras__license",  # !license_id
+            "spatial": "extras__spatial",  # Geometry not valid GeoJSON, not indexing
             "temporal": "extras__temporal",
 
             "theme": "extras__theme",
-            "dataDictionary": "extras__dataDictionary", # !data_dict
+            "dataDictionary": "extras__dataDictionary",  # !data_dict
             "dataQuality": "extras__dataQuality",
             "accrualPeriodicity":"extras__accrualPeriodicity",
             "landingPage": "extras__landingPage",
             "language": "extras__language",
-            "primaryITInvestmentUII": "extras__primaryITInvestmentUII", # !PrimaryITInvestmentUII
+            "primaryITInvestmentUII": "extras__primaryITInvestmentUII",  # !PrimaryITInvestmentUII
             "references": "extras__references",
             "issued": "extras__issued",
             "systemOfRecords": "extras__systemOfRecords",
