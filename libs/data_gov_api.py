@@ -26,12 +26,13 @@ class CKANPortalAPI:
 
     def __init__(self, base_url='https://catalog.data.gov', api_key=None):  # default data.gov
         self.base_url = base_url
-        self.api_key=api_key
+        self.api_key = api_key
 
     def get_request_headers(self, include_api_key=False):
         headers = {'User-Agent': f'{self.user_agent} {self.version}'}
         if include_api_key:
-            headers['Autorization'] = self.api_key
+            # headers['Autorization'] = self.api_key
+            headers['X-CKAN-API-Key'] = self.api_key
         return headers
 
     def search_harvest_packages(self, rows=1000, harvest_source_id=None,  # just one harvest source
@@ -222,8 +223,9 @@ class CKANPortalAPI:
         url = '{}{}'.format(self.base_url, self.package_create_url)
         headers = self.get_request_headers(include_api_key=True)
         params = package
+        logger.error(f'POST {url} headers:{headers} params:{params}')
         try:
-            req = requests.post(url, params=params, headers=headers)
+            req = requests.post(url, data=params, headers=headers)
         except Exception as e:
             error = 'ERROR creating package: {} [{}]'.format(url, e)
             raise

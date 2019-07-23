@@ -1,6 +1,8 @@
 import unittest
 from libs.data_gov_api import CKANPortalAPI
 base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
+import random
+from slugify import slugify
 
 
 class CKANPortalAPITestClass(unittest.TestCase):
@@ -23,11 +25,16 @@ class CKANPortalAPITestClass(unittest.TestCase):
     """
 
     def test_create_package(self):
-        # needs a local CKAN instance
-        # python -m unittest tests.test_data_ckan_api -v
-        CKAN_API_KEY = '1a756a9b-50fb-471d-9e0e-9acfdfdf5596'  # put your own local API key
+        # needs a local CKAN instance with an organization id = 'my-local-test-organization-v2'
+        #TODO improve this test to check requirements
+
+        CKAN_API_KEY = '79744bbe-f27b-46c8-a1e0-8f7264746c86'  # put your own local API key
         cpa = CKANPortalAPI(base_url='http://ckan:5000', api_key=CKAN_API_KEY)
-        package = {'name': 'test package'}
+
+        # error if duplicated
+        dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
+        dataset_name = slugify(dataset_title)
+        package = {'name': dataset_name, 'title': dataset_title, 'owner_org': 'my-local-test-organization-v2'}
         res = cpa.create_package(package=package)
         print(res)
         self.assertTrue(res['success'])
