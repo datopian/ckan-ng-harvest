@@ -102,7 +102,7 @@ class DataJSON:
         # validate with jsonschema lib
         # many data.json are not extrictly valid, we use as if they are
 
-        #TODO check and re-use a ckanext-datajson validator: https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
+        # TODO check and re-use a ckanext-datajson validator: https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
 
         try:
             jss.validate(instance=self.data_json, schema=self.schema.json_content)
