@@ -218,6 +218,7 @@ class DataJSON:
 
 
 class DataJSONDataset:
+    validation_errors = []
     omb_burueau_codes = set()
     ftpstream = urllib.request.urlopen(BUREAU_CODE_URL)
     csvfile = csv.DictReader(codecs.iterdecode(ftpstream, 'utf-8'))
@@ -228,101 +229,100 @@ class DataJSONDataset:
         errs = {}
         # Required
 
-        dataset_name = '"%s"' % item.get("title", "").strip()
+        dataset_identifier = "%s" % item.get("identifier", "").strip()
 
         # title
-        if self.check_required_string_field(item, "title", 2, dataset_name, errs):
-            dataset_name = '"%s"' % item.get("title", "").strip()
+        self.check_required_string_field(item, "title", 2, dataset_identifier, errs)
 
         # accessLevel # required
-        if self.check_required_string_field(item, "accessLevel", 3, dataset_name, errs):
+        if self.check_required_string_field(item, "accessLevel", 3, dataset_identifier, errs):
             if item["accessLevel"] not in ("public", "restricted public", "non-public"):
                 self.add_error(errs, 5, "Invalid Required Field Value",
                                "The field 'accessLevel' had an invalid value: \"%s\"" % item[
                                    "accessLevel"],
-                               dataset_name)
+                               dataset_identifier)
 
         # bureauCode # required
         if not self.is_redacted(item.get('bureauCode')):
-            if self.check_required_field(item, "bureauCode", list, dataset_name, errs):
+            if self.check_required_field(item, "bureauCode", list, dataset_identifier, errs):
                 for bc in item["bureauCode"]:
                     if not isinstance(bc, str):
                         self.add_error(errs, 5, "Invalid Required Field Value", "Each bureauCode must be a string",
-                                       dataset_name)
+                                       dataset_identifier)
                     elif ":" not in bc:
                         self.add_error(errs, 5, "Invalid Required Field Value",
                                        "The bureau code \"%s\" is invalid. "
                                        "Start with the agency code, then a colon, then the bureau code." % bc,
-                                       dataset_name)
+                                       dataset_identifier)
                     elif bc not in self.omb_burueau_codes:
                         self.add_error(errs, 5, "Invalid Required Field Value",
                                        "The bureau code \"%s\" was not found in our list %s"
                                        % (bc, BUREAU_CODE_URL),
-                                       dataset_name)
+                                       dataset_identifier)
 
         # contactPoint # required
-        if self.check_required_field(item, "contactPoint", dict, dataset_name, errs):
+        if self.check_required_field(item, "contactPoint", dict, dataset_identifier, errs):
             cp = item["contactPoint"]
             # contactPoint - fn # required
-            self.check_required_string_field(cp, "fn", 1, dataset_name, errs)
+            self.check_required_string_field(cp, "fn", 1, dataset_identifier, errs)
 
             # contactPoint - hasEmail # required
-            if self.check_required_string_field(cp, "hasEmail", 9, dataset_name, errs):
+            if self.check_required_string_field(cp, "hasEmail", 9, dataset_identifier, errs):
                 if not self.is_redacted(cp.get('hasEmail')):
                     email = cp["hasEmail"].replace('mailto:', '')
                     if not validate_email(email):
                         self.add_error(errs, 5, "Invalid Required Field Value",
                                        "The email address \"%s\" is not a valid email address." % email,
-                                       dataset_name)
+                                       dataset_identifier)
 
         # description # required
         self.check_required_string_field(
-            item, "description", 1, dataset_name, errs)
+            item, "description", 1, dataset_identifier, errs)
 
         # identifier #required
         self.check_required_string_field(
-            item, "identifier", 1, dataset_name, errs)
+            item, "identifier", 1, dataset_identifier, errs)
 
         # keyword # required
         if isinstance(item.get("keyword"), str):
             if not self.is_redacted(item.get("keyword")):
                 self.add_error(errs, 5, "Update Your File!",
-                               "The keyword field used to be a string but now it must be an array.", dataset_name)
-        elif self.check_required_field(item, "keyword", list, dataset_name, errs):
+                               "The keyword field used to be a string but now it must be an array.", dataset_identifier)
+        elif self.check_required_field(item, "keyword", list, dataset_identifier, errs):
             for kw in item["keyword"]:
                 if not isinstance(kw, str):
                     self.add_error(errs, 5, "Invalid Required Field Value",
-                                   "Each keyword in the keyword array must be a string", dataset_name)
+                                   "Each keyword in the keyword array must be a string", dataset_identifier)
                 elif len(kw.strip()) == 0:
                     self.add_error(errs, 5, "Invalid Required Field Value",
-                                   "A keyword in the keyword array was an empty string.", dataset_name)
+                                   "A keyword in the keyword array was an empty string.", dataset_identifier)
 
         # modified # required
-        if self.check_required_string_field(item, "modified", 1, dataset_name, errs):
+        if self.check_required_string_field(item, "modified", 1, dataset_identifier, errs):
             if not self.is_redacted(item['modified']) \
                     and not MODIFIED_REGEX_1.match(item['modified']) \
                     and not MODIFIED_REGEX_2.match(item['modified']) \
                     and not MODIFIED_REGEX_3.match(item['modified']):
                 self.add_error(errs, 5, "Invalid Required Field Value",
-                               "The field \"modified\" is not in valid format: \"%s\"" % item['modified'], dataset_name)
+                               "The field \"modified\" is not in valid format: \"%s\"" % item['modified'], dataset_identifier)
 
         # programCode # required
         if not self.is_redacted(item.get('programCode')):
-            if self.check_required_field(item, "programCode", list, dataset_name, errs):
+            if self.check_required_field(item, "programCode", list, dataset_identifier, errs):
                 for pc in item["programCode"]:
                     if not isinstance(pc, str):
                         self.add_error(errs, 5, "Invalid Required Field Value",
-                                       "Each programCode in the programCode array must be a string", dataset_name)
+                                       "Each programCode in the programCode array must be a string", dataset_identifier)
                     elif not PROGRAM_CODE_REGEX.match(pc):
                         self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
                                        "One of programCodes is not in valid format (ex. 018:001): \"%s\"" % pc,
-                                       dataset_name)
+                                       dataset_identifier)
 
         # publisher # required
-        if self.check_required_field(item, "publisher", dict, dataset_name, errs):
+        if self.check_required_field(item, "publisher", dict, dataset_identifier, errs):
             # publisher - name # required
             self.check_required_string_field(
-                item["publisher"], "name", 1, dataset_name, errs)
+                item["publisher"], "name", 1, dataset_identifier, errs)
 
         # Required-If-Applicable
 
@@ -333,7 +333,7 @@ class DataJSONDataset:
             self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
                            "The field 'dataQuality' must be true or false, "
                            "as a JSON boolean literal (not the string \"true\" or \"false\").",
-                           dataset_name)
+                           dataset_identifier)
 
         # distribution # Required-If-Applicable
         if item.get("distribution") is None:
@@ -343,13 +343,13 @@ class DataJSONDataset:
                 pass
             else:
                 self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                               "The field 'distribution' must be an array, if present.", dataset_name)
+                               "The field 'distribution' must be an array, if present.", dataset_identifier)
         else:
             for j, dt in enumerate(item["distribution"]):
                 if isinstance(dt, str):
                     if self.is_redacted(dt):
                         continue
-                distribution_name = dataset_name + \
+                distribution_name = dataset_identifier + \
                     (" distribution %d" % (j + 1))
                 # distribution - downloadURL # Required-If-Applicable
                 self.check_url_field(
@@ -403,33 +403,33 @@ class DataJSONDataset:
 
         # license # Required-If-Applicable
         self.check_url_field(False, item, "license",
-                             dataset_name, errs, allow_redacted=True)
+                             dataset_identifier, errs, allow_redacted=True)
 
         # rights # Required-If-Applicable
         # TODO move to warnings
         # if item.get("accessLevel") != "public":
-        # check_string_field(item, "rights", 1, dataset_name, errs)
+        # check_string_field(item, "rights", 1, dataset_identifier, errs)
 
         # spatial # Required-If-Applicable
         # TODO: There are more requirements than it be a string.
         if item.get("spatial") is not None and not isinstance(item.get("spatial"), str):
             self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                           "The field 'spatial' must be a string value if specified.", dataset_name)
+                           "The field 'spatial' must be a string value if specified.", dataset_identifier)
 
         # temporal # Required-If-Applicable
         if item.get("temporal") is None or self.is_redacted(item.get("temporal")):
             pass  # not required or REDACTED
         elif not isinstance(item["temporal"], str):
             self.add_error(errs, 10, "Invalid Field Value (Optional Fields)",
-                           "The field 'temporal' must be a string value if specified.", dataset_name)
+                           "The field 'temporal' must be a string value if specified.", dataset_identifier)
         elif "/" not in item["temporal"]:
             self.add_error(errs, 10, "Invalid Field Value (Optional Fields)",
-                           "The field 'temporal' must be two dates separated by a forward slash.", dataset_name)
+                           "The field 'temporal' must be two dates separated by a forward slash.", dataset_identifier)
         elif not TEMPORAL_REGEX_1.match(item['temporal']) \
                 and not TEMPORAL_REGEX_2.match(item['temporal']) \
                 and not TEMPORAL_REGEX_3.match(item['temporal']):
             self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                           "The field 'temporal' has an invalid start or end date.", dataset_name)
+                           "The field 'temporal' has an invalid start or end date.", dataset_identifier)
 
         # Expanded Fields
 
@@ -437,15 +437,15 @@ class DataJSONDataset:
         if item.get("accrualPeriodicity") not in ACCRUAL_PERIODICITY_VALUES \
                 and not self.is_redacted(item.get("accrualPeriodicity")):
             self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                           "The field 'accrualPeriodicity' had an invalid value.", dataset_name)
+                           "The field 'accrualPeriodicity' had an invalid value.", dataset_identifier)
 
         # conformsTo # optional
         self.check_url_field(False, item, "conformsTo",
-                             dataset_name, errs, allow_redacted=True)
+                             dataset_identifier, errs, allow_redacted=True)
 
         # describedBy # optional
         self.check_url_field(False, item, "describedBy",
-                             dataset_name, errs, allow_redacted=True)
+                             dataset_identifier, errs, allow_redacted=True)
 
         # describedByType # optional
         if item.get("describedByType") is None or self.is_redacted(item.get("describedByType")):
@@ -454,34 +454,34 @@ class DataJSONDataset:
             self.add_error(errs, 5, "Invalid Field Value",
                            "The describedByType \"%s\" is invalid. "
                            "It must be in IANA MIME format." % item["describedByType"],
-                           dataset_name)
+                           dataset_identifier)
 
         # isPartOf # optional
         if item.get("isPartOf"):
             self.check_required_string_field(
-                item, "isPartOf", 1, dataset_name, errs)
+                item, "isPartOf", 1, dataset_identifier, errs)
 
         # issued # optional
         if item.get("issued") is not None and not self.is_redacted(item.get("issued")):
             if not ISSUED_REGEX.match(item['issued']):
                 self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                               "The field 'issued' is not in a valid format.", dataset_name)
+                               "The field 'issued' is not in a valid format.", dataset_identifier)
 
         # landingPage # optional
         self.check_url_field(False, item, "landingPage",
-                             dataset_name, errs, allow_redacted=True)
+                             dataset_identifier, errs, allow_redacted=True)
 
         # language # optional
         if item.get("language") is None or self.is_redacted(item.get("language")):
             pass  # not required or REDACTED
         elif not isinstance(item["language"], list):
             self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                           "The field 'language' must be an array, if present.", dataset_name)
+                           "The field 'language' must be an array, if present.", dataset_identifier)
         else:
             for s in item["language"]:
                 if not LANGUAGE_REGEX.match(s) and not self.is_redacted(s):
                     self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                                   "The field 'language' had an invalid language: \"%s\"" % s, dataset_name)
+                                   "The field 'language' had an invalid language: \"%s\"" % s, dataset_identifier)
 
         # PrimaryITInvestmentUII # optional
         if item.get("PrimaryITInvestmentUII") is None or self.is_redacted(item.get("PrimaryITInvestmentUII")):
@@ -489,7 +489,7 @@ class DataJSONDataset:
         elif not PRIMARY_IT_INVESTMENT_UII_REGEX.match(item["PrimaryITInvestmentUII"]):
             self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
                            "The field 'PrimaryITInvestmentUII' must be a string "
-                           "in 023-000000001 format, if present.", dataset_name)
+                           "in 023-000000001 format, if present.", dataset_identifier)
 
         # references # optional
         if item.get("references") is None:
@@ -499,31 +499,31 @@ class DataJSONDataset:
                 pass
             else:
                 self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                               "The field 'references' must be an array, if present.", dataset_name)
+                               "The field 'references' must be an array, if present.", dataset_identifier)
         else:
             for s in item["references"]:
                 if not rfc3987_url.match(s) and not self.is_redacted(s):
                     self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                                   "The field 'references' had an invalid rfc3987 URL: \"%s\"" % s, dataset_name)
+                                   "The field 'references' had an invalid rfc3987 URL: \"%s\"" % s, dataset_identifier)
 
         # systemOfRecords # optional
         self.check_url_field(False, item, "systemOfRecords",
-                             dataset_name, errs, allow_redacted=True)
+                             dataset_identifier, errs, allow_redacted=True)
 
         # theme #optional
         if item.get("theme") is None or self.is_redacted(item.get("theme")):
             pass  # not required or REDACTED
         elif not isinstance(item["theme"], list):
             self.add_error(errs, 50, "Invalid Field Value (Optional Fields)", "The field 'theme' must be an array.",
-                           dataset_name)
+                           dataset_identifier)
         else:
             for s in item["theme"]:
                 if not isinstance(s, str):
                     self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                                   "Each value in the theme array must be a string", dataset_name)
+                                   "Each value in the theme array must be a string", dataset_identifier)
                 elif len(s.strip()) == 0:
                     self.add_error(errs, 50, "Invalid Field Value (Optional Fields)",
-                                   "A value in the theme array was an empty string.", dataset_name)
+                                   "A value in the theme array was an empty string.", dataset_identifier)
 
         # Form the output data.
         for err_type in sorted(errs):
@@ -533,60 +533,61 @@ class DataJSONDataset:
                  for err_item in sorted(errs[err_type], key=lambda x: (-len(errs[err_type][x]), x))
                  ]))
 
-    def check_required_field(self, obj, field_name, data_type, dataset_name, errs):
+    def check_required_field(self, obj, field_name, data_type, dataset_identifier, errs):
         # checks that a field exists and has the right type
         if field_name not in obj:
             self.add_error(errs, 10, "Missing Required Fields",
-                           "The '%s' field is missing." % field_name, dataset_name)
+                           "The '%s' field is missing." % field_name, dataset_identifier)
             return False
         elif obj[field_name] is None:
             self.add_error(errs, 10, "Missing Required Fields",
-                           "The '%s' field is empty." % field_name, dataset_name)
+                           "The '%s' field is empty." % field_name, dataset_identifier)
             return False
         elif not isinstance(obj[field_name], data_type):
             self.add_error(errs, 5, "Invalid Required Field Value",
                            "The '%s' field must be a %s but it has a different datatype (%s)." % (
-                               field_name, self.nice_type_name(data_type), self.nice_type_name(type(obj[field_name]))), dataset_name)
+                               field_name, self.nice_type_name(data_type), self.nice_type_name(type(obj[field_name]))), dataset_identifier)
             return False
         elif isinstance(obj[field_name], list) and len(obj[field_name]) == 0:
             self.add_error(errs, 10, "Missing Required Fields",
-                           "The '%s' field is an empty array." % field_name, dataset_name)
+                           "The '%s' field is an empty array." % field_name, dataset_identifier)
             return False
         return True
 
-    def check_required_string_field(self, obj, field_name, min_length, dataset_name, errs):
+    def check_required_string_field(self, obj, field_name, min_length, dataset_identifier, errs):
         # checks that a required field exists, is typed as a string, and has a minimum length
-        if not self.check_required_field(obj, field_name, str, dataset_name, errs):
+        if not self.check_required_field(obj, field_name, str, dataset_identifier, errs):
             return False
         elif len(obj[field_name].strip()) == 0:
             self.add_error(errs, 10, "Missing Required Fields", "The '%s' field is present but empty." % field_name,
-                           dataset_name)
+                           dataset_identifier)
             return False
         elif len(obj[field_name].strip()) < min_length:
             self.add_error(errs, 100, "Invalid Field Value",
                            "The '%s' field is very short (min. %d): \"%s\"" % (
                                field_name, min_length, obj[field_name]),
-                           dataset_name)
+                           dataset_identifier)
             return False
         return True
 
-    def check_url_field(self, required, obj, field_name, dataset_name, errs, allow_redacted=False):
+    def check_url_field(self, required, obj, field_name, dataset_identifier, errs, allow_redacted=False):
         # checks that a required or optional field, if specified, looks like a URL
         if not required and (field_name not in obj or obj[field_name] is None):
             return True  # not required, so OK
-        if not self.check_required_field(obj, field_name, str, dataset_name,
+        if not self.check_required_field(obj, field_name, str, dataset_identifier,
                                          errs):
             return False  # just checking data type
         if allow_redacted and self.is_redacted(obj[field_name]):
             return True
         if not rfc3987_url.match(obj[field_name]):
             self.add_error(errs, 5, "Invalid Required Field Value",
-                           "The '%s' field has an invalid rfc3987 URL: \"%s\"." % (field_name, obj[field_name]), dataset_name)
+                           "The '%s' field has an invalid rfc3987 URL: \"%s\"." % (field_name, obj[field_name]), dataset_identifier)
             return False
         return True
 
     @staticmethod
     def add_error(errs, severity, heading, description, context=None):
+        heading = "%s: %s" % (context, heading)
         s = errs.setdefault((severity, heading), {}
                             ).setdefault(description, set())
         if context:
@@ -606,3 +607,13 @@ class DataJSONDataset:
             return "array"
         else:
             return str(data_type)
+
+    def save_validation_errors(self, path):
+        dmp = json.dumps(self.validation_errors, indent=2)
+        if os.path.exists(path):
+            append_write = 'a'
+        else:
+            append_write = 'w'
+        f = open(path, append_write)
+        f.write(dmp)
+        f.close()
