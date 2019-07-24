@@ -110,7 +110,11 @@ class DataJSON:
             error = "Error validating JsonSchema: {}".format(e)
             errors.append(error)
 
-        #read datasets by now, even in error
+        # read datasets by now, even in error
+
+        # save headers
+        self.headers = self.data_json.copy()
+        del self.headers['dataset']
         self.datasets = self.data_json['dataset']
         self.validation_errors = errors
         if len(errors) > 0:

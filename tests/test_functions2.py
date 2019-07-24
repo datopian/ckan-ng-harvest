@@ -23,8 +23,6 @@ class Functions2TestClass(unittest.TestCase):
 
         self.assertEqual(total, 1580)
 
-
-
         # compare with fake results
         fake_rows = [
             # extras do not exist

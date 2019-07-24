@@ -5,7 +5,7 @@ class DataJSONSchema1_1:
     """ Data.json dataset from Schema 1.0"""
 
     def get_mapping_fields(self):
-
+        # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L478
         MAPPING = {
             "title": "title",
             "description": "notes",
@@ -44,7 +44,7 @@ class DataJSONSchema1_0:
     """ Data.json dataset from Schema 1.0"""
 
     def get_mapping_fields(self):
-
+        # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L443
         MAPPING = {
             "title": "title",
             "description": "notes",

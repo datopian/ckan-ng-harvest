@@ -145,7 +145,6 @@ class CKANPortalAPI:
         f.write(dmp)
         f.close()
 
-
     def create_package_from_data_json(self, dictt):
         """ transform a data.json dataset/package to a CKAN one
             ############
@@ -197,28 +196,6 @@ class CKANPortalAPI:
     def create_package(self, package):
         """ POST to CKAN API to create a new package/dataset
             https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
-
-            name (string) – the name of the new dataset, must be between 2 and 100 characters long and contain only lowercase alphanumeric characters, - and _, e.g. 'warandpeace'
-            title (string) – the title of the dataset (optional, default: same as name)
-            private (bool) – If True creates a private dataset
-            author (string) – the name of the dataset’s author (optional)
-            author_email (string) – the email address of the dataset’s author (optional)
-            maintainer (string) – the name of the dataset’s maintainer (optional)
-            maintainer_email (string) – the email address of the dataset’s maintainer (optional)
-            license_id (license id string) – the id of the dataset’s license, see license_list() for available values (optional)
-            notes (string) – a description of the dataset (optional)
-            url (string) – a URL for the dataset’s source (optional)
-            version (string, no longer than 100 characters) – (optional)
-            state (string) – the current state of the dataset, e.g. 'active' or 'deleted', only active datasets show up in search results and other lists of datasets, this parameter will be ignored if you are not authorized to change the state of the dataset (optional, default: 'active')
-            type (string) – the type of the dataset (optional), IDatasetForm plugins associate themselves with different dataset types and provide custom dataset handling behaviour for these types
-            resources (list of resource dictionaries) – the dataset’s resources, see resource_create() for the format of resource dictionaries (optional)
-            tags (list of tag dictionaries) – the dataset’s tags, see tag_create() for the format of tag dictionaries (optional)
-            extras (list of dataset extra dictionaries) – the dataset’s extras (optional), extras are arbitrary (key: value) metadata items that can be added to datasets, each extra dictionary should have keys 'key' (a string), 'value' (a string)
-            relationships_as_object (list of relationship dictionaries) – see package_relationship_create() for the format of relationship dictionaries (optional)
-            relationships_as_subject (list of relationship dictionaries) – see package_relationship_create() for the format of relationship dictionaries (optional)
-            groups (list of dictionaries) – the groups to which the dataset belongs (optional), each group dictionary should have one or more of the following keys which identify an existing group: 'id' (the id of the group, string), or 'name' (the name of the group, string), to see which groups exist call group_list()
-            owner_org (string) – the id of the dataset’s owning organization, see organization_list() or organization_list_for_user() for available values. This parameter can be made optional if the config option ckan.auth.create_unowned_dataset is set to True.
-
         """
         url = '{}{}'.format(self.base_url, self.package_create_url)
         headers = self.get_request_headers(include_api_key=True)
@@ -265,37 +242,3 @@ class CKANPortalAPI:
             package.add_resource(descriptor=resource.descriptor)
             package_path = os.path.join(folder_path, f'pkg_ckan_api_{encoded_identifier}.zip')
             package.save(target=package_path)
-
-
-if __name__ == '__main__':
-
-    print('testing data')
-
-    c_handler = logging.StreamHandler()
-    f_handler = logging.FileHandler('api.log')
-    logger.addHandler(c_handler)
-    logger.addHandler(f_handler)
-    logger.setLevel(logging.DEBUG)
-
-    cpa = CKANPortalAPI()
-    resources = 0
-    harvest_source_ids = ['de90314a-7c7d-4aff-bd84-87b134bba13d',  # Treasury JSON
-                            '50104281-92a3-4534-9d38-141bc82276c5',  # NYC JSON
-                            'afb32af7-87ba-4f27-ae5c-f0d4d0e039dc'  # CFPB JSON
-                            ]
-
-    for harvest_source_id in harvest_source_ids:
-        page = 0
-        for packages in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
-            page += 1
-            for package in packages:
-                pkg_resources = len(package['resources'])
-                resources += pkg_resources
-
-            if len(packages) > 0:
-                f = open(f'data/ckan_api_tmp_results_{harvest_source_id}_{page}.json', 'w')
-                f.write(json.dumps(packages, indent=2))
-                f.close()
-
-            print('{} total resources'.format(resources))
-
