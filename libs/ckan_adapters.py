@@ -52,6 +52,8 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
     # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L478
     # value at data.json -> value at CKAN dataset
 
+    ckan_owner_org_id = None  # required, the client must inform which existing org
+
     MAPPING = {
         'title': 'title',
         'description': 'notes',
@@ -137,9 +139,11 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
                 ckan_dataset = self.__set_destination_element(raw_field=field_ckan, to_dict=ckan_dataset, new_value=origin)
                 logger.debug(f'Connected OK fields "{field_data_json}"="{origin}"')
 
-        # define name if not
-        if ckan_dataset['name'] == '':
-            ckan_dataset['name'] = slugify(ckan_dataset['title'])
+        # define name (are uniques in CKAN instance)
+        ckan_dataset['name'] = self.generate_name(title=ckan_dataset['title'])
+
+        # mandatory
+        ckan_dataset['owner_org'] = self.ckan_owner_org_id
 
         # clean all empty unused values (can't pop keys while iterating)
         ckan_dataset_copy = ckan_dataset.copy()
@@ -148,9 +152,23 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
                 ckan_dataset_copy.pop(k)
         return ckan_dataset_copy
 
+    def generate_name(self, title):
+        # names are unique in CKAN
+        # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747
+
+        name = slugify(title)
+        if len(name) > 99:  # max length is 100
+            name = name[:95]
+
+        # TODO check if the name MUST be a new unexisting one
+        # TODO check if it's an existing resource and we need to read previos name using the identifier
+
+        return name
+
 
 class DataJSONSchema1_0(CKANDatasetAdapter):
-    ''' Data.json dataset from Schema 1.0'''
+    ''' Data.json dataset from Schema 1.0
+        NOT IN USE '''
 
     # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L443
     MAPPING = {

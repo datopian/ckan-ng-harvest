@@ -18,13 +18,12 @@ from logs import logger
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
 parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter CKAN API")
-parser.add_argument("--data_packages_path", type=str, help="Path of data packages from data.json")
+parser.add_argument("--ckan_owner_org_id", type=str, help="Source ID for filter CKAN API")
 
 args = parser.parse_args()
-
 config.SOURCE_NAME = args.name  # Nice name of the source
 config.SOURCE_ID = args.harvest_source_id
-data_packages_path = args.data_packages_path
+config.CKAN_OWNER_ORG = args.ckan_owner_org_id
 
 res = Flow(
     load(load_source=config.get_flow2_datasets_result_path()),

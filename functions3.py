@@ -22,6 +22,9 @@ def write_results_to_ckan(rows):
         logger.info(f'Dataset {dmp}')
 
         djss = DataJSONSchema1_1(original_dataset=dataset)
+        # ORG is required!
+        djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
+
         ckan_dataset = djss.transform_to_ckan_dataset()
         dmp = json.dumps(ckan_dataset, indent=4)
         logger.info(f'Converted {dmp}')

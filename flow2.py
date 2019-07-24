@@ -20,13 +20,11 @@ from logs import logger
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
 parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter CKAN API")
-parser.add_argument("--data_packages_path", type=str, help="Path of data packages from data.json")
 
 args = parser.parse_args()
 
 config.SOURCE_NAME = args.name  # Nice name of the source
 config.SOURCE_ID = args.harvest_source_id
-data_packages_path = args.data_packages_path
 
 res = Flow(
     # add other resource to this process. The packages list from data.gov
@@ -41,9 +39,6 @@ res = Flow(
     # In data.json the datasets have the identifier field: "identifier": "USDA-ERS-00071"
     # In CKAN API results the datasets have the same identifier at "extras" list: {"key": "identifier", "value": "USDA-ERS-00071"}
     compare_resources,
-
-    # dump_to_path(data_packages_path),
-
 ).results()
 
 # save results
@@ -58,5 +53,4 @@ pkg.save(config.get_flow2_data_package_result_path())
 
 logger.info('Continue to next step with: python3 flow3.py '
             f'--name {config.SOURCE_NAME} '
-            f'--data_packages_path {config.get_data_packages_folder_path()} '
             f'--harvest_source_id {args.harvest_source_id}')
