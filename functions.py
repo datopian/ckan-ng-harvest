@@ -63,6 +63,8 @@ def get_data_json_from_url(url):
 
     # the real dataset list
     for dataset in datajson.datasets:
+        # add headers
+        dataset['headers'] = datajson.headers
         yield(dataset)
 
 

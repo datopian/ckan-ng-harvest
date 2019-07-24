@@ -11,6 +11,7 @@ import base64
 from dateutil.parser import parse
 import glob
 from functions import encode_identifier
+import pytz
 
 
 def get_current_ckan_resources_from_api(harvest_source_id):
@@ -47,6 +48,7 @@ def compare_resources(rows):
     logger.info(f'Rows from resource {res_name}')
 
     data_packages_path = config.get_data_packages_folder_path()
+    default_tzinfo_for_naives_dates = pytz.UTC
 
     # Calculate minimum statistics
     total = 0
@@ -54,7 +56,8 @@ def compare_resources(rows):
     no_extras = 0
     no_identifier_key_found = 0
     deleted = 0
-    found = 0
+    found_update = 0
+    found_not_update = 0
 
     sample_row = None
     for row in rows:
@@ -107,7 +110,6 @@ def compare_resources(rows):
             yield row
             continue
 
-        found += 1
         datajson_package = Package(expected_path)
         # logger.info(f'Dataset: {ckan_id}
         # found as data package at {expected_path}')
@@ -125,7 +127,16 @@ def compare_resources(rows):
         ckan_json = row
         ckan_json_modified = parse(ckan_json['metadata_modified'])
 
+        # un-naive datetimes
+        if data_json_modified.tzinfo is None:
+            data_json_modified = data_json_modified.replace(tzinfo=default_tzinfo_for_naives_dates)
+            # logger.warning('Modified date in data.json is naive: {}'.format(data_json_data['modified']))
+        if ckan_json_modified.tzinfo is None:
+            ckan_json_modified = ckan_json_modified.replace(tzinfo=default_tzinfo_for_naives_dates)
+            # logger.warning('Modified date in CKAN results is naive: {}'.format(ckan_json['metadata_modified']))
+
         diff_times = data_json_modified - ckan_json_modified
+
         seconds = diff_times.total_seconds()
         # logger.info(f'Seconds: {seconds} data.json:{data_json_modified} ckan:{ckan_json_modified})')
 
@@ -137,11 +148,13 @@ def compare_resources(rows):
                       'new_data': data_json_data,
                       'reason': f'Changed: ~{seconds} seconds difference. {warning}'
                     }
+            found_update += 1
         else:
             result = {'action': 'ignore',
                       'ckan_id': ckan_id,
                       'new_data': None,  # do not need this data_json_data
                       'reason': 'Changed: ~{seconds} seconds difference'}
+            found_not_update += 1
         row.update({'comparison_results': result})
         yield row
 
@@ -172,11 +185,13 @@ def compare_resources(rows):
         # Delete the data.json file
         os.remove(name)
 
+    found = found_not_update + found_update
+
     stats = f"""Total processed: {total}.
                 {no_extras} fail extras.
                 {no_identifier_key_found} fail identifier key.
                 {deleted} deleted.
-                {found} datasets found,
+                {found} datasets found ({found_update} needs update, {found_not_update} are the same),
                 {news} new datasets."""
 
     logger.info(stats)

@@ -4,6 +4,7 @@ import requests
 import logging
 logger = logging.getLogger(__name__)
 
+
 class CKANPortalAPI:
     """ API and data from data.gov
         API SPECS: https://docs.ckan.org/en/latest/api/index.html """
@@ -27,11 +28,14 @@ class CKANPortalAPI:
         search_params = {'rows': rows, 'start': start}
         if harvest_source_id is not None:
             # this filter is not working
-            search_params['q'] = f'harvest_source_id:{harvest_source_id}'
+            search_params['q'] = f'harvest_source_id:"{harvest_source_id}"'
 
         logger.info(f'search with params: {search_params}')
         self.last_search_params = search_params
+        # FAILs: https://github.com/ckan/ckanapi/issues/143
         results = self.remote_ckan.action.package_search(**search_params)
+        # results = self.remote_ckan.call_action('package_search', data_dict=search_params)
+        # results = self.remote_ckan.action.package_search(rows=7)
 
         return results
 
@@ -52,7 +56,7 @@ if __name__ == '__main__':
     harvest_source_id = '50104281-92a3-4534-9d38-141bc82276c5'  # NYC JSON
     harvest_source_id = 'afb32af7-87ba-4f27-ae5c-f0d4d0e039dc'  # CFPB JSON
 
-    results = cpa.search_harvest_packages(start=100, rows=5, harvest_source_id=harvest_source_id)
+    results = cpa.search_harvest_packages(start=0, rows=5, harvest_source_id=harvest_source_id)
     print(results)
 
     f = open('tmp_results.json', 'w')
@@ -65,6 +69,7 @@ if __name__ == '__main__':
     harvest_source_ids = set()
 
     errors = []
+    oks = 0
     for result in results['results']:
         packages += 1
         for resource in result['resources']:
@@ -76,6 +81,11 @@ if __name__ == '__main__':
                 harvest_source_ids.add(extra['value'])
                 if this_harvest_source_id is None:
                     this_harvest_source_id = extra['value']
+                    if this_harvest_source_id == harvest_source_id:
+                        oks += 1
+                    else:
+                        errors.append(f'Bad Harves source ID {harvest_source_id} != {this_harvest_source_id}')
+
                 else:
                     if this_harvest_source_id != extra['value']:
                         error = 'Multi harvest_source_id:Package ID:{} {} {}'.format(result['id'], this_harvest_source_id, extra['value'])
@@ -84,6 +94,6 @@ if __name__ == '__main__':
     harvest_source_ids_count = len(harvest_source_ids)
     print(f'{packages} packages, {resources} resources {has_harvest_source_id} has harvest source. {harvest_source_ids_count} different ids')
     print(cpa.last_search_params)
-    print('Errors: {}'.format(len(errors)))
+    print('OKs: {} Errors: {}'.format(oks, len(errors)))
     for error in errors:
         print(f'error: {error}')

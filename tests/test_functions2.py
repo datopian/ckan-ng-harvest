@@ -2,7 +2,6 @@
 Tests all functions used in flow file
 """
 import unittest
-
 import config
 from functions import get_data_json_from_url, save_as_data_packages
 from functions2 import compare_resources
@@ -23,8 +22,6 @@ class Functions2TestClass(unittest.TestCase):
             save_as_data_packages(dataset)
 
         self.assertEqual(total, 1580)
-
-
 
         # compare with fake results
         fake_rows = [

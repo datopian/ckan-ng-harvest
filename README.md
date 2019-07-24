@@ -14,7 +14,7 @@ Process using [dataflows](https://github.com/datahq/dataflows) and [datapackages
 Usage flow script
 
 ```
-usage: flow.py [-h] [--url URL] [--name NAME] [--force_download]
+usage: flow.py [-h] [--url URL] [--name NAME]
                   [--harvest_source_id HARVEST_SOURCE_ID]
 
 optional arguments:
