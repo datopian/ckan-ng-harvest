@@ -2,7 +2,6 @@
 Tests all functions used in flow file
 """
 import unittest
-
 import config
 from functions import get_data_json_from_url, save_as_data_packages
 from functions2 import compare_resources

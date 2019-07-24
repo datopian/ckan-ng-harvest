@@ -7,3 +7,6 @@ datapackage==1.6.2
 rfc3987
 validate_email
 pytz==2019.1
+coverage==4.5.3
+pytest==5.0.1
+pytest-cov==2.7.1

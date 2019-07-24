@@ -2,8 +2,6 @@
 Tests all functions used in flow file
 """
 import unittest
-
-import config
 from functions import clean_duplicated_identifiers, get_data_json_from_url
 
 base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
