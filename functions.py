@@ -13,18 +13,15 @@ from dateutil.parser import parse
 import glob
 
 
-def validate_data_json(data_json):
+def validate_data_json(row):
     # Taken from https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
     errors = []
     try:
         data_validator = DataJSONDataset()
-        data_validator.validate_dataset(data_json, errors)
+        errors = data_validator.validate_dataset(row)
     except Exception as e:
         errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
-    data_validator.validation_errors = errors
-    data_validator.save_validation_errors(path=config.get_datajson_dataset_validation_errors_path())
     return errors
-
 
 def get_data_json_from_url(url):
     logger.info(f'Geting data.json from {url}')
@@ -97,8 +94,8 @@ def clean_duplicated_identifiers(rows):
 
 def validate_datasets(row):
     """ validate dataset row by row """
-    validate_data_json(row)
-
+    errors = validate_data_json(row)
+    row['validation_errors'] = errors
 
 # we need a way to save as file using an unique identifier
 # TODO check if base64 is the best idea
