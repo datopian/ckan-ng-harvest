@@ -4,7 +4,7 @@ import os
 import requests
 from libs.data_gov_api import CKANPortalAPI
 from libs.data_json import DataJSON
-from libs.datajsonvalidator import do_validation
+from libs.data_json import DataJSONDataset
 from datapackage import Package, Resource
 from slugify import slugify
 import config
@@ -13,16 +13,15 @@ from dateutil.parser import parse
 import glob
 
 
-def validate_data_json(data_json):
+def validate_data_json(row):
     # Taken from https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
-    # TODO send these errors somewhere
     errors = []
     try:
-        do_validation(data_json, errors)
+        data_validator = DataJSONDataset()
+        errors = data_validator.validate_dataset(row)
     except Exception as e:
         errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
     return errors
-
 
 def get_data_json_from_url(url):
     logger.info(f'Geting data.json from {url}')
@@ -94,13 +93,9 @@ def clean_duplicated_identifiers(rows):
 
 
 def validate_datasets(row):
-    # just validate this row dictionary and append a line (if error)
-    # in a CSV file defined in config.py
-    # do not need to yield anything, a row processor just modify a row
-    # example dataflows row processor: https://github.com/datahq/dataflows/blob/master/TUTORIAL.md#learn-how-to-write-your-own-processing-flows
-    # if you need to delete some dataset (on big errors) convert this in a "rows" processor (as clean_duplicates)
-    row = row
-
+    """ validate dataset row by row """
+    errors = validate_data_json(row)
+    row['validation_errors'] = errors
 
 # we need a way to save as file using an unique identifier
 # TODO check if base64 is the best idea
