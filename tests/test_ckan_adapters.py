@@ -4,9 +4,7 @@ from libs.ckan_adapters import DataJSONSchema1_1
 
 class TestCKANAdapter(object):
 
-    def test_datajson_1_1_to_ckan(self):
-
-        dataset = {
+    test_datajson_dataset = {
             "identifier": "USDA-26521",
             "accessLevel": "public",
             "contactPoint": {
@@ -40,7 +38,10 @@ class TestCKANAdapter(object):
             "@context": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
             }
         }
-        djss = DataJSONSchema1_1(original_dataset=dataset)
+
+    def test_datajson_1_1_to_ckan(self):
+
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
         # ORG is required!
         djss.ckan_owner_org_id = 'XXXX'
 
@@ -50,5 +51,15 @@ class TestCKANAdapter(object):
         assert ckan_dataset['notes'] == 'Some notes ...'
         assert len(ckan_dataset['resources']) == 1
         assert ckan_dataset['maintainer_email'] == 'mailto:Fred.Teensma@ams.usda.gov'
+        assert len(ckan_dataset['tags']) == 2
+
+    def test_required_fields(self):
+        assert "Check required fiedls are missing" == False
+
+    def test_resources(self):
+        assert "Check for resources changes" == False
+
+    def test_name_collision(self):
+        assert "Check for package name collision" == False
 
 

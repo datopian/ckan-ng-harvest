@@ -11,7 +11,7 @@ def write_results_to_ckan(rows):
     c = 0
     for row in rows:
         c += 1
-        yield row
+
         action = row['comparison_results']['action']
         if action not in actions.keys():
             actions[action] = 0
@@ -29,6 +29,9 @@ def write_results_to_ckan(rows):
         dmp = json.dumps(ckan_dataset, indent=4)
         logger.info(f'Converted {dmp}')
 
+        # yield adding adding process results
+
+        yield row
         if c == 3:
             raise Exception('out')
 
