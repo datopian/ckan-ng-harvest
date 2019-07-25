@@ -116,7 +116,8 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # Help https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.tag_create
         ret = []
         for tag in tags:
-            ret.append({"id": None, "name": tag})
+            # ret.append({"id": None, "name": tag})
+            ret.append({"name": tag})
         return ret
 
     def __set_destination_element(self, raw_field, to_dict, new_value):
