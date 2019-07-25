@@ -168,7 +168,8 @@ class CKANPortalAPI:
         """
         url = '{}{}'.format(self.base_url, self.package_create_url)
         headers = self.get_request_headers(include_api_key=True)
-        logger.error(f'POST {url} headers:{headers} data:{ckan_package}')
+        logger.info(f'POST {url} headers:{headers} data:{ckan_package}')
+
         try:
             req = requests.post(url, data=ckan_package, headers=headers)
         except Exception as e:
@@ -176,6 +177,13 @@ class CKANPortalAPI:
             raise
 
         content = req.content
+
+        if req.status_code >= 400:
+            error = 'ERROR creating CKAN package: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+            logger.error(error)
+            raise Exception(error)
+
+
         try:
             json_content = json.loads(content)
         except Exception as e:

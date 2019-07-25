@@ -51,8 +51,8 @@ def write_results_to_ckan(rows):
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
                                 api_key=config.CKAN_API_KEY)
 
-            ckan_dataset['extras'] = []
-            ckan_dataset['tags'] = []
+            # ckan_dataset['extras'] = []
+            # ckan_dataset['tags'] = []
             ckan_response = cpa.create_package(ckan_package=ckan_dataset)
 
             if not ckan_response['success']:
