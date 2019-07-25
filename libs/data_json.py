@@ -229,14 +229,15 @@ class DataJSONDataset:
     for row in csvfile:
         omb_burueau_codes.add(row["Agency Code"] + ":" + row["Bureau Code"])
 
-    def validate_dataset(self, item, errors_array):
+    def validate_dataset(self, item):
+        errors_array = []
         errs = {}
         # Required
-
         dataset_identifier = "%s" % item.get("identifier", "").strip()
 
         # title
-        self.check_required_string_field(item, "title", 2, dataset_identifier, errs)
+        if self.check_required_string_field(item, "title", 1, dataset_identifier, errs):
+                dataset_identifier = "%s" % item.get("title", "").strip()
 
         # accessLevel # required
         if self.check_required_string_field(item, "accessLevel", 3, dataset_identifier, errs):
@@ -531,11 +532,9 @@ class DataJSONDataset:
 
         # Form the output data.
         for err_type in sorted(errs):
-            errors_array.append((
-                err_type[1],  # heading
-                [err_item + (" (%d locations)" % len(errs[err_type][err_item]) if len(errs[err_type][err_item]) else "")
-                 for err_item in sorted(errs[err_type], key=lambda x: (-len(errs[err_type][x]), x))
-                 ]))
+            errors_array.append({err_type[1]: [err_item + (" (%d locations)" % len(errs[err_type][err_item]) if len(errs[err_type][err_item]) else "")
+                  for err_item in sorted(errs[err_type], key=lambda x: (-len(errs[err_type][x]), x))]})
+        return errors_array
 
     def check_required_field(self, obj, field_name, data_type, dataset_identifier, errs):
         # checks that a field exists and has the right type
@@ -611,13 +610,3 @@ class DataJSONDataset:
             return "array"
         else:
             return str(data_type)
-
-    def save_validation_errors(self, path):
-        dmp = json.dumps(self.validation_errors, indent=2)
-        if os.path.exists(path):
-            append_write = 'a'
-        else:
-            append_write = 'w'
-        f = open(path, append_write)
-        f.write(dmp)
-        f.close()
