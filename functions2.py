@@ -71,6 +71,7 @@ def compare_resources(rows):
             logger.error(f'No extras! dataset: {ckan_id}')
             result = {'action': 'error',
                       'ckan_id': ckan_id,
+                      'new_data': None,
                       'reason': 'The CKAN dataset does not '
                                 'have the "extras" property'}
             row.update({'comparison_results': result})
@@ -90,6 +91,7 @@ def compare_resources(rows):
             no_identifier_key_found += 1
             result = {'action': 'error',
                     'ckan_id': ckan_id,
+                    'new_data': None,
                     'reason': 'The CKAN dataset does not have an "identifier"'}
             row.update({'comparison_results': result})
             yield row
@@ -105,6 +107,7 @@ def compare_resources(rows):
             deleted += 1
             result = {'action': 'delete',
                       'ckan_id': ckan_id,
+                      'new_data': None,
                       'reason': 'It no longer exists in the data.json source'}
             row.update({'comparison_results': result})
             yield row
@@ -171,7 +174,7 @@ def compare_resources(rows):
         data_json = package.get_resource('inline')
         data_json_data = data_json.source
 
-        result = {'action': 'add',
+        result = {'action': 'create',
                   'ckan_id': None,
                   'new_data': data_json_data,
                   'reason': 'Not found in the CKAN results'}

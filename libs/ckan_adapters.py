@@ -80,7 +80,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'references': 'extras__references',
         'issued': 'extras__issued',
         'systemOfRecords': 'extras__systemOfRecords',
-        'distribution': 'resources'
+        # 'distribution': 'resources'
     }
 
     def __identify_origin_element(self, raw_field, in_dict):
@@ -99,6 +99,26 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
                     return None
         return origin
 
+    def __fix_fields(self, field, value):
+        # some fields requires extra work
+        if field == 'tags':
+            return self.__build_tags(value)
+        elif field == 'maintainer_email':
+            if value.startswith('mailto:'):
+                value = value.replace('mailto:', '')
+            return value
+
+        else:
+            return value
+
+    def __build_tags(self, tags):
+        # create a CKAN tag
+        # Help https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.tag_create
+        ret = []
+        for tag in tags:
+            ret.append({"id": None, "name": tag})
+        return ret
+
     def __set_destination_element(self, raw_field, to_dict, new_value):
         # in 'extras__issued' gets or creates to_dict[extras][key][issued] and assing new_value to in_dict[extras][value]
         # in 'title' assing new_value to to_dict[title]
@@ -107,7 +127,8 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         if parts[0] not in to_dict:
             raise Exception(f'Not found field "{parts[0]}" at CKAN destination dict')
         if len(parts) == 1:
-            to_dict[raw_field] = new_value
+            to_dict[raw_field] = self.__fix_fields(field=raw_field,
+                                                   value=new_value)
             return to_dict
         elif len(parts) == 2:
             if parts[0] != 'extras':
