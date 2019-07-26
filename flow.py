@@ -59,10 +59,3 @@ f.close()
 
 pkg = res[1]  # package returned
 pkg.save(config.get_flow1_data_package_result_path())
-
-# save validation errors
-path = config.get_datajson_dataset_validation_errors_path()
-dmp = json.dumps([row['validation_errors'] for row in res[0][0]])
-f = open(path, 'w')
-f.write(dmp)
-f.close()
