@@ -1,5 +1,11 @@
 image: alpine:latest
 
+test:
+  stage: test
+  script: python -m pytest --cov=. tests/
+  only:
+  - merge_requests
+
 pages:
   stage: deploy
   script:
