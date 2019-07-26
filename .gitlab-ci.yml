@@ -2,7 +2,11 @@ image: alpine:latest
 
 test:
   stage: test
-  script: python -m pytest --cov=. tests/
+  script:
+    - apt-get update -qy
+    - apt-get install -y python3.6 python3-pip
+    - pip3 install -r requirements.txt
+    - python -m pytest --cov=. tests/
   only:
   - merge_requests
 
