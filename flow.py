@@ -24,7 +24,6 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", type=str, help="URL of the data.json")
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
-parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter CKAN API")
 
 args = parser.parse_args()
 
@@ -48,8 +47,7 @@ res = Flow(
 ).results()
 
 logger.info('Continue to next step with: python3 flow2.py '
-            f'--name {config.SOURCE_NAME} '
-            f'--harvest_source_id {args.harvest_source_id}')
+            f'--name {config.SOURCE_NAME} ')
 
 # save results (data package and final datasets results)
 dmp = json.dumps(res[0][0], indent=2)
