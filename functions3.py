@@ -112,8 +112,8 @@ def write_results_to_ckan(rows):
         comparison_results['action_results'] = results
         yield row
 
-
     logger.info(f'Actions detected {actions}')
+
 
 def write_final_report():
     """ take all generated data and write a final report """
