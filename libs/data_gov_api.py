@@ -18,6 +18,8 @@ class CKANPortalAPI:
     package_list_url = '/api/3/action/package_list'  # redirect to package_search (?)
     package_search_url = '/api/3/action/package_search'  # iterate with start and rows GET params
     package_create_url = '/api/3/action/package_create'
+    package_update_url = '/api/3/action/package_update'
+    package_delete_url = '/api/3/action/package_delete'
     # search for harvest sources
     package_search_harvested_sources_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'  # all the sources in a CKAN instance (959 results in data.gov)
     package_search_harvested_datajson_sources_url = '/api/3/action/package_search?q=%28type:harvest%20source_type:datajson%29&rows=1000'  # just the data.json harvest sources in a CKAN instance (144 results in data.gov)
@@ -156,58 +158,35 @@ class CKANPortalAPI:
 
             https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L394
 
-
-
-            data.json sample:
-                {
-                "accessLevel": "public",
-                "bureauCode": ["018:001"],
-                "license": "https://project-open-data.cio.gov/unknown-license",
-                "identifier": "10.5439/1027273",
-                "contactPoint": {"hasEmail": "mailto:adc@arm.gov", "fn": "ARM Data Center"},
-                "description": "No description found",
-                "programCode": ["018:001"],
-                "distribution": [
-                {
-                    "accessURL": "http://www.archive.arm.gov/discovery/#v/results/s/s::aerich2nf1turn",
-                    "format": "cdf"
-                }
-                ],
-                "modified": "2019-06-27 12:41:27",
-                "publisher": {
-                "name": "Atmospheric Radiation Measurement Data Center",
-                "subOrganizationOf": {
-                    "name": "DOE Biological and Environmental Research (BER)",
-                    "subOrganizationOf": {
-                    "name": "DOE Office of Science user facilities",
-                    "subOrganizationOf": {
-                        "name": "U.S. Government"
-                    }
-                    }
-                }
-                },
-                "@type": "dcat:Dataset",
-                "keyword": ["ARM", "AERI Noise Filtered"],
-                "title": "AERI ch. 2 radiance data, with uncorrelated random error (noise) filtered out"
-            }
         """
         pass
 
-    def create_package(self, package):
+    def create_package(self, ckan_package):
         """ POST to CKAN API to create a new package/dataset
+            ckan_package is just a python dict
             https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
         """
         url = '{}{}'.format(self.base_url, self.package_create_url)
         headers = self.get_request_headers(include_api_key=True)
-        params = package
-        logger.error(f'POST {url} headers:{headers} params:{params}')
+
+        headers['Content-Type'] = 'application/json'
+        ckan_package = json.dumps(ckan_package)
+
+        logger.info(f'POST {url} headers:{headers} data:{ckan_package}')
+
         try:
-            req = requests.post(url, data=params, headers=headers)
+            req = requests.post(url, data=ckan_package, headers=headers)
         except Exception as e:
-            error = 'ERROR creating package: {} [{}]'.format(url, e)
+            error = 'ERROR creating CKAN package: {} [{}]'.format(url, e)
             raise
 
         content = req.content
+
+        if req.status_code >= 400:
+            error = 'ERROR creating CKAN package: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+            logger.error(error)
+            raise Exception(error)
+
         try:
             json_content = json.loads(content)
         except Exception as e:
@@ -216,7 +195,77 @@ class CKANPortalAPI:
 
         if not json_content['success']:
             error = 'API response failed: {}'.format(json_content.get('error', None))
-            raise ValueError(error)
+            logger.error(error)
+
+        return json_content
+
+    def update_package(self, ckan_package):
+        """ POST to CKAN API to update a package/dataset
+            ckan_package is just a python dict
+            https://docs.ckan.org/en/2.8/api/#ckan.logic.action.update.package_update
+        """
+        url = '{}{}'.format(self.base_url, self.package_update_url)
+        headers = self.get_request_headers(include_api_key=True)
+
+        headers['Content-Type'] = 'application/json'
+        ckan_package = json.dumps(ckan_package)
+
+        logger.error(f'POST {url} headers:{headers} data:{ckan_package}')
+        try:
+            req = requests.post(url, data=ckan_package, headers=headers)
+        except Exception as e:
+            error = 'ERROR creating CKAN package: {} [{}]'.format(url, e)
+            raise
+
+        content = req.content
+
+        if req.status_code >= 400:
+            error = 'ERROR updateing CKAN package: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+            logger.error(error)
+            raise Exception(error)
+
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data: {} [{}]'.format(content, e)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            logger.error(error)
+
+        return json_content
+
+    def delete_package(self, ckan_package_ir_or_name):
+        """ POST to CKAN API to create a new package/dataset
+            https://docs.ckan.org/en/2.8/api/#ckan.logic.action.delete.package_delete
+        """
+        url = '{}{}'.format(self.base_url, self.package_delete_url)
+        headers = self.get_request_headers(include_api_key=True)
+        data = {'id': ckan_package_ir_or_name}
+        logger.error(f'POST {url} headers:{headers} data:{data}')
+        try:
+            req = requests.post(url, data=data, headers=headers)
+        except Exception as e:
+            error = 'ERROR deleting CKAN package: {} [{}]'.format(url, e)
+            raise
+
+        content = req.content
+
+        if req.status_code >= 400:
+            error = 'ERROR deleting CKAN package: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+            logger.error(error)
+            raise Exception(error)
+
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data from delete_package: {} [{}]'.format(content, e)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            logger.error(error)
 
         return json_content
 
