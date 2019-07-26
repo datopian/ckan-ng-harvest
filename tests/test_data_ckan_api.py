@@ -3,6 +3,7 @@ from libs.data_gov_api import CKANPortalAPI
 base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
 import random
 from slugify import slugify
+import json
 
 
 class CKANPortalAPITestClass(unittest.TestCase):
@@ -37,8 +38,27 @@ class CKANPortalAPITestClass(unittest.TestCase):
         dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
         dataset_name = slugify(dataset_title)
         package = {'name': dataset_name, 'title': dataset_title, 'owner_org': 'my-local-test-organization-v2'}
-        res = cpa.create_package(package=package)
+        res = cpa.create_package(ckan_package=package)
         print(res)
         self.assertTrue(res['success'])
 
+    def test_create_package_with_tags(self):
+        # needs a local CKAN instance with:
+        # - an organization with a custom id
+        # - an specific CKAN API KEY
+        # TODO improve this test to check requirements
+
+        CKAN_API_KEY = '79744bbe-f27b-46c8-a1e0-8f7264746c86'  # put your own local API key
+        cpa = CKANPortalAPI(base_url='http://ckan:5000', api_key=CKAN_API_KEY)
+
+        # error if duplicated
+        dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
+        dataset_name = slugify(dataset_title)
+        tags = [{'name': 'tag001'}, {'name': 'tag002'}]
+
+        package = {'name': dataset_name,
+                   'title': dataset_title, 'owner_org': 'my-local-test-organization-v2',
+                   'tags': tags}
+        res = cpa.create_package(ckan_package=package)
         print(res)
+        self.assertTrue(res['success'])

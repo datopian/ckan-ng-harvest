@@ -18,8 +18,8 @@ def write_results_to_ckan(rows):
         comparison_results = row['comparison_results']
         action = comparison_results['action']
         if action not in actions.keys():
-            actions[action] = 0
-        actions[action] += 1
+            actions[action] = {'total': 0, 'success': 0, 'fails': 0}
+        actions[action]['total'] += 1
 
         dump_comp_res = json.dumps(comparison_results, indent=4)
         # logger.info(f'Previous results {dump_comp_res}')
@@ -51,43 +51,54 @@ def write_results_to_ckan(rows):
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
                                 api_key=config.CKAN_API_KEY)
 
-            # ckan_dataset['extras'] = []
-            # ckan_dataset['tags'] = []
-            ckan_response = cpa.create_package(ckan_package=ckan_dataset)
-
-            if not ckan_response['success']:
-                dump_ckan_dataset = json.dumps(ckan_dataset, indent=2)
-                dump_ckan_response = json.dumps(ckan_response, indent=2)
-
-                error = f'Error creating {dump_ckan_dataset}. Results: {dump_ckan_response}'
-                raise Exception(error)
+            try:
+                ckan_response = cpa.create_package(ckan_package=ckan_dataset)
+            except Exception as e:
+                ckan_response = {'success': False, 'error': str(e)}
 
             results = {'success': ckan_response['success']}
             results['ckan_response'] = ckan_response
+
+            if ckan_response['success']:
+                actions[action]['success'] += 1
+            else:
+                actions[action]['fails'] += 1
 
         elif action == 'update':
             continue
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
                                 api_key=config.CKAN_API_KEY)
-            ckan_response = cpa.update_package(ckan_package=ckan_dataset)
 
-            # if not ckan_response['success']:
-            #    raise Exception('Error updating')
+            try:
+                ckan_response = cpa.update_package(ckan_package=ckan_dataset)
+            except Exception as e:
+                ckan_response = {'success': False, 'error': str(e)}
 
             results = {'success': ckan_response['success']}
             results['ckan_response'] = ckan_response
+
+            if ckan_response['success']:
+                actions[action]['success'] += 1
+            else:
+                actions[action]['fails'] += 1
 
         elif action == 'delete':
             continue
             ckan_id = row['comparison_results']['ckan_id']
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL, api_key=config.CKAN_API_KEY)
-            ckan_response = cpa.delete_package(ckan_package_ir_or_name=ckan_id)
 
-            # if not ckan_response['success']:
-            #    raise Exception('Error deleting')
+            try:
+                ckan_response = cpa.delete_package(ckan_package_ir_or_name=ckan_id)
+            except Exception as e:
+                ckan_response = {'success': False, 'error': str(e)}
 
             results = {'success': ckan_response['success']}
             results['ckan_response'] = ckan_response
+
+            if ckan_response['success']:
+                actions[action]['success'] += 1
+            else:
+                actions[action]['fails'] += 1
 
         elif action == 'ignore':
             continue
