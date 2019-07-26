@@ -236,7 +236,7 @@ class DataJSONDataset:
         dataset_identifier = "%s" % item.get("identifier", "").strip()
 
         # title
-        if self.check_required_string_field(item, "title", 1, dataset_identifier, errs):
+        if self.check_required_string_field(item, "title", 2, dataset_identifier, errs):
                 dataset_identifier = "%s" % item.get("title", "").strip()
 
         # accessLevel # required
