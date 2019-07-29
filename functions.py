@@ -23,6 +23,7 @@ def validate_data_json(row):
         errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
     return errors
 
+
 def get_data_json_from_url(url):
     logger.info(f'Geting data.json from {url}')
 

@@ -19,11 +19,13 @@ from logs import logger
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
+parser.add_argument("--catalog_url", type=str, help="URL for write CKAN API")
 parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter CKAN API")
 
 args = parser.parse_args()
 
 config.SOURCE_NAME = args.name  # Nice name of the source
+config.CKAN_CATALOG_URL = args.catalog_url
 config.SOURCE_ID = args.harvest_source_id
 
 res = Flow(

@@ -5,6 +5,16 @@ from libs.data_gov_api import CKANPortalAPI
 import json
 from datetime import datetime
 import pytz
+import hashlib
+
+
+def hash_dataset(datasetdict):
+    # hash the dataset.
+    # We change the way that previous harvester do this
+    #  https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L730
+    dmp_dataset = json.dumps(datasetdict, sort_keys=True)
+    str_to_hash = dmp_dataset.encode('utf-8')
+    return hashlib.sha1(str_to_hash).hexdigest()
 
 
 def write_results_to_ckan(rows):
@@ -40,6 +50,15 @@ def write_results_to_ckan(rows):
 
         if action in ['update', 'create']:
             datajson_dataset = comparison_results['new_data']
+
+            # add required extras
+            datajson_dataset['harvest_source_title'] = config.SOURCE_NAME
+            datajson_dataset['harvest_source_id'] = config.SOURCE_ID
+            schema_version = datajson_dataset['headers']['schema_version']  # 1.1 or 1.0
+            assert schema_version in ['1.0', '1.1']
+            datajson_dataset['source_schema_version'] = schema_version
+            datajson_dataset['source_hash'] = hash_dataset(datasetdict=datajson_dataset)
+
             djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
             # ORG is required!
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
@@ -65,7 +84,6 @@ def write_results_to_ckan(rows):
                 actions[action]['fails'] += 1
 
         elif action == 'update':
-            continue
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
                                 api_key=config.CKAN_API_KEY)
 
@@ -83,7 +101,6 @@ def write_results_to_ckan(rows):
                 actions[action]['fails'] += 1
 
         elif action == 'delete':
-            continue
             ckan_id = row['comparison_results']['ckan_id']
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL, api_key=config.CKAN_API_KEY)
 
