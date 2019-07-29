@@ -23,6 +23,7 @@ def validate_data_json(row):
         errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
     return errors
 
+
 def get_data_json_from_url(url):
     logger.info(f'Geting data.json from {url}')
 
@@ -60,9 +61,17 @@ def get_data_json_from_url(url):
     # save headers errors
     datajson.save_validation_errors(path=config.get_datajson_headers_validation_errors_path())
 
+    """ TRY it
+    return Flow(
+           datajson.datasets,
+           # update_resource(-1, **datajson.headers)
+           update_resource(-1, headers=datajson.headers)
+        )
+    """
     # the real dataset list
     for dataset in datajson.datasets:
         # add headers
+        # TODO: this not a good idea, try other.
         dataset['headers'] = datajson.headers
         yield(dataset)
 
@@ -84,6 +93,7 @@ def clean_duplicated_identifiers(rows):
             processed += 1
         else:
             duplicates.append(row['identifier'])
+
             # do not log all duplicates. Sometimes they are too many.
             if len(duplicates) < 10:
                 logger.error('Duplicated {}'.format(row['identifier']))
@@ -142,3 +152,9 @@ def save_as_data_packages(row):
     # no not rewrite if exists
     if not os.path.isfile(package_path):
         package.save(target=package_path)
+
+    # test if I could USE just meta as data package.
+    Flow(
+        update_metadata(row)
+        dump_to_path()
+    ).process()

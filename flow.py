@@ -34,17 +34,43 @@ res = Flow(
     # get data.json and yield all datasets
     # validate headers and save the validation errors
     get_data_json_from_url(url=config.SOURCE_URL),
-    update_resource('res_1', name='datajson', path='datajson.csv'),
+
+    update_resource(-1, name='datajson', path='datajson.csv'),
 
     # remove duplicates
     clean_duplicated_identifiers,
+
+    """ It's a better idea to preserve one data stream
+    join_with_self(
+        {
+        "id": None,
+        "count": {"aggregate": "count"},
+        "*": None
+        }
+    """
+
+    # TRY this add_field('validation_errors', type="array", default=validate_data_json),
 
     # validate each dataset
     validate_datasets,
 
     # save each dataset as data package
     save_as_data_packages,
+
+    # FLOW2 HERE
+    # get_current_ckan_datasets_from_api(harvest_source_id=config.SOURCE_ID),
+    # add_field('identifier)
+    # extract the identifier in this new field
+    # full join() with this two resources. Target
+    # the results will be
+    # {"datajson": None if not exist or {} if yes. "ckan_result": None or {} if exists}
+    # now my rows has the fields I defined.
+
+
 ).results()
+
+# analyze how to save datapckage ans ask for JSON and not CSV (force_format or something like this)
+
 
 logger.info('Continue to next step with: python3 flow2.py '
             f'--name {config.SOURCE_NAME} ')
@@ -57,3 +83,4 @@ f.close()
 
 pkg = res[1]  # package returned
 pkg.save(config.get_flow1_data_package_result_path())
+

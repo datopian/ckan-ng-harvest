@@ -28,8 +28,8 @@ config.SOURCE_ID = args.harvest_source_id
 
 res = Flow(
     # add other resource to this process. The packages list from data.gov
-    get_current_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID),
-    update_resource('res_1', name='ckan_results'),
+    get_current_ckan_datasets_from_api(harvest_source_id=config.SOURCE_ID),
+    update_resource(-1, name='ckan_results'),
     # new field at this copy for comparasion results
     add_field(name='comparison_results',
               type='object',

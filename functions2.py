@@ -14,7 +14,7 @@ from functions import encode_identifier
 import pytz
 
 
-def get_current_ckan_resources_from_api(harvest_source_id):
+def get_current_ckan_datasets_from_api(harvest_source_id):
     results_json_path = config.get_ckan_results_cache_path()
     logger.info(f'Extracting from harvest source id: {harvest_source_id}')
     cpa = CKANPortalAPI()
@@ -44,6 +44,7 @@ def compare_resources(rows):
         Yield any comparison result
         """
 
+    # for testing propouses.
     res_name = rows.res.name if hasattr(rows, 'res') else 'Fake res testing'
     logger.info(f'Rows from resource {res_name}')
 

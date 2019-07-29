@@ -83,7 +83,7 @@ def write_results_to_ckan(rows):
                 actions[action]['fails'] += 1
 
         elif action == 'delete':
-            continue
+            # continue
             ckan_id = row['comparison_results']['ckan_id']
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL, api_key=config.CKAN_API_KEY)
 
