@@ -153,6 +153,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             if parts[0] != 'extras':
                 raise Exception(f'Unknown field estructure: "{raw_field}" at CKAN destination dict')
 
+            # check if extra already exists
             for extra in to_dict['extras']:
 
                 if extra['key'] == parts[1]:
@@ -160,6 +161,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
                     extra['value'] = new_value
                     return to_dict
 
+            # the extra do not exists already
             new_extra = {'key': parts[1], 'value': None}
             new_value = self.__fix_extras(key=parts[1], value=new_value)
             new_extra['value'] = new_value
