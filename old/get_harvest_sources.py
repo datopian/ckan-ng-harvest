@@ -29,7 +29,7 @@ api_results_path = os.path.join(local_folder, 'api_results.json')
 if not os.path.isfile(api_results_path) or args.force_download:
     logger.info('Downloading harvest sources')
     cpa = CKANPortalAPI(base_url=args.ckan_base_url)
-    cpa.get_all_packages(harvest_type='harvest', source_type='datajson')
+    cpa.get_all_packages(harvest_type='harvest')  #, source_type='datajson')
     cpa.save_packages_list(path=api_results_path)
 else:
     logger.info(f'Using data.json prevously downloaded: {api_results_path}')

@@ -208,7 +208,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747
 
         name = slugify(title)
-        if len(name) > 99:  # max length is 100
+        if len(name) > 95:  # max length is 100
             name = name[:95]
 
         # TODO check if the name MUST be a new unexisting one

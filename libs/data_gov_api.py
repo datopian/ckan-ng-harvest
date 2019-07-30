@@ -1,11 +1,11 @@
 import json
 import requests
 import logging
-logger = logging.getLogger(__name__)
 import os
 from datapackage import Package, Resource
 from slugify import slugify
 import base64
+logger = logging.getLogger(__name__)
 
 
 class CKANPortalAPI:
@@ -199,10 +199,48 @@ class CKANPortalAPI:
 
         return json_content
 
-    def create_harvest_source(self):
-        """ create a harvest source, required to try locally harcesting process """
+    def create_harvest_source(self, title, url, owner_org_id, name=None,
+                              notes='',
+                              source_type='datajson',
+                              frequency='MANUAL'):
+        """ create a harvest source (is just a CKAN dataset/package),
+            required to try locally harcesting process
+            Previous: https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/logic/action/create.py#L27"""
 
-        pass
+        if name is None:
+            name = self.generate_name(title=title)
+
+        ckan_package = {
+                "frequency": frequency,
+                "title": title,
+                "name": name,
+                "type": "harvest",
+                "source_type": source_type,
+                "url": url,
+                "notes": notes,
+                "owner_org": owner_org_id,
+                "private": False,
+                "state": "active",
+                "active": True,
+                "tags": [{'name': 'harvest source'}],
+                # "config": None,
+                "config": {"private_datasets": False},
+                }
+
+        if type(ckan_package['config']) == dict:
+            ckan_package['config'] = json.dumps(ckan_package['config'])
+
+        return self.create_package(ckan_package=ckan_package)
+
+    def generate_name(self, title):
+        # names are unique in CKAN
+        # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747
+
+        name = slugify(title)
+        if len(name) > 95:  # max length is 100
+            name = name[:95]
+
+        return name
 
     def update_package(self, ckan_package):
         """ POST to CKAN API to update a package/dataset
