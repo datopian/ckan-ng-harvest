@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from logs import logger
 from slugify import slugify
+import json
 
 
 class CKANDatasetAdapter(ABC):
@@ -113,7 +114,17 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             if value.startswith('mailto:'):
                 value = value.replace('mailto:', '')
             return value
+        elif field == 'publisher':
+            return value['name']
 
+        else:
+            return value
+
+    def __fix_extras(self, key, value):
+        logger.info(f'fix extras {key} {value}')
+        # some fields requires extra work
+        if key == 'publisher':
+            return value['name']
         else:
             return value
 
@@ -143,13 +154,16 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
                 raise Exception(f'Unknown field estructure: "{raw_field}" at CKAN destination dict')
 
             for extra in to_dict['extras']:
+
                 if extra['key'] == parts[1]:
+                    new_value = self.__fix_extras(key=extra['key'], value=new_value)
                     extra['value'] = new_value
                     return to_dict
 
             new_extra = {'key': parts[1], 'value': None}
-            to_dict['extras'].append(new_extra)
+            new_value = self.__fix_extras(key=parts[1], value=new_value)
             new_extra['value'] = new_value
+            to_dict['extras'].append(new_extra)
             return to_dict
         else:
             raise Exception(f'Unknown fields length estructure for "{raw_field}" at CKAN destination dict')

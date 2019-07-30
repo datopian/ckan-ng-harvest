@@ -17,9 +17,13 @@ args = parser.parse_args()
 
 logger.info('Starting full harvest process')
 
-os.system(f'python3 flow.py --name {args.name} --url {args.url}')
-os.system(f'python3 flow2.py --name {args.name} --harvest_source_id {args.harvest_source_id} --catalog_url {args.catalog_url}')
-os.system(f'python3 flow3.py --name {args.name} --ckan_owner_org_id {args.ckan_owner_org_id} --catalog_url {args.catalog_url} --ckan_api_key {args.ckan_api_key}')
+commands = [f'python3 flow.py --name {args.name} --url {args.url}',
+            f'python3 flow2.py --name {args.name} --harvest_source_id {args.harvest_source_id} --catalog_url {args.catalog_url}',
+            f'python3 flow3.py --name {args.name} --ckan_owner_org_id {args.ckan_owner_org_id} --catalog_url {args.catalog_url} --ckan_api_key {args.ckan_api_key}']
+
+for cmd in commands:
+    logger.info(f'**************\nExecute: {cmd}\n**************')
+    os.system(cmd)
 
 """ local example
 python3 harvest.py \
