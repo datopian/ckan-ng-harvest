@@ -52,12 +52,22 @@ def write_results_to_ckan(rows):
             datajson_dataset = comparison_results['new_data']
 
             # add required extras
-            datajson_dataset['harvest_source_title'] = config.SOURCE_NAME
-            datajson_dataset['harvest_source_id'] = config.SOURCE_ID
+
             schema_version = datajson_dataset['headers']['schema_version']  # 1.1 or 1.0
             assert schema_version in ['1.0', '1.1']
             datajson_dataset['source_schema_version'] = schema_version
             datajson_dataset['source_hash'] = hash_dataset(datasetdict=datajson_dataset)
+
+            # harvest extras
+            # check if a local harvest source is required
+            # https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/logic/action/create.py#L27
+            datajson_dataset['harvest_ng_source_title'] = config.SOURCE_NAME
+            datajson_dataset['harvest_ng_source_id'] = config.SOURCE_ID
+
+            # CKAN hides this extras if we not define as harvest type
+            # if https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/plugin.py#L125
+            datajson_dataset['harvest_source_title'] = config.SOURCE_NAME
+            datajson_dataset['harvest_source_id'] = config.SOURCE_ID
 
             djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
             # ORG is required!

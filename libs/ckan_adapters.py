@@ -83,6 +83,9 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'systemOfRecords': 'extras__systemOfRecords',
         # 'distribution': 'resources'
 
+        'harvest_ng_source_title': 'extras__harvest_source_title',
+        'harvest_ng_source_id': 'extras__harvest_source_id',
+
         'harvest_source_title': 'extras__harvest_source_title',
         'harvest_source_id': 'extras__harvest_source_id',
         'source_schema_version': 'extras__source_schema_version',  # 1.1 or 1.0
@@ -114,14 +117,13 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             if value.startswith('mailto:'):
                 value = value.replace('mailto:', '')
             return value
-        elif field == 'publisher':
-            return value['name']
 
         else:
             return value
 
     def __fix_extras(self, key, value):
-        logger.info(f'fix extras {key} {value}')
+        # modify extras when need it
+        logger.debug(f'fix extras {key} {value}')
         # some fields requires extra work
         if key == 'publisher':
             return value['name']
@@ -187,8 +189,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # add custom extras
         # add source_datajson_identifier = {"key": "source_datajson_identifier", "value": True}
         ckan_dataset = self.__set_destination_element(raw_field='extras__source_datajson_identifier', to_dict=ckan_dataset, new_value=True)
-
-        # we will no continue using harvest_object_id {"key": "harvest_object_id", "value": harvest_object.id,},
 
         # define name (are uniques in CKAN instance)
         ckan_dataset['name'] = self.generate_name(title=ckan_dataset['title'])
