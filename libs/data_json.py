@@ -25,6 +25,7 @@ from libs.validator_constants import (ACCRUAL_PERIODICITY_VALUES, BUREAU_CODE_UR
                                       TEMPORAL_REGEX_1, TEMPORAL_REGEX_2,
                                       TEMPORAL_REGEX_3)
 
+
 class JSONSchema:
     """ a JSON Schema definition for validating data.json files """
     json_content = None  # schema content
@@ -51,7 +52,7 @@ class JSONSchema:
 class DataJSON:
     """ a data.json file for read and validation """
     url = None  # URL of de data.json file
-
+    schema_version = None
     raw_data_json = None  # raw downloaded text
     data_json = None  # JSON readed from data.json file
 
@@ -129,6 +130,15 @@ class DataJSON:
         # save headers
         self.headers = self.data_json.copy()
         del self.headers['dataset']
+        self.headers['schema_version'] = self.schema_version
+
+        """ headers sample
+        "@context": "https://openei.org/data.json",
+        "@id": "https://openei.org/data.json",
+        "@type": "dcat:Catalog",
+        "conformsTo": "https://project-open-data.cio.gov/v1.1/schema",
+        "describedBy": "https://project-open-data.cio.gov/v1.1/schema/catalog.json",
+        """
         self.datasets = self.data_json['dataset']
         self.validation_errors = errors
         if len(errors) > 0:
@@ -148,7 +158,7 @@ class DataJSON:
         schema_value = self.data_json.get('conformsTo', '')
         if schema_value not in self.schema.valid_schemas.keys():
             errors.append(f'Error reading json schema value. "{schema_value}" is not known schema')
-        schema_version = self.schema.valid_schemas.get(schema_value, '1.0')
+        self.schema_version = self.schema.valid_schemas.get(schema_value, '1.0')
 
         # list of needed catalog values  # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L152
         catalog_fields = ['@context', '@id', 'conformsTo', 'describedBy']

@@ -20,12 +20,14 @@ parser.add_argument("--name", type=str, help="Name of the resource (for generate
 parser.add_argument("--ckan_owner_org_id", type=str, help="Source ID for filter CKAN API")
 parser.add_argument("--catalog_url", type=str, help="URL for write CKAN API")
 parser.add_argument("--ckan_api_key", type=str, help="CKAN API KEY")
+parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter CKAN API")
 
 args = parser.parse_args()
 config.SOURCE_NAME = args.name  # Nice name of the source
 config.CKAN_OWNER_ORG = args.ckan_owner_org_id
 config.CKAN_CATALOG_URL = args.catalog_url
 config.CKAN_API_KEY = args.ckan_api_key
+config.SOURCE_ID = args.harvest_source_id
 
 res = Flow(
     load(load_source=config.get_flow2_datasets_result_path()),

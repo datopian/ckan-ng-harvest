@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from logs import logger
 from slugify import slugify
+import json
 
 
 class CKANDatasetAdapter(ABC):
@@ -81,6 +82,15 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'issued': 'extras__issued',
         'systemOfRecords': 'extras__systemOfRecords',
         # 'distribution': 'resources'
+
+        'harvest_ng_source_title': 'extras__harvest_source_title',
+        'harvest_ng_source_id': 'extras__harvest_source_id',
+
+        'harvest_source_title': 'extras__harvest_source_title',
+        'harvest_source_id': 'extras__harvest_source_id',
+        'source_schema_version': 'extras__source_schema_version',  # 1.1 or 1.0
+        'source_hash': 'extras__source_hash',
+
     }
 
     def __identify_origin_element(self, raw_field, in_dict):
@@ -111,6 +121,15 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         else:
             return value
 
+    def __fix_extras(self, key, value):
+        # modify extras when need it
+        logger.debug(f'fix extras {key} {value}')
+        # some fields requires extra work
+        if key == 'publisher':
+            return value['name']
+        else:
+            return value
+
     def __build_tags(self, tags):
         # create a CKAN tag
         # Help https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.tag_create
@@ -123,6 +142,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
     def __set_destination_element(self, raw_field, to_dict, new_value):
         # in 'extras__issued' gets or creates to_dict[extras][key][issued] and assing new_value to in_dict[extras][value]
         # in 'title' assing new_value to to_dict[title]
+        # return to_dict modified
 
         parts = raw_field.split('__')
         if parts[0] not in to_dict:
@@ -135,14 +155,19 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             if parts[0] != 'extras':
                 raise Exception(f'Unknown field estructure: "{raw_field}" at CKAN destination dict')
 
+            # check if extra already exists
             for extra in to_dict['extras']:
+
                 if extra['key'] == parts[1]:
+                    new_value = self.__fix_extras(key=extra['key'], value=new_value)
                     extra['value'] = new_value
                     return to_dict
 
+            # the extra do not exists already
             new_extra = {'key': parts[1], 'value': None}
-            to_dict['extras'].append(new_extra)
+            new_value = self.__fix_extras(key=parts[1], value=new_value)
             new_extra['value'] = new_value
+            to_dict['extras'].append(new_extra)
             return to_dict
         else:
             raise Exception(f'Unknown fields length estructure for "{raw_field}" at CKAN destination dict')
@@ -160,6 +185,10 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             else:
                 ckan_dataset = self.__set_destination_element(raw_field=field_ckan, to_dict=ckan_dataset, new_value=origin)
                 logger.debug(f'Connected OK fields "{field_data_json}"="{origin}"')
+
+        # add custom extras
+        # add source_datajson_identifier = {"key": "source_datajson_identifier", "value": True}
+        ckan_dataset = self.__set_destination_element(raw_field='extras__source_datajson_identifier', to_dict=ckan_dataset, new_value=True)
 
         # define name (are uniques in CKAN instance)
         ckan_dataset['name'] = self.generate_name(title=ckan_dataset['title'])

@@ -17,7 +17,7 @@ import pytz
 def get_current_ckan_resources_from_api(harvest_source_id):
     results_json_path = config.get_ckan_results_cache_path()
     logger.info(f'Extracting from harvest source id: {harvest_source_id}')
-    cpa = CKANPortalAPI()
+    cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL)
     resources = 0
 
     page = 0
