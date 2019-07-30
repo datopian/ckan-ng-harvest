@@ -199,6 +199,11 @@ class CKANPortalAPI:
 
         return json_content
 
+    def create_harvest_source(self):
+        """ create a harvest source, required to try locally harcesting process """
+
+        pass
+
     def update_package(self, ckan_package):
         """ POST to CKAN API to update a package/dataset
             ckan_package is just a python dict
