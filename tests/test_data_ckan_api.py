@@ -64,7 +64,6 @@ class CKANPortalAPITestClass(unittest.TestCase):
         self.assertTrue(res['success'])
 
     def test_create_harvest_source(self):
-
         CKAN_API_KEY = '79744bbe-f27b-46c8-a1e0-8f7264746c86'  # put your own local API key
         cpa = CKANPortalAPI(base_url='http://ckan:5000', api_key=CKAN_API_KEY)
         res = cpa.create_harvest_source(title='Energy JSON test CPAJUTM {}'.format(random.randint(1, 999999)),
@@ -80,3 +79,18 @@ class CKANPortalAPITestClass(unittest.TestCase):
         self.assertTrue(res['success'])
 
 
+    def test_get_admins(self):
+        CKAN_API_KEY = '43d8916f-f48f-452f-9909-73fc1bcee779'  # put your own local API key
+        cpa = CKANPortalAPI(base_url='http://localhost:5000', api_key=CKAN_API_KEY)
+
+        res = cpa.get_admin_users(organization_id='california')
+        print(res)
+        self.assertTrue(res['success'])
+
+    def test_get_user_info(self):
+        CKAN_API_KEY = '43d8916f-f48f-452f-9909-73fc1bcee779'  # put your own local API key
+        cpa = CKANPortalAPI(base_url='http://localhost:5000', api_key=CKAN_API_KEY)
+
+        res = cpa.get_user_info(user_id=1)
+        print(res)
+        self.assertTrue(res['success'])

@@ -145,3 +145,67 @@ def write_results_to_ckan(rows):
 def write_final_report():
     """ take all generated data and write a final report """
     pass
+
+def build_validation_error_email(error_items):
+    #header errors
+    errors = {}
+    header_errors_path = config.get_datajson_headers_validation_errors_path()
+    f = open(header_errors_path, "r")
+    header_errors = f.read()
+    errors['header_errors'] = header_errors
+
+    #dataset errors
+    errors['dataset_errors'] = []
+    for item in error_items:
+        if len(item['comparison_results']['new_data']['validation_errors']) > 0:
+            errors['dataset_errors'].append(item['comparison_results']['new_data']['validation_errors'])
+
+    #duplicate errors
+    # TODO add duplicate errors to email
+
+    #send validation email
+    send_validation_error_email(errors)
+
+def send_validation_error_email(errors):
+    """ take all errors and send to organization admins """
+    if len(errors) > 0:
+        msg = errors
+        admin_users = get_admin_users()
+        recipients = []
+        for user in admin_users:
+            member_details = get_user_info(user[0])
+            if member_details['email']:
+                recipients.append({
+                    'name': member_details['name'],
+                    'email': member_details['email']
+                })
+
+            for recipient in recipients:
+                email = {'recipient_name': recipient['name'],
+                         'recipient_email': recipient['email'],
+                         'subject': 'Harvesting Job - Error Notification',
+                         'body': msg}
+                # TODO find email server to send email
+                # try:
+                #     mail_recipient(**email)
+                # except MailerException:
+                #     logger.error('Sending Harvest-Notification-Mail failed. Message: ' + msg)
+                # except Exception as e:
+                #     logger.error(e)
+
+
+def get_admin_users():
+    """ fetch admin users from an organization """
+    owner_org = config.CKAN_OWNER_ORG
+    cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
+                        api_key=config.CKAN_API_KEY)
+    res = cpa.get_admin_users(organization_id=owner_org)
+    return res['result']
+
+
+def get_user_info(user_id):
+    """ fetch admin users from an organization """
+    cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
+                        api_key=config.CKAN_API_KEY)
+    res = cpa.get_user_info(user_id=user_id)
+    return res['result']

@@ -12,7 +12,7 @@ from dataflows import (Flow, dump_to_path, load, printer,
                        )
 
 import config
-from functions3 import write_results_to_ckan, write_final_report
+from functions3 import write_results_to_ckan, write_final_report, build_validation_error_email
 from logs import logger
 
 parser = argparse.ArgumentParser()
@@ -34,6 +34,8 @@ res = Flow(
     write_results_to_ckan,
 
 ).results()
+
+build_validation_error_email(res[0][0])
 
 # save results
 dmp = json.dumps(res[0][0], indent=2)
