@@ -56,6 +56,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
     ckan_owner_org_id = None  # required, the client must inform which existing org
 
     MAPPING = {
+        'name': 'name',
         'title': 'title',
         'description': 'notes',
         'keyword': 'tags',
@@ -172,7 +173,31 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         else:
             raise Exception(f'Unknown fields length estructure for "{raw_field}" at CKAN destination dict')
 
+    def validate_origin_dataset(self):
+        # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
+        datajson_dataset = self.original_dataset
+
+        if self.ckan_owner_org_id is None:
+            return False, 'Owner organization ID is required'
+
+        return True, None
+
+    def validate_final_dataset(self, ckan_dataset):
+        # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
+
+        if 'private' not in ckan_dataset:
+            return False, 'private is a required field'
+        if 'name' not in ckan_dataset:
+            return False, 'name is a required field'
+
+        return True, None
+
     def transform_to_ckan_dataset(self):
+
+        valid, error = self.validate_origin_dataset()
+        if not valid:
+            raise Exception(f'Error validating origin dataset: {error}')
+
         ckan_dataset = self.get_base_ckan_dataset()
         datajson_dataset = self.original_dataset
 
@@ -191,7 +216,8 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         ckan_dataset = self.__set_destination_element(raw_field='extras__source_datajson_identifier', to_dict=ckan_dataset, new_value=True)
 
         # define name (are uniques in CKAN instance)
-        ckan_dataset['name'] = self.generate_name(title=ckan_dataset['title'])
+        if 'name' not in ckan_dataset:
+            ckan_dataset['name'] = self.generate_name(title=ckan_dataset['title'])
 
         # mandatory
         ckan_dataset['owner_org'] = self.ckan_owner_org_id
@@ -201,6 +227,11 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         for k, v in ckan_dataset.items():
             if v is None:
                 ckan_dataset_copy.pop(k)
+
+        valid, error = self.validate_final_dataset(ckan_dataset=ckan_dataset_copy)
+        if not valid:
+            raise Exception(f'Error validating final dataset: {error}')
+
         return ckan_dataset_copy
 
     def generate_name(self, title):
