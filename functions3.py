@@ -160,6 +160,9 @@ def build_validation_error_email(error_items):
         if len(item['comparison_results']['new_data']['validation_errors']) > 0:
             errors['dataset_errors'].append(item['comparison_results']['new_data']['validation_errors'])
 
+    #duplicate errors
+    # TODO add duplicate errors to email
+
     #send validation email
     send_validation_error_email(errors)
 
