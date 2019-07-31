@@ -23,6 +23,9 @@ class CKANPortalAPI:
     # search for harvest sources
     package_search_harvested_sources_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'  # all the sources in a CKAN instance (959 results in data.gov)
     package_search_harvested_datajson_sources_url = '/api/3/action/package_search?q=%28type:harvest%20source_type:datajson%29&rows=1000'  # just the data.json harvest sources in a CKAN instance (144 results in data.gov)
+    # get members
+    member_list_url = '/api/3/action/member_list'
+    user_show_url = '/api/3/action/user_show'
     package_list = []
     total_packages = 0
 
@@ -334,3 +337,67 @@ class CKANPortalAPI:
             package.add_resource(descriptor=resource.descriptor)
             package_path = os.path.join(folder_path, f'pkg_ckan_api_{encoded_identifier}.zip')
             package.save(target=package_path)
+
+    def get_admin_users(self, organization_id):
+        """ GET to CKAN API to get list of admins
+            https://docs.ckan.org/en/2.8/api/#ckan.logic.action.get.member_list
+        """
+        url = '{}{}?id={}&object_type=user&capacity=admin'.format(self.base_url, self.member_list_url, organization_id)
+        headers = self.get_request_headers(include_api_key=True)
+        logger.info(f'GET {url} headers:{headers}')
+        try:
+            req = requests.get(url, headers=headers)
+        except Exception as e:
+            error = 'ERROR getting organization members: {} [{}]'.format(url, e)
+            raise
+
+        content = req.content
+
+        if req.status_code >= 400:
+            error = 'ERROR getting organization members: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+            logger.error(error)
+            raise Exception(error)
+
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data from organization members {} [{}]'.format(content, e)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            logger.error(error)
+
+        return json_content
+
+    def get_user_info(self, user_id):
+        """ GET to CKAN API to get list of admins
+            https://docs.ckan.org/en/2.8/api/#ckan.logic.action.get.user_show
+        """
+        url = '{}{}?id={}'.format(self.base_url, self.user_show_url, user_id)
+        headers = self.get_request_headers(include_api_key=True)
+        logger.info(f'GET {url} headers:{headers}')
+        try:
+            req = requests.get(url, headers=headers)
+        except Exception as e:
+            error = 'ERROR getting users information: {} [{}]'.format(url, e)
+            raise
+
+        content = req.content
+
+        if req.status_code >= 400:
+            error = 'ERROR getting users information: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+            logger.error(error)
+            raise Exception(error)
+
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data from users information {} [{}]'.format(content, e)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            logger.error(error)
+
+        return json_content
