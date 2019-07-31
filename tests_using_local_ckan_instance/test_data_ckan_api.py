@@ -1,9 +1,15 @@
 import unittest
 from libs.data_gov_api import CKANPortalAPI
-base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
 import random
 from slugify import slugify
 import json
+# put you settings in the local_settings hidden-to-github file
+from tests_using_local_ckan_instance.settings import (HARVEST_SOURCE_ID,
+                                                      CKAN_API_KEY,
+                                                      CKAN_BASE_URL,
+                                                      CKAN_ORG_ID,
+                                                      CKAN_VALID_USER_ID
+                                                      )
 
 
 class CKANPortalAPITestClass(unittest.TestCase):
@@ -12,25 +18,19 @@ class CKANPortalAPITestClass(unittest.TestCase):
         """
 
     def test_load_from_url(self):
-        cpa = CKANPortalAPI()
-        harvest_source_id = '8d4de31c-979c-4b50-be6b-ea3c72453ff6'  # Dep Energy US Gov
+        cpa = CKANPortalAPI(base_url=CKAN_BASE_URL)
         resources = 0
 
         page = 0
-        for packages in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
+        for packages in cpa.search_harvest_packages(harvest_source_id=HARVEST_SOURCE_ID):
             page += 1
             print(f'API packages search page {page}')
             self.assertGreater(cpa.total_packages, 0)  # has resources in the first page
             break  # do not need more
 
     def test_create_package(self):
-        # needs a local CKAN instance with:
-        # - an organization with a custom id
-        # - an specific CKAN API KEY
-        # TODO improve this test to check requirements
 
-        CKAN_API_KEY = '79744bbe-f27b-46c8-a1e0-8f7264746c86'  # put your own local API key
-        cpa = CKANPortalAPI(base_url='http://ckan:5000', api_key=CKAN_API_KEY)
+        cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
 
         # error if duplicated
         dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
@@ -41,13 +41,8 @@ class CKANPortalAPITestClass(unittest.TestCase):
         self.assertTrue(res['success'])
 
     def test_create_package_with_tags(self):
-        # needs a local CKAN instance with:
-        # - an organization with a custom id
-        # - an specific CKAN API KEY
-        # TODO improve this test to check requirements
 
-        CKAN_API_KEY = '79744bbe-f27b-46c8-a1e0-8f7264746c86'  # put your own local API key
-        cpa = CKANPortalAPI(base_url='http://ckan:5000', api_key=CKAN_API_KEY)
+        cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
 
         # error if duplicated
         dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
@@ -62,11 +57,11 @@ class CKANPortalAPITestClass(unittest.TestCase):
         self.assertTrue(res['success'])
 
     def test_create_harvest_source(self):
-        CKAN_API_KEY = '79744bbe-f27b-46c8-a1e0-8f7264746c86'  # put your own local API key
-        cpa = CKANPortalAPI(base_url='http://ckan:5000', api_key=CKAN_API_KEY)
-        res = cpa.create_harvest_source(title='Energy JSON test CPAJUTM {}'.format(random.randint(1, 999999)),
+
+        cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
+        res = cpa.create_harvest_source(title='Energy JSON test {}'.format(random.randint(1, 999999)),
                                         url='http://www.energy.gov/data.json',
-                                        owner_org_id='my-local-test-organization-v2',
+                                        owner_org_id=CKAN_ORG_ID,
                                         notes='Some tests about local harvesting sources creation',
                                         frequency='WEEKLY')
         print(res)
@@ -76,19 +71,18 @@ class CKANPortalAPITestClass(unittest.TestCase):
         res2 = cpa.delete_package(ckan_package_ir_or_name=res['result']['name'])
         self.assertTrue(res['success'])
 
-
     def test_get_admins(self):
-        CKAN_API_KEY = '43d8916f-f48f-452f-9909-73fc1bcee779'  # put your own local API key
-        cpa = CKANPortalAPI(base_url='http://localhost:5000', api_key=CKAN_API_KEY)
 
-        res = cpa.get_admin_users(organization_id='california')
+        cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
+
+        res = cpa.get_admin_users(organization_id=CKAN_ORG_ID)
         print(res)
         self.assertTrue(res['success'])
 
     def test_get_user_info(self):
-        CKAN_API_KEY = '43d8916f-f48f-452f-9909-73fc1bcee779'  # put your own local API key
-        cpa = CKANPortalAPI(base_url='http://localhost:5000', api_key=CKAN_API_KEY)
 
-        res = cpa.get_user_info(user_id=1)
+        cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
+
+        res = cpa.get_user_info(user_id=CKAN_VALID_USER_ID)
         print(res)
         self.assertTrue(res['success'])

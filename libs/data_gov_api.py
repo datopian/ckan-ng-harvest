@@ -226,8 +226,7 @@ class CKANPortalAPI:
                 "state": "active",
                 "active": True,
                 "tags": [{'name': 'harvest source'}],
-                # "config": None,
-                "config": {"private_datasets": False},
+                "config": None,
                 }
 
         if type(ckan_package['config']) == dict:
