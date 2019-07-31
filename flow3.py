@@ -12,7 +12,7 @@ from dataflows import (Flow, dump_to_path, load, printer,
                        )
 
 import config
-from functions3 import write_results_to_ckan, write_final_report, send_validation_error_email
+from functions3 import write_results_to_ckan, write_final_report, build_validation_error_email
 from logs import logger
 
 parser = argparse.ArgumentParser()
@@ -35,12 +35,7 @@ res = Flow(
 
 ).results()
 
-#send validation errors email
-errors = []
-for item in res[0][0]:
-  if len(item['comparison_results']['new_data']['validation_errors']) > 0:
-    errors.append(item['comparison_results']['new_data']['validation_errors'])
-send_validation_error_email(errors),
+build_validation_error_email(res[0][0])
 
 # save results
 dmp = json.dumps(res[0][0], indent=2)

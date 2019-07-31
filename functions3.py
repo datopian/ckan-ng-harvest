@@ -146,6 +146,22 @@ def write_final_report():
     """ take all generated data and write a final report """
     pass
 
+def build_validation_error_email(error_items):
+    #header errors
+    errors = {}
+    header_errors_path = config.get_datajson_headers_validation_errors_path()
+    f = open(header_errors_path, "r")
+    header_errors = f.read()
+    errors['header_errors'] = header_errors
+
+    #dataset errors
+    errors['dataset_errors'] = []
+    for item in error_items:
+        if len(item['comparison_results']['new_data']['validation_errors']) > 0:
+            errors['dataset_errors'].append(item['comparison_results']['new_data']['validation_errors'])
+
+    #send validation email
+    send_validation_error_email(errors)
 
 def send_validation_error_email(errors):
     """ take all errors and send to organization admins """
