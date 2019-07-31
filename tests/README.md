@@ -3,7 +3,7 @@
 With _pytest_
 
 ```
-python -m pytest
+python -m pytest tests
 ```
 
 ## Measure overage

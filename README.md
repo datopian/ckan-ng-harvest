@@ -173,19 +173,8 @@ Total processed: 2613.
 
 ### Tests
 
+We have two tests. One requires that a local instance of CKAN running and the others not.
 ```
-python -m unittest discover -s tests -v
-
-test_load_from_url (test_data_ckan_api.CKANPortalAPITestClass) ... API packages search page 1
-ok
-test_load_from_url (test_data_json.DataJSONTestClass) ... ok
-test_read_json (test_data_json.DataJSONTestClass) ... ok
-test_validate_json1 (test_data_json.DataJSONTestClass) ... ok
-test_validate_json2 (test_data_json.DataJSONTestClass) ... ok
-test_validate_json3 (test_data_json.DataJSONTestClass) ... ok
-
-----------------------------------------------------------------------
-Ran 6 tests in 45.506s
-
-OK
+python -m pytest -v tests/
+python -m pytest -v tests_using_local_ckan_instance/
 ```

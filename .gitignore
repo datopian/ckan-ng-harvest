@@ -6,4 +6,5 @@ __pycache__
 .coverage
 data/
 datapackages/
+local_settings.py
 

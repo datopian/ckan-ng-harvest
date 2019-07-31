@@ -54,9 +54,25 @@ class TestCKANAdapter(object):
         assert len(ckan_dataset['tags']) == 2
 
     def test_required_fields(self):
-        assert "Check required fiedls are missing" == False
+
+        dataset = self.test_datajson_dataset
+        # drop required keys
+        djss = DataJSONSchema1_1(original_dataset=dataset)
+        # ORG is required!
+
+        with pytest.raises(Exception):
+            ckan_dataset = djss.transform_to_ckan_dataset()
+
+        djss.ckan_owner_org_id = 'XXXX'
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        del ckan_dataset['name']
+
+        ret, error = djss.validate_final_dataset(ckan_dataset=ckan_dataset)
+        assert ret == False
+        assert 'name is a required field' in error
 
     def test_resources(self):
+        # https://gitlab.com/avdata99/andres-harvesting-experiments-v2/issues/22
         assert "Check for resources changes" == False
 
     def test_name_collision(self):
