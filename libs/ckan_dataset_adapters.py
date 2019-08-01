@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from logs import logger
 from slugify import slugify
 import json
+from libs.ckan_resource_adapters import DataJSONDistribution
 
 
 class CKANDatasetAdapter(ABC):
@@ -48,7 +49,7 @@ class CKANDatasetAdapter(ABC):
 
 
 class DataJSONSchema1_1(CKANDatasetAdapter):
-    ''' Data.json dataset from Schema 1.0'''
+    ''' Data.json dataset from Schema 1.1'''
 
     # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L478
     # value at data.json -> value at CKAN dataset
@@ -82,7 +83,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'references': 'extras__references',
         'issued': 'extras__issued',
         'systemOfRecords': 'extras__systemOfRecords',
-        # 'distribution': 'resources'
+        # 'distribution': 'resources'  # transformed with a custom adapter
 
         'harvest_ng_source_title': 'extras__harvest_source_title',
         'harvest_ng_source_id': 'extras__harvest_source_id',
@@ -192,7 +193,36 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         return True, None
 
-    def transform_to_ckan_dataset(self):
+    def __infer_distribution(self):
+        # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
+        datajson_dataset = self.original_dataset
+        distribution = []
+        for field in ('accessURL', 'webService'):
+            url = datajson_dataset.get(field, '').strip()
+
+            if url != '':
+                fmt = datajson_dataset.get('format', '')
+                distribution.append({field: url, 'format': fmt, 'mimetype': fmt})
+
+        return distribution
+
+    def __transform_resources(self, distribution):
+        ''' Transform the distribution list in list of resources '''
+        if type(distribution) == dict:
+            distribution = [distribution]
+
+        resources = []
+        for original_resource in distribution:
+            cra = DataJSONDistribution(original_resource=original_resource)
+            resource_transformed = cra.transform_to_ckan_resource()
+            resources.append(resource_transformed)
+
+        return resources
+
+    def transform_to_ckan_dataset(self, existing_resources=None):
+        # check how to parse
+        # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/parse_datajson.py#L5
+        # if we are updating existing dataset we need to merge resources
 
         valid, error = self.validate_origin_dataset()
         if not valid:
@@ -211,12 +241,24 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
                 ckan_dataset = self.__set_destination_element(raw_field=field_ckan, to_dict=ckan_dataset, new_value=origin)
                 logger.debug(f'Connected OK fields "{field_data_json}"="{origin}"')
 
+        # transform distribution into resources
+        distribution = datajson_dataset['distribution'] if 'distribution' in datajson_dataset else []
+        # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
+        if distribution == []:
+            distribution = self.__infer_distribution()
+        ckan_dataset['resources'] = self.__transform_resources(distribution)
+        if existing_resources is not None:
+            ckan_dataset['resources'] = self.__merge_resources(existing_resources=existing_resources,
+                                                               new_resources=ckan_dataset['resources'])
+
         # add custom extras
         # add source_datajson_identifier = {"key": "source_datajson_identifier", "value": True}
-        ckan_dataset = self.__set_destination_element(raw_field='extras__source_datajson_identifier', to_dict=ckan_dataset, new_value=True)
+        ckan_dataset = self.__set_destination_element(raw_field='extras__source_datajson_identifier',
+                                                      to_dict=ckan_dataset,
+                                                      new_value=True)
 
         # define name (are uniques in CKAN instance)
-        if 'name' not in ckan_dataset:
+        if 'name' not in ckan_dataset or ckan_dataset['name'] == '':
             ckan_dataset['name'] = self.generate_name(title=ckan_dataset['title'])
 
         # mandatory
@@ -233,6 +275,21 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             raise Exception(f'Error validating final dataset: {error}')
 
         return ckan_dataset_copy
+
+    def __merge_resources(self, existing_resources, new_resources):
+        # if we are updating datasets we need to check if the resources exists and merge them
+        # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L681
+
+        merged_resources = []
+
+        for res in new_resources:
+            for existing_res in existing_resources:
+                if res["url"] == existing_res["url"]:
+                    # in CKAN exts maybe the have an ID because a local show
+                    res["id"] = existing_res["id"]
+            merged_resources.append(res)
+
+        return merged_resources
 
     def generate_name(self, title):
         # names are unique in CKAN
