@@ -1,6 +1,6 @@
 from logs import logger
 import config
-from libs.ckan_adapters import DataJSONSchema1_1
+from libs.ckan_dataset_adapters import DataJSONSchema1_1
 from libs.data_gov_api import CKANPortalAPI
 import json
 from datetime import datetime
@@ -48,6 +48,12 @@ def write_results_to_ckan(rows):
             yield row
             continue
 
+        # if it's an update we need to merge internal resources
+        if action == 'update':
+            existing_resources = row['resources']
+        elif action == 'create':
+            existing_resources = None
+
         if action in ['update', 'create']:
             datajson_dataset = comparison_results['new_data']
 
@@ -73,7 +79,7 @@ def write_results_to_ckan(rows):
             # ORG is required!
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
 
-            ckan_dataset = djss.transform_to_ckan_dataset()
+            ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
 
         results = {'success': False}
         if action == 'create':

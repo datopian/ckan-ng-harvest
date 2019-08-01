@@ -180,13 +180,17 @@ class CKANPortalAPI:
         try:
             req = requests.post(url, data=ckan_package, headers=headers)
         except Exception as e:
-            error = 'ERROR creating CKAN package: {} [{}]'.format(url, e)
+            error = 'ERROR creating [POST] CKAN package: {} [{}]'.format(url, e)
             raise
 
         content = req.content
 
         if req.status_code >= 400:
-            error = 'ERROR creating CKAN package: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+
+            error = ('ERROR creating [STATUS] CKAN package: {}'
+                     '\n\t Status code: {}'
+                     '\n\t content:{}'
+                     '\n\t Dataset {}'.format(url, req.status_code, content, ckan_package))
             logger.error(error)
             raise Exception(error)
 
