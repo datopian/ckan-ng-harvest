@@ -2,6 +2,9 @@
 MAX_NAME_LENGTH = 100
 MAX_TAG_NAME_LENGTH = 100
 
+# Previous harvester uses this list statically
+# check if we need dynamically from
+# /api/3/action/license_list
 LICENCES = {
     'Creative Commons Attribution':'cc-by',
     'Creative Commons Attribution Share-Alike':'cc-by-sa',

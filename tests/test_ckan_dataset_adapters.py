@@ -85,8 +85,6 @@ class TestCKANDatasetAdapter(object):
         assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
         assert ['USA GOV > Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
 
-
-
     def test_required_fields(self):
 
         dataset = self.test_datajson_dataset
