@@ -61,6 +61,11 @@ class TestCKANDatasetAdapter(object):
         assert ckan_dataset['maintainer_email'] == 'Fred.Teensma@ams.usda.gov'
         assert len(ckan_dataset['tags']) == 2
         assert ckan_dataset['license_id'] == 'cc-by'  # transformation
+
+        # test *Code
+        assert [['005:45']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'bureauCode']
+        assert [['005:047']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'programCode']
+
         # test publisher processor
         assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
         assert [] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
