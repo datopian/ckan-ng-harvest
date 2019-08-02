@@ -76,8 +76,14 @@ class TestCKANDatasetAdapter(object):
         assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
         assert ['Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
 
-
-
+        t2['publisher']['subOrganizationOf']['subOrganizationOf'] = {
+                        "@type": "org:Organization",
+                        "name": "USA GOV"
+                        }
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+        assert ['USA GOV > Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
 
 
 
