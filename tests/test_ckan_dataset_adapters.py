@@ -36,7 +36,7 @@ class TestCKANDatasetAdapter(object):
             "modified": "2014-12-23",
             "publisher": {
                 "@type": "org:Organization",
-                "name": "Agricultural Marketing Service, Department of Agriculture"
+                "name": "Agricultural Marketing Service"
                 },
             "keyword": ["FOB", "wholesale market"],
             "headers": {
@@ -60,6 +60,26 @@ class TestCKANDatasetAdapter(object):
         assert len(ckan_dataset['resources']) == 2
         assert ckan_dataset['maintainer_email'] == 'Fred.Teensma@ams.usda.gov'
         assert len(ckan_dataset['tags']) == 2
+        assert ckan_dataset['license_id'] == 'cc-by'  # transformation
+        # test publisher processor
+        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+        assert [] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
+
+        # test publisher subOrganizationOf
+        t2 = self.test_datajson_dataset
+        t2['publisher']['subOrganizationOf'] = {
+                        "@type": "org:Organization",
+                        "name": "Department of Agriculture"
+                        }
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+        assert ['Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
+
+
+
+
+
 
     def test_required_fields(self):
 
