@@ -35,7 +35,8 @@ class FunctionsDuplicatesTestClass(unittest.TestCase):
         total_ok = 0
         for dataset in clean_duplicated_identifiers(rows):
             self.assertIsInstance(dataset, dict)
-            total_ok += 1
+            if 'is_duplicate' not in dataset:
+                total_ok += 1
 
         total_duplicates = len(rows) - total_ok
 
@@ -50,7 +51,8 @@ class FunctionsDuplicatesTestClass(unittest.TestCase):
         total_ok = 0
         for dataset in clean_duplicated_identifiers(rows):
             self.assertIsInstance(dataset, dict)
-            total_ok += 1
+            if 'is_duplicate' not in dataset:
+                total_ok += 1
 
         total_duplicates = len(rows) - total_ok
 
