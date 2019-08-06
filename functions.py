@@ -85,6 +85,8 @@ def clean_duplicated_identifiers(rows):
             processed += 1
         else:
             duplicates.append(row['identifier'])
+            row['is_duplicate'] = 'True'
+            yield(row)
             # do not log all duplicates. Sometimes they are too many.
             if len(duplicates) < 10:
                 logger.error('Duplicated {}'.format(row['identifier']))
