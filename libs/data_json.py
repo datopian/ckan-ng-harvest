@@ -80,14 +80,20 @@ class DataJSON:
         return True, None
 
     def read_local_data_json(self, data_json_path):
+        # initialize reading a JSON file
         if not os.path.isfile(data_json_path):
             return False, "File not exists"
         data_json_file = open(data_json_path, 'r')
         self.raw_data_json = data_json_file.read()
         return True, None
 
+    def read_dict_data_json(self, data_json_dict):
+        # to initialize using directly a dict
+        self.data_json = data_json_dict
+        return True, None
+
     def load_data_json(self):
-        """ load as a JSON object """
+        """ load raw data as a JSON object """
         try:
             self.data_json = json.loads(self.raw_data_json)  # check for encoding errors
         except Exception as e:
@@ -140,11 +146,33 @@ class DataJSON:
         "describedBy": "https://project-open-data.cio.gov/v1.1/schema/catalog.json",
         """
         self.datasets = self.data_json['dataset']
+        self.__detect_collections()
+
         self.validation_errors = errors
         if len(errors) > 0:
             return False, errors
         else:
             return True, None
+
+    def __detect_collections(self):
+        # if a dataset has the property "isPartOf" assigned then
+        #   this datasets must be marked as is_colleccion
+        # when exists, isPartOf is a dataset identifier
+
+        parent_identifiers = set()
+        for dataset in self.datasets:
+            parent = dataset.get('isPartOf', None)
+            if parent is not None:
+                # At the moment I don't know the CKAN ID but mark for later
+                dataset['collection_pkg_id'] = ''
+                parent_identifiers.add(parent)
+
+        # mark all parents as collections
+        for dataset in self.datasets:
+            identifier = dataset.get('identifier')
+            if identifier in parent_identifiers:
+                dataset['is_collection'] = True
+
 
     def validate_schema(self):
         """ validate using jsonschema lib """
