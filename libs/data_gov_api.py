@@ -20,6 +20,8 @@ class CKANPortalAPI:
     package_create_url = '/api/3/action/package_create'
     package_update_url = '/api/3/action/package_update'
     package_delete_url = '/api/3/action/package_delete'
+    package_show_url = '/api/3/action/package_show'
+
     # search for harvest sources
     package_search_harvested_sources_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'  # all the sources in a CKAN instance (959 results in data.gov)
     package_search_harvested_datajson_sources_url = '/api/3/action/package_search?q=%28type:harvest%20source_type:datajson%29&rows=1000'  # just the data.json harvest sources in a CKAN instance (144 results in data.gov)
@@ -41,9 +43,9 @@ class CKANPortalAPI:
         return headers
 
     def search_harvest_packages(self, rows=1000, harvest_source_id=None,  # just one harvest source
-                                                    harvest_type=None,  # harvest for harvest sources
-                                                    source_type=None):  # datajson for
-        """ search packages
+                                                 harvest_type=None,  # harvest for harvest sources
+                                                 source_type=None):  # datajson for
+        """ search harvested packages or harvest sources
             "rows" is the page size.
             You could search for an specific harvest_source_id """
 
@@ -52,7 +54,7 @@ class CKANPortalAPI:
 
         url = '{}{}'.format(self.base_url, self.package_search_url)
         page = 0
-        #TODO check for a real paginated version
+        # TODO check for a real paginated version
         while url:
             page += 1
 
@@ -65,7 +67,7 @@ class CKANPortalAPI:
                 else:
                     params['q'] = f'(type:{harvest_type})'
 
-            logger.debug(f'Searching {url} PAGE:{page} start:{start}, rows:{rows} with params: {params}')
+            logger.info(f'Searching {url} PAGE:{page} start:{start}, rows:{rows} with params: {params}')
 
             headers = self.get_request_headers()
             try:
@@ -99,6 +101,7 @@ class CKANPortalAPI:
             else:
                 start += rows
                 self.package_list += results
+                logger.info(f'datasets found: {results}')
                 yield(results)
 
     def get_all_packages(self, harvest_source_id=None,  # just one harvest source
@@ -286,7 +289,7 @@ class CKANPortalAPI:
         return json_content
 
     def delete_package(self, ckan_package_ir_or_name):
-        """ POST to CKAN API to create a new package/dataset
+        """ POST to CKAN API to delete a new package/dataset
             https://docs.ckan.org/en/2.8/api/#ckan.logic.action.delete.package_delete
         """
         url = '{}{}'.format(self.base_url, self.package_delete_url)
@@ -310,6 +313,38 @@ class CKANPortalAPI:
             json_content = json.loads(content)
         except Exception as e:
             error = 'ERROR parsing JSON data from delete_package: {} [{}]'.format(content, e)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            logger.error(error)
+
+        return json_content
+
+    def show_package(self, ckan_package_ir_or_name):
+        """ GET to CKAN API to show a package/dataset """
+
+        url = '{}{}'.format(self.base_url, self.package_show_url)
+        headers = self.get_request_headers()
+        data = {'id': ckan_package_ir_or_name}
+        logger.info(f'POST {url} headers:{headers} data:{data}')
+        try:
+            req = requests.get(url, params=data, headers=headers)
+        except Exception as e:
+            error = 'ERROR showing CKAN package: {} [{}]'.format(url, e)
+            raise
+
+        if req.status_code >= 400:
+            error = 'ERROR showing CKAN package: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+            logger.error(error)
+            raise Exception(error)
+
+        content = req.content
+
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data from show_package: {} [{}]'.format(content, e)
             raise
 
         if not json_content['success']:

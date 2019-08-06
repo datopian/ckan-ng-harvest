@@ -59,16 +59,49 @@ class CKANPortalAPITestClass(unittest.TestCase):
     def test_create_harvest_source(self):
 
         cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
-        res = cpa.create_harvest_source(title='Energy JSON test {}'.format(random.randint(1, 999999)),
-                                        url='http://www.energy.gov/data.json',
+        title = 'Energy JSON test {}'.format(random.randint(1, 999999))
+        url = 'http://www.energy.gov/data-{}.json'.format(random.randint(1, 999999))
+        res = cpa.create_harvest_source(title=title,
+                                        url=url,
                                         owner_org_id=CKAN_ORG_ID,
+                                        source_type='datajson',
                                         notes='Some tests about local harvesting sources creation',
                                         frequency='WEEKLY')
-        print(res)
+
         self.assertTrue(res['success'])
+        dataset_name = res['result']['name']
+        dataset_id = res['result']['id']
+
+        # read it
+        res = cpa.show_package(ckan_package_ir_or_name=dataset_id)
+        self.assertTrue(res['success'])
+        dataset = res['result']
+        self.assertEqual(dataset['url'], url)
+        self.assertEqual(dataset['title'], title)
+        self.assertEqual(dataset['type'], 'harvest')
+        self.assertEqual(dataset['source_type'], 'datajson')
+
+        # search for it
+        results = cpa.search_harvest_packages(rows=1000,
+                                               harvest_type='harvest',  # harvest for harvest sources
+                                               # source_type='datajson'
+                                               )
+
+        created_ok = False
+        for datasets in results:
+            for dataset in datasets:
+                print('FOUND: {}'.format(dataset['name']))
+                if dataset['name'] == dataset_name:
+                    created_ok = True
+
+        # ---------------------------------------------------------
+        # FIXME The dataset was created OK but the search didn't find it.
+        # Nopt sure what's happening
+        assert created_ok == True
+        # ---------------------------------------------------------
 
         # delete it
-        res2 = cpa.delete_package(ckan_package_ir_or_name=res['result']['name'])
+        res2 = cpa.delete_package(ckan_package_ir_or_name=dataset_name)
         self.assertTrue(res['success'])
 
     def test_get_admins(self):
