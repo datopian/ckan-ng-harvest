@@ -86,16 +86,20 @@ def compare_resources(rows):
 
         if identifier is None:
             logger.error('No identifier '
-                        '(extras[].key.identifier not exists). '
-                        'Dataset.id: {}'.format(ckan_id))
+                         '(extras[].key.identifier not exists). '
+                         'Dataset.id: {}'.format(ckan_id))
+
             no_identifier_key_found += 1
             result = {'action': 'error',
-                    'ckan_id': ckan_id,
-                    'new_data': None,
-                    'reason': 'The CKAN dataset does not have an "identifier"'}
+                      'ckan_id': ckan_id,
+                      'new_data': None,
+                      'reason': 'The CKAN dataset does not have an "identifier"'}
             row.update({'comparison_results': result})
             yield row
             continue
+
+        # was parent in the previous harvest
+        # if extras.get('collection_metadata', None) is not None:
 
         encoded_identifier = encode_identifier(identifier)
         expected_filename = f'data-json-{encoded_identifier}.json'

@@ -4,6 +4,7 @@ from logs import logger
 from slugify import slugify
 import json
 from libs.ckan_resource_adapters import DataJSONDistribution
+from libs.settings import ckan_settings
 
 
 class CKANDatasetAdapter(ABC):
@@ -25,7 +26,8 @@ class CKANDatasetAdapter(ABC):
             'author_email': None,  # (string) – the email address of the dataset’s author (optional)
             'maintainer': None,  # (string) – the name of the dataset’s maintainer (optional)
             'maintainer_email': None,  # (string) – the email address of the dataset’s maintainer (optional)
-            'license_id': None,  # (license id string) – the id of the dataset’s license, see license_list() for available values (optional)
+            # just aded when license exists
+            # 'license_id': None,  # (license id string) – the id of the dataset’s license, see license_list() for available values (optional)
             'notes':  None,  # (string) – a description of the dataset (optional)
             'url': None,  # (string) – a URL for the dataset’s source (optional)
             'version': None,  # (string, no longer than 100 characters) – (optional)
@@ -62,7 +64,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'description': 'notes',
         'keyword': 'tags',
         'modified': 'extras__modified',  # ! revision_timestamp
-        'publisher': 'extras__publisher',  # !owner_org
+        # requires extra work 'publisher': 'extras__publisher',  # !owner_org
         'contactPoint__fn': 'maintainer',
         'contactPoint__hasEmail': 'maintainer_email',
         'identifier': 'extras__identifier',  # !id
@@ -93,11 +95,20 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'source_schema_version': 'extras__source_schema_version',  # 1.1 or 1.0
         'source_hash': 'extras__source_hash',
 
+        'catalog_@context': 'extras__catalog_@context',
+        'catalog_@id': 'extras__catalog_@id',
+        'catalog_conformsTo': 'extras__catalog_conformsTo',
+        'catalog_describedBy': 'extras__catalog_describedBy',
+
+        'is_collection': 'extras__is_collection',
+        'collection_pkg_id': 'extras__collection_package_id',  # don't like pkg vs package
     }
 
     def __identify_origin_element(self, raw_field, in_dict):
-        # in 'contactPoint__hasEmail' gets in_dict[contactPoint][hasEmail] if exists
-        # in 'licence' gets in_dict[licence] if exists
+        # get the value in data.json to put in CKAN dataset.
+        # Consider the __ separator
+        # in 'contactPoint__hasEmail' gets in_dict['contactPoint']['hasEmail'] if exists
+        # in 'licence' gets in_dict['licence'] if exists
 
         parts = raw_field.split('__')
         if parts[0] not in in_dict:
@@ -123,22 +134,17 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         else:
             return value
 
-    def __fix_extras(self, key, value):
-        # modify extras when need it
-        logger.debug(f'fix extras {key} {value}')
-        # some fields requires extra work
-        if key == 'publisher':
-            return value['name']
-        else:
-            return value
-
     def __build_tags(self, tags):
         # create a CKAN tag
         # Help https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.tag_create
         ret = []
         for tag in tags:
-            # ret.append({"id": None, "name": tag})
-            ret.append({"name": tag})
+            # CKAN exts uses a more ugly an complex function
+            # https://github.com/ckan/ckan/blob/30ca7aae2f2aca6a19a2e6ed29148f8428e25c86/ckan/lib/munge.py#L26
+            tag = tag.strip()
+            if tag != '':
+                tag = slugify(tag[:ckan_settings.MAX_TAG_NAME_LENGTH])
+                ret.append({"name": tag})
         return ret
 
     def __set_destination_element(self, raw_field, to_dict, new_value):
@@ -161,13 +167,11 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             for extra in to_dict['extras']:
 
                 if extra['key'] == parts[1]:
-                    new_value = self.__fix_extras(key=extra['key'], value=new_value)
                     extra['value'] = new_value
                     return to_dict
 
-            # the extra do not exists already
+            # this extra do not exists already
             new_extra = {'key': parts[1], 'value': None}
-            new_value = self.__fix_extras(key=parts[1], value=new_value)
             new_extra['value'] = new_value
             to_dict['extras'].append(new_extra)
             return to_dict
@@ -231,6 +235,9 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         ckan_dataset = self.get_base_ckan_dataset()
         datajson_dataset = self.original_dataset
 
+        # previous transformations at origin
+
+
         for field_data_json, field_ckan in self.MAPPING.items():
             logger.debug(f'Connecting fields "{field_data_json}", "{field_ckan}"')
             # identify origin and set value to destination
@@ -264,6 +271,32 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # mandatory
         ckan_dataset['owner_org'] = self.ckan_owner_org_id
 
+        # check for license
+        if datajson_dataset.get('license', None) not in [None, '']:
+            original_license = datajson_dataset['license']
+            original_license = original_license.replace('http://', '')
+            original_license = original_license.replace('https://', '')
+            original_license = original_license.rstrip('/')
+            license_id = ckan_settings.LICENCES.get(original_license, "other-license-specified")
+            ckan_dataset['license_id'] = license_id
+
+        # define publisher as extras as we expect
+        publisher = datajson_dataset.get('publisher', None)
+        if publisher is not None:
+            publisher_name = publisher.get('name', '')
+            ckan_dataset = self.__set_extra(ckan_dataset, 'publisher', publisher_name)
+            parent_publisher = publisher.get('subOrganizationOf', None)
+            if parent_publisher is not None:
+                publisher_hierarchy = [publisher_name]
+                while parent_publisher:
+                    parent_name = parent_publisher.get('name', '')
+                    parent_publisher = parent_publisher.get('subOrganizationOf', None)
+                    publisher_hierarchy.append(parent_name)
+
+                publisher_hierarchy.reverse()
+                publisher_hierarchy = " > ".join(publisher_hierarchy)
+                ckan_dataset = self.__set_extra(ckan_dataset, 'publisher_hierarchy', publisher_hierarchy)
+
         # clean all empty unused values (can't pop keys while iterating)
         ckan_dataset_copy = ckan_dataset.copy()
         for k, v in ckan_dataset.items():
@@ -275,6 +308,22 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             raise Exception(f'Error validating final dataset: {error}')
 
         return ckan_dataset_copy
+
+    def __find_extra(self, ckan_dataset, key, default=None):
+        for extra in ckan_dataset["extras"]:
+            if extra["key"] == key:
+                return extra["value"]
+        return default
+
+    def __set_extra(self, ckan_dataset, key, value):
+        found = False
+        for extra in ckan_dataset['extras']:
+            if extra['key'] == key:
+                extra['value'] = value
+                found = True
+        if not found:
+            ckan_dataset['extras'].append({'key': key, 'value': value})
+        return ckan_dataset
 
     def __merge_resources(self, existing_resources, new_resources):
         # if we are updating datasets we need to check if the resources exists and merge them
@@ -296,8 +345,9 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747
 
         name = slugify(title)
-        if len(name) > 95:  # max length is 100
-            name = name[:95]
+        cut_at = ckan_settings.MAX_NAME_LENGTH - 5  # max length is 100
+        if len(name) > cut_at:
+            name = name[:cut_at]
 
         # TODO check if the name MUST be a new unexisting one
         # TODO check if it's an existing resource and we need to read previos name using the identifier

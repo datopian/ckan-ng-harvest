@@ -36,7 +36,7 @@ class TestCKANDatasetAdapter(object):
             "modified": "2014-12-23",
             "publisher": {
                 "@type": "org:Organization",
-                "name": "Agricultural Marketing Service, Department of Agriculture"
+                "name": "Agricultural Marketing Service"
                 },
             "keyword": ["FOB", "wholesale market"],
             "headers": {
@@ -60,6 +60,72 @@ class TestCKANDatasetAdapter(object):
         assert len(ckan_dataset['resources']) == 2
         assert ckan_dataset['maintainer_email'] == 'Fred.Teensma@ams.usda.gov'
         assert len(ckan_dataset['tags']) == 2
+        assert ckan_dataset['license_id'] == 'cc-by'  # transformation
+
+        # test *Code
+        assert [['005:45']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'bureauCode']
+        assert [['005:047']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'programCode']
+
+        # test publisher processor
+        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+        assert [] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
+
+        # test publisher subOrganizationOf
+        t2 = self.test_datajson_dataset
+        t2['publisher']['subOrganizationOf'] = {
+                        "@type": "org:Organization",
+                        "name": "Department of Agriculture"
+                        }
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+        assert ['Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
+
+        t2['publisher']['subOrganizationOf']['subOrganizationOf'] = {
+                        "@type": "org:Organization",
+                        "name": "USA GOV"
+                        }
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+        assert ['USA GOV > Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
+
+    def test_collections(self):
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
+        # ORG is required!
+        djss.ckan_owner_org_id = 'XXXX'
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert [] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'is_collection']
+        t2 = self.test_datajson_dataset
+        t2['is_collection'] = True
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert [True] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'is_collection']
+
+        assert [] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'collection_package_id']
+        t2['collection_pkg_id'] = 'XXXXX'
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ['XXXXX'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'collection_package_id']
+
+    def test_catalog_extras(self):
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
+        # ORG is required!
+        djss.ckan_owner_org_id = 'XXXX'
+        ckan_dataset = djss.transform_to_ckan_dataset()
+
+        t2 = self.test_datajson_dataset
+        t2['catalog_@context'] = "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+        t2['catalog_describedBy']  = "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+        t2['catalog_conformsTo'] = "https://project-open-data.cio.gov/v1.1/schema"
+        t2['catalog_@id'] = 'https://healthdata.gov/data.json'
+
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ["https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'catalog_@context']
+        assert ["https://project-open-data.cio.gov/v1.1/schema/catalog.json"] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'catalog_describedBy']
+        assert ["https://project-open-data.cio.gov/v1.1/schema"] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'catalog_conformsTo']
+        assert ['https://healthdata.gov/data.json'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'catalog_@id']
 
     def test_required_fields(self):
 
@@ -163,8 +229,3 @@ class TestCKANDatasetAdapter(object):
                 assert 'name' not in resource
             else:
                 assert 'Unexpected URL' == False
-
-    """
-    def test_name_collision(self):
-        assert "Check for package name collision" == False
-    """
