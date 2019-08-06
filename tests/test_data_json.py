@@ -1,5 +1,7 @@
 import unittest
 from libs.data_json import DataJSON
+from libs.ckan_dataset_adapters import DataJSONSchema1_1
+
 base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
 
 
@@ -163,4 +165,7 @@ class DataJSONTestClass(unittest.TestCase):
                 assert dataset['is_collection'] == True
             if dataset['identifier'] == 'USDA-26522':
                 assert dataset['collection_pkg_id'] == ''
+
+    def test_catalog_extras(self):
+        assert 'TEST CATALOG EXTRAS' == False
 

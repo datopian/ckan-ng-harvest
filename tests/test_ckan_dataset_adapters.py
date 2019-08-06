@@ -108,6 +108,25 @@ class TestCKANDatasetAdapter(object):
         ckan_dataset = djss.transform_to_ckan_dataset()
         assert ['XXXXX'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'collection_pkg_id']
 
+    def test_catalog_extras(self):
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
+        # ORG is required!
+        djss.ckan_owner_org_id = 'XXXX'
+        ckan_dataset = djss.transform_to_ckan_dataset()
+
+        t2 = self.test_datajson_dataset
+        t2['catalog_@context'] = "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+        t2['catalog_describedBy']  = "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+        t2['catalog_conformsTo'] = "https://project-open-data.cio.gov/v1.1/schema"
+        t2['catalog_@id'] = 'https://healthdata.gov/data.json'
+
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ["https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'catalog_@context']
+        assert ["https://project-open-data.cio.gov/v1.1/schema/catalog.json"] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'catalog_describedBy']
+        assert ["https://project-open-data.cio.gov/v1.1/schema"] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'catalog_conformsTo']
+        assert ['https://healthdata.gov/data.json'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'catalog_@id']
+
     def test_required_fields(self):
 
         dataset = self.test_datajson_dataset
