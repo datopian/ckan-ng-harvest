@@ -17,6 +17,51 @@ def hash_dataset(datasetdict):
     return hashlib.sha1(str_to_hash).hexdigest()
 
 
+def assing_collection_pkg_id(rows):
+    """ detect new CKAN ids for collections """
+
+    # create a list of datajson identifiers -> CKAN indetifiers
+    # to detect collection IDs
+    related_ids = {}
+    missing_rows = []
+    for row in rows:
+        comparison_results = row['comparison_results']
+        action = comparison_results['action']
+        if action != 'update':  # just resources
+            yield row
+        else:
+            datajson_dataset = comparison_results['new_data']
+            old_identifier = datajson_dataset['identifier']  # ID at data.json
+            new_identifier = row['id']  # ID at CKAN
+            related_ids[old_identifier] = new_identifier
+
+            # if dataset was marked as a collection, set its CKAN id
+            if datajson_dataset.get('collection_pkg_id', None) is None:
+                yield row
+            else:
+                old_identifier = datajson_dataset['identifier']  # ID at data.json
+                new_identifier = related_ids.get(old_identifier, None)
+                if new_identifier is not None:
+                    datajson_dataset['collection_pkg_id'] = new_identifier
+                    yield row
+                else:
+                    # the CKAN ID is not loaded at related_ids at the moment. Try it later
+                    missing_rows.append(row)
+
+    for row in missing_rows:
+        comparison_results = row['comparison_results']
+        datajson_dataset = comparison_results['new_data']
+        old_identifier = datajson_dataset['identifier']  # ID at data.json
+        new_identifier = related_ids.get(old_identifier, None)
+        if new_identifier is not None:
+            datajson_dataset['collection_pkg_id'] = new_identifier
+        else:
+            # it's an error. We must have a CKAN ID
+            datajson_dataset['collection_pkg_id'] = ''  # later we  notify the error in results
+
+        yield row
+
+
 def write_results_to_ckan(rows):
     """ each row it's a dataset to delete/update/create """
 
@@ -42,9 +87,11 @@ def write_results_to_ckan(rows):
             }
         """
 
+        results = {'success': False, 'warnings': [], 'errors': []}
+        comparison_results['action_results'] = results
+
         if action == 'error':
-            results = {'success': False}
-            comparison_results['action_results'] = results
+            results['errors'].append(comparison_results['reason'])
             yield row
             continue
 
@@ -58,9 +105,13 @@ def write_results_to_ckan(rows):
             datajson_dataset = comparison_results['new_data']
 
             # add required extras
+            # set catalog extras
+            for key, value in datajson_dataset['headers'].items():
+                if key in ['@context', '@id', 'conformsTo', 'describedBy']:
+                    datajson_dataset[f'catalog_{key}'] = value
 
             schema_version = datajson_dataset['headers']['schema_version']  # 1.1 or 1.0
-            assert schema_version in ['1.0', '1.1']
+            assert schema_version in ['1.0', '1.1']  # main error
             datajson_dataset['source_schema_version'] = schema_version
             datajson_dataset['source_hash'] = hash_dataset(datasetdict=datajson_dataset)
 
@@ -75,13 +126,21 @@ def write_results_to_ckan(rows):
             datajson_dataset['harvest_source_title'] = config.SOURCE_NAME
             datajson_dataset['harvest_source_id'] = config.SOURCE_ID
 
-            djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
+            if schema_version == '1.1':
+                djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
+            else:
+                results['errors'].append('We are not ready to harvest 1.0 schema datasets. Add it to harvester')
+                yield row
+                continue
+                # raise Exception('We are not ready to harvest 1.0 schema datasets. Check if this kind of dataset still exists')
             # ORG is required!
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
 
+            if datajson_dataset.get('collection_pkg_id', None) == '':
+                results['warnings'].append('Failed to get the collection_pkg_id')
+
             ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
 
-        results = {'success': False}
         if action == 'create':
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
                                 api_key=config.CKAN_API_KEY)
@@ -142,7 +201,6 @@ def write_results_to_ckan(rows):
             results = {'success': False, 'error': error}
 
         results['timestamp'] = datetime.now(pytz.utc).isoformat()  # iso format move as string to save to disk
-        comparison_results['action_results'] = results
         yield row
 
     logger.info(f'Actions detected {actions}')
@@ -171,6 +229,7 @@ def build_validation_error_email(error_items):
 
     #send validation email
     send_validation_error_email(errors)
+
 
 def send_validation_error_email(errors):
     """ take all errors and send to organization admins """
