@@ -18,7 +18,9 @@ def hash_dataset(datasetdict):
 
 
 def assing_collection_pkg_id(rows):
-    """ detect new CKAN ids for collections """
+    """ detect new CKAN ids for collections.
+        The IDs are at different rows so we need to iterate all rows
+        """
 
     # create a list of datajson identifiers -> CKAN indetifiers
     # to detect collection IDs
@@ -27,7 +29,7 @@ def assing_collection_pkg_id(rows):
     for row in rows:
         comparison_results = row['comparison_results']
         action = comparison_results['action']
-        if action != 'update':  # just resources
+        if action not in ['update', 'create']:  # just resources
             yield row
         else:
             datajson_dataset = comparison_results['new_data']
@@ -35,14 +37,14 @@ def assing_collection_pkg_id(rows):
             new_identifier = row['id']  # ID at CKAN
             related_ids[old_identifier] = new_identifier
 
-            # if dataset was marked as a collection, set its CKAN id
-            if datajson_dataset.get('collection_pkg_id', None) is None:
+            # if is part of a collection, get the CKAN ID
+            is_part_of = datajson_dataset.get('isPartOf', None)
+            if is_part_of is None:
                 yield row
             else:
-                old_identifier = datajson_dataset['identifier']  # ID at data.json
-                new_identifier = related_ids.get(old_identifier, None)
-                if new_identifier is not None:
-                    datajson_dataset['collection_pkg_id'] = new_identifier
+                new_ckan_identifier = related_ids.get(is_part_of, None)
+                if new_ckan_identifier is not None:
+                    datajson_dataset['collection_pkg_id'] = new_ckan_identifier
                     yield row
                 else:
                     # the CKAN ID is not loaded at related_ids at the moment. Try it later
@@ -51,10 +53,10 @@ def assing_collection_pkg_id(rows):
     for row in missing_rows:
         comparison_results = row['comparison_results']
         datajson_dataset = comparison_results['new_data']
-        old_identifier = datajson_dataset['identifier']  # ID at data.json
-        new_identifier = related_ids.get(old_identifier, None)
-        if new_identifier is not None:
-            datajson_dataset['collection_pkg_id'] = new_identifier
+        old_identifier = datajson_dataset['isPartOf']  # ID at data.json
+        new_ckan_identifier = related_ids.get(old_identifier, None)
+        if new_ckan_identifier is not None:
+            datajson_dataset['collection_pkg_id'] = new_ckan_identifier
         else:
             # it's an error. We must have a CKAN ID
             datajson_dataset['collection_pkg_id'] = ''  # later we  notify the error in results

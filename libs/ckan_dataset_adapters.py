@@ -101,7 +101,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'catalog_describedBy': 'extras__catalog_describedBy',
 
         'is_collection': 'extras__is_collection',
-        'collection_pkg_id': 'extras__collection_pkg_id'
+        'collection_pkg_id': 'extras__collection_package_id',  # don't like pkg vs package
     }
 
     def __identify_origin_element(self, raw_field, in_dict):
