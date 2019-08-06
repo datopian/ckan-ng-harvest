@@ -173,7 +173,6 @@ class DataJSON:
             if identifier in parent_identifiers:
                 dataset['is_collection'] = True
 
-
     def validate_schema(self):
         """ validate using jsonschema lib """
 
@@ -190,7 +189,7 @@ class DataJSON:
 
         # list of needed catalog values  # https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L152
         catalog_fields = ['@context', '@id', 'conformsTo', 'describedBy']
-        self.catalog_extras = dict(('catalog_'+k, v) for (k, v) in self.schema.json_content.items() if k in catalog_fields)
+        self.catalog_extras = dict(('catalog_'+k, v) for (k, v) in self.data_json.items() if k in catalog_fields)
 
         return len(errors) == 0, errors
 

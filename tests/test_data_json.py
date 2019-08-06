@@ -167,5 +167,16 @@ class DataJSONTestClass(unittest.TestCase):
                 assert dataset['collection_pkg_id'] == ''
 
     def test_catalog_extras(self):
-        assert 'TEST CATALOG EXTRAS' == False
+
+        dj = DataJSON()
+
+        dj.url = f'{base_url}/usda.gov.data.json'
+        ret, error = dj.download_data_json()
+        ret, error = dj.load_data_json()
+        ret, errors = dj.validate_json()
+        print(dj.catalog_extras)
+        assert dj.catalog_extras['catalog_@context'] == 'https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld'
+        assert 'catalog_@id' not in dj.catalog_extras
+        assert dj.catalog_extras['catalog_conformsTo'] == 'https://project-open-data.cio.gov/v1.1/schema'
+        assert dj.catalog_extras['catalog_describedBy'] == 'https://project-open-data.cio.gov/v1.1/schema/catalog.json'
 

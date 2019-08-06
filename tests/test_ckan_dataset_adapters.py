@@ -102,11 +102,11 @@ class TestCKANDatasetAdapter(object):
         ckan_dataset = djss.transform_to_ckan_dataset()
         assert [True] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'is_collection']
 
-        assert [] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'collection_pkg_id']
+        assert [] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'collection_package_id']
         t2['collection_pkg_id'] = 'XXXXX'
         djss.original_dataset = t2
         ckan_dataset = djss.transform_to_ckan_dataset()
-        assert ['XXXXX'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'collection_pkg_id']
+        assert ['XXXXX'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'collection_package_id']
 
     def test_catalog_extras(self):
         djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
