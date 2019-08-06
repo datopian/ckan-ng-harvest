@@ -95,6 +95,13 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'source_schema_version': 'extras__source_schema_version',  # 1.1 or 1.0
         'source_hash': 'extras__source_hash',
 
+        'catalog_@context': 'extras__catalog_@context',
+        'catalog_@id': 'extras__catalog_@id',
+        'catalog_conformsTo': 'extras__catalog_conformsTo',
+        'catalog_describedBy': 'extras__catalog_describedBy',
+
+        'is_collection': 'extras__is_collection',
+        'collection_pkg_id': 'extras__collection_pkg_id'
     }
 
     def __identify_origin_element(self, raw_field, in_dict):
@@ -228,6 +235,9 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         ckan_dataset = self.get_base_ckan_dataset()
         datajson_dataset = self.original_dataset
 
+        # previous transformations at origin
+
+
         for field_data_json, field_ckan in self.MAPPING.items():
             logger.debug(f'Connecting fields "{field_data_json}", "{field_ckan}"')
             # identify origin and set value to destination
@@ -262,7 +272,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         ckan_dataset['owner_org'] = self.ckan_owner_org_id
 
         # check for license
-        if 'license' in datajson_dataset and datajson_dataset['license'] != '':
+        if datajson_dataset.get('license', None) not in [None, '']:
             original_license = datajson_dataset['license']
             original_license = original_license.replace('http://', '')
             original_license = original_license.replace('https://', '')

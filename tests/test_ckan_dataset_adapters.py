@@ -192,8 +192,3 @@ class TestCKANDatasetAdapter(object):
                 assert 'name' not in resource
             else:
                 assert 'Unexpected URL' == False
-
-    """
-    def test_name_collision(self):
-        assert "Check for package name collision" == False
-    """
