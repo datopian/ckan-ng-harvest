@@ -208,7 +208,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
                 fmt = datajson_dataset.get('format', '')
                 distribution.append({field: url, 'format': fmt, 'mimetype': fmt})
 
-        logger.info(f'Infered distribution: {distribution}')
         return distribution
 
     def __transform_resources(self, distribution):
@@ -229,6 +228,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/parse_datajson.py#L5
         # if we are updating existing dataset we need to merge resources
 
+        logger.info('Transforming data.json dataset {}'.format(self.original_dataset.get('identifier', '')))
         valid, error = self.validate_origin_dataset()
         if not valid:
             raise Exception(f'Error validating origin dataset: {error}')
@@ -237,8 +237,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         datajson_dataset = self.original_dataset
 
         # previous transformations at origin
-
-
         for field_data_json, field_ckan in self.MAPPING.items():
             logger.debug(f'Connecting fields "{field_data_json}", "{field_ckan}"')
             # identify origin and set value to destination
@@ -308,6 +306,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         if not valid:
             raise Exception(f'Error validating final dataset: {error}')
 
+        logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return ckan_dataset_copy
 
     def __find_extra(self, ckan_dataset, key, default=None):

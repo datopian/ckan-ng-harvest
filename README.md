@@ -13,12 +13,13 @@ Process using [dataflows](https://github.com/datahq/dataflows) and [datapackages
 
 # Full harvest local test
 
-We need a local CKAN instance running ar http://ckan:5000.
+We need a local CKAN instance running ar http://ckan:5000.  
+Test for a small version of education data.json
 
 ```
 python3 harvest.py \
-  --name education \
-  --url https://www2.ed.gov/data.json \
+  --name smalleducation \
+  --url https://datopian.gitlab.io/ckan-ng-harvest/small-education.json \
   --harvest_source_id d6ce0a12-5d48-452e-b97d-14dcb8426899 \
   --ckan_owner_org_id my-local-test-organization-v2 \
   --catalog_url http://ckan:5000 \
