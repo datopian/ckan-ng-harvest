@@ -6,8 +6,6 @@ import unittest
 import config
 from functions import clean_duplicated_identifiers
 
-base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
-
 
 class FunctionsDuplicatesTestClass(unittest.TestCase):
 

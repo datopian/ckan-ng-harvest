@@ -4,7 +4,7 @@ Tests all functions used in flow file
 import unittest
 from functions import clean_duplicated_identifiers, get_data_json_from_url
 
-base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
+base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
 
 
 class FunctionsTestClass(unittest.TestCase):

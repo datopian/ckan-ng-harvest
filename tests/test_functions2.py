@@ -6,7 +6,7 @@ import config
 from functions import get_data_json_from_url, save_as_data_packages
 from functions2 import compare_resources
 
-base_url = 'https://avdata99.gitlab.io/andres-harvesting-experiments-v2'
+base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
 
 
 class Functions2TestClass(unittest.TestCase):
