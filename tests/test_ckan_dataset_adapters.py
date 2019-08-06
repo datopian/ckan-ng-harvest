@@ -229,3 +229,18 @@ class TestCKANDatasetAdapter(object):
                 assert 'name' not in resource
             else:
                 assert 'Unexpected URL' == False
+
+    def test_drop_distribution(self):
+
+        dataset = self.test_datajson_dataset
+        # drop required keys
+        djss = DataJSONSchema1_1(original_dataset=dataset)
+        djss.ckan_owner_org_id = 'XXXX'
+        ckan_dataset = djss.transform_to_ckan_dataset()
+
+        del dataset['distribution']
+        djss = DataJSONSchema1_1(original_dataset=dataset)
+        djss.ckan_owner_org_id = 'XXXX'
+        ckan_dataset = djss.transform_to_ckan_dataset()
+
+        assert ckan_dataset['resources'] == []

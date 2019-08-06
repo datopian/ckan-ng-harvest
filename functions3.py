@@ -29,12 +29,13 @@ def assing_collection_pkg_id(rows):
     for row in rows:
         comparison_results = row['comparison_results']
         action = comparison_results['action']
-        if action not in ['update', 'create']:  # just resources
+        if action not in ['update', 'create']:
             yield row
         else:
             datajson_dataset = comparison_results['new_data']
             old_identifier = datajson_dataset['identifier']  # ID at data.json
-            new_identifier = row['id']  # ID at CKAN
+            # If I'm creating a new resource that not exists at CKAN then I have no ID
+            new_identifier = row.get('id', None)  # ID at CKAN
             related_ids[old_identifier] = new_identifier
 
             # if is part of a collection, get the CKAN ID
@@ -58,8 +59,8 @@ def assing_collection_pkg_id(rows):
         if new_ckan_identifier is not None:
             datajson_dataset['collection_pkg_id'] = new_ckan_identifier
         else:
-            # it's an error. We must have a CKAN ID
-            datajson_dataset['collection_pkg_id'] = ''  # later we  notify the error in results
+            # Maybe the CKAN dataset has not been created yet.
+            datajson_dataset['collection_pkg_id'] = ''
 
         yield row
 
