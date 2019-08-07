@@ -62,8 +62,12 @@ class CKANPortalAPI:
             if harvest_source_id is not None:
                 params['q'] = f'harvest_source_id:{harvest_source_id}'
             elif harvest_type is not None:
+                # at my local instance I need this.
+                # I not sure why, in another public instances is not needed
+                params['fq'] = f'+dataset_type:{harvest_type}'
                 if source_type is not None:
                     params['q'] = f'(type:{harvest_type} source_type:{source_type})'
+
                 else:
                     params['q'] = f'(type:{harvest_type})'
 
