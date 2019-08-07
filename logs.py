@@ -10,4 +10,4 @@ c_handler.setLevel(logging.INFO)
 logger.addHandler(c_handler)
 logger.addHandler(f_handler)
 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)

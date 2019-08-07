@@ -111,13 +111,16 @@ class DataJSON:
         errors = []  # to return list of validation errors
 
         if self.data_json is None:
-            return False, 'No data json available'
+            return False, ['No data json available']
+
+        if type(self.data_json) == list:
+            return False, ['Data.json is a simple list']
 
         if not self.data_json.get('describedBy', False):
-            return False, 'Missing describedBy KEY'
+            return False, ['Missing describedBy KEY']
 
         if not self.data_json.get('dataset', False):
-            return False, 'Missing "dataset" KEY'
+            return False, ['Missing "dataset" KEY']
 
         schema_definition_url = self.data_json['describedBy']
         self.schema = JSONSchema(url=schema_definition_url)
