@@ -80,6 +80,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         self.assertEqual(dataset['title'], title)
         self.assertEqual(dataset['type'], 'harvest')
         self.assertEqual(dataset['source_type'], 'datajson')
+        print(dataset)
 
         # search for it
         results = cpa.search_harvest_packages(rows=1000,
