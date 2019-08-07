@@ -443,3 +443,28 @@ class CKANPortalAPI:
             logger.error(error)
 
         return json_content
+
+    def import_harvest_sources(self, catalog_url,
+                                harvest_type='harvest',
+                                source_type='datajson',
+                               delete_local_harvest_sources=True):
+        """ import harvest sources from another CKAN open data portal """
+
+        if delete_local_harvest_sources:
+            logger.info(f'Deleting local harvest sources')
+            for harvest_sources in self.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
+                for harvest_source in harvest_sources:
+                    harvest_source_id = harvest_source['id']
+                    res = self.delete_package(ckan_package_ir_or_name=harvest_source_id)
+                    if not res['success']:
+                        raise Exception(f'Failed to delete ID {harvest_source_id}')
+                    else:
+                        logger.info(f'Deleted ID {harvest_source_id}')
+
+        logger.info(f'Getting external harvest sources for {catalog_url}')
+        external_portal = CKANPortalAPI(base_url=catalog_url)
+        for external_harvest_sources in external_portal.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
+            for external_harvest_source in external_harvest_sources:
+
+
+
