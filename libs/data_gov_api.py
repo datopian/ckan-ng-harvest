@@ -1,11 +1,10 @@
 import json
 import requests
-import logging
 import os
 from datapackage import Package, Resource
 from slugify import slugify
 import base64
-logger = logging.getLogger(__name__)
+from logs import logger
 
 
 class CKANPortalAPI:
@@ -205,6 +204,7 @@ class CKANPortalAPI:
             json_content = json.loads(content)
         except Exception as e:
             error = 'ERROR parsing JSON data: {} [{}]'.format(content, e)
+            logger.error(error)
             raise
 
         if not json_content['success']:
@@ -445,8 +445,9 @@ class CKANPortalAPI:
         return json_content
 
     def import_harvest_sources(self, catalog_url,
-                                harvest_type='harvest',
-                                source_type='datajson',
+                               owner_org_id,  # we use our local org
+                               harvest_type='harvest',
+                               source_type='datajson',
                                delete_local_harvest_sources=True):
         """ import harvest sources from another CKAN open data portal """
 
@@ -465,6 +466,17 @@ class CKANPortalAPI:
         external_portal = CKANPortalAPI(base_url=catalog_url)
         for external_harvest_sources in external_portal.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
             for external_harvest_source in external_harvest_sources:
-
+                name = external_harvest_source['name']
+                res = self.create_harvest_source(title=external_harvest_source['title'],
+                                                 url=external_harvest_source['url'],
+                                                 owner_org_id=owner_org_id,
+                                                 name=name,
+                                                 notes=external_harvest_source['notes'],
+                                                 source_type=source_type,
+                                                 frequency=external_harvest_source['frequency'])
+                if not res['success']:
+                    raise Exception(f'Failed to import harvest source {name}')
+                else:
+                    logger.info(f'Deleted ID {harvest_source_id}')
 
 

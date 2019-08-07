@@ -113,6 +113,9 @@ class DataJSON:
         if self.data_json is None:
             return False, 'No data json available'
 
+        if type(self.data_json) == list:
+            return False, 'Data.json is a simple list'
+
         if not self.data_json.get('describedBy', False):
             return False, 'Missing describedBy KEY'
 
