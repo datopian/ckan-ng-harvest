@@ -482,4 +482,47 @@ class CKANPortalAPI:
                 else:
                     logger.info(f'Deleted ID {harvest_source_id}')
 
+    def create_organization(self, organization):
+        """ POST to CKAN API to create a new organization
+            organization is just a python dict
+            https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.organization_create
+        """
+        url = '{}{}'.format(self.base_url, self.organization_create_url)
+        headers = self.get_request_headers(include_api_key=True)
+
+        headers['Content-Type'] = 'application/json'
+        organization = json.dumps(organization)
+
+        logger.info(f'POST {url} headers:{headers} data:{organization}')
+
+        try:
+            req = requests.post(url, data=organization, headers=headers)
+        except Exception as e:
+            error = 'ERROR creating [POST] organization: {} [{}]'.format(url, e)
+            raise
+
+        content = req.content
+
+        if req.status_code >= 400:
+
+            error = ('ERROR creating [STATUS] organization: {}'
+                     '\n\t Status code: {}'
+                     '\n\t content:{}'
+                     '\n\t Dataset {}'.format(url, req.status_code, content, organization))
+            logger.error(error)
+            raise Exception(error)
+
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data: {} [{}]'.format(content, e)
+            logger.error(error)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            logger.error(error)
+
+        return json_content
+
 
