@@ -20,6 +20,9 @@ class CKANPortalAPI:
     package_update_url = '/api/3/action/package_update'
     package_delete_url = '/api/3/action/package_delete'
     package_show_url = '/api/3/action/package_show'
+    organization_create_url = '/api/3/action/organization_create'
+    organization_update_url = '/api/3/action/organization_update'
+    organization_show_url = '/api/3/action/organization_show'
 
     # search for harvest sources
     package_search_harvested_sources_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'  # all the sources in a CKAN instance (959 results in data.gov)
