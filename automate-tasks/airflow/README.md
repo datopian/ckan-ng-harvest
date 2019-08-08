@@ -14,3 +14,10 @@ I read some people on the web ([1](https://medium.com/videoamp/what-we-learned-m
 ## Airflow code
 
 Airflow is open, code [here](https://github.com/apache/airflow).  
+
+### Using Airflow
+
+```
+pip install apache-airflow
+airflow initdb
+```
