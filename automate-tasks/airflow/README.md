@@ -20,4 +20,6 @@ Airflow is open, code [here](https://github.com/apache/airflow).
 ```
 pip install apache-airflow
 airflow initdb
+airflow webserver -p 8082
+airflow scheduler
 ```

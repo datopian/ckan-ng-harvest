@@ -7,6 +7,7 @@ from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta
 from libs.data_gov_api import CKANPortalAPI
+from logs import logger
 
 
 default_args = {
@@ -24,13 +25,13 @@ default_args = {
     # 'end_date': datetime(2020, 2, 1),
 }
 
-dag = DAG('Harvest all at catalog.data.gov', default_args=default_args,
+dag = DAG('harvest_all_data_gov', default_args=default_args,
           schedule_interval=timedelta(weeks=1))
 
 catalog_url = 'http://ckan:5000'
 catalog_api_key = '79744bbe-f27b-46c8-a1e0-8f7264746c86'
 
-cpa = CKANPortalAPI(base_url='https://catalog.data.gov')
+cpa = CKANPortalAPI(base_url=catalog_url)
 urls = []
 last_task = None
 
@@ -41,6 +42,8 @@ for results in cpa.search_harvest_packages(harvest_type='harvest', source_type='
         if url in urls:  # avoid duplicates
             continue
         urls.append(url)
+
+        organization = harvest_source['organization']
 
         templated_harvest_command = """
             python3 harvest.py \
@@ -75,3 +78,5 @@ for results in cpa.search_harvest_packages(harvest_type='harvest', source_type='
             task.set_upstream(last_task)
 
         last_task = task
+
+        logger.info(f'task added {task}')

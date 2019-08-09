@@ -73,7 +73,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         dataset_id = res['result']['id']
 
         # read it
-        res = cpa.show_package(ckan_package_ir_or_name=dataset_id)
+        res = cpa.show_package(ckan_package_id_or_name=dataset_id)
         self.assertTrue(res['success'])
         dataset = res['result']
         self.assertEqual(dataset['url'], url)
@@ -102,7 +102,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         # ---------------------------------------------------------
 
         # delete it
-        res2 = cpa.delete_package(ckan_package_ir_or_name=dataset_name)
+        res2 = cpa.delete_package(ckan_package_id_or_name=dataset_name)
         self.assertTrue(res['success'])
 
     def test_get_admins(self):
@@ -140,4 +140,13 @@ class CKANPortalAPITestClass(unittest.TestCase):
 
         res = cpa.create_organization(organization=organization)
         print(res)
+        self.assertTrue(res['success'])
+
+        # try to duplicate ir
+        res = cpa.create_organization(organization=organization, check_if_exists=True)
+        print(res)
+        self.assertTrue(res['success'])
+
+        res = cpa.show_organization(organization_id_or_name=name)
+        print('**************\n{}\n****************\n'.format(res))
         self.assertTrue(res['success'])
