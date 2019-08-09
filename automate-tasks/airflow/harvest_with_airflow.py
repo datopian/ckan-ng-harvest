@@ -13,7 +13,7 @@ from logs import logger
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2020, 1, 1),
+    'start_date': datetime(2019, 8, 8),
     'email': ['devops@datopian.com'],  # TODO check
     'email_on_failure': False,
     'email_on_retry': False,
@@ -28,6 +28,7 @@ default_args = {
 dag = DAG('harvest_all_data_gov', default_args=default_args,
           schedule_interval=timedelta(weeks=1))
 
+logger.info(f'DAG created {dag}')
 catalog_url = 'http://ckan:5000'
 catalog_api_key = '79744bbe-f27b-46c8-a1e0-8f7264746c86'
 
