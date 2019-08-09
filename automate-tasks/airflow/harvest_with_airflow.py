@@ -1,6 +1,6 @@
 """
 Harvester DAGs
-
+ This file must live at the airflow dags folder
 """
 
 from airflow import DAG
