@@ -36,7 +36,7 @@ dag = DAG('harvest_all_data_gov', default_args=default_args,
 
 logger.info(f'DAG created {dag}')
 catalog_url = 'http://ckan:5000'
-catalog_api_key = '79744bbe-f27b-46c8-a1e0-8f7264746c86'
+catalog_api_key = '2de6add4-bd1c-4f66-9e2b-37f4bc3ddd0f'
 
 cpa = CKANPortalAPI(base_url=catalog_url)
 urls = []
