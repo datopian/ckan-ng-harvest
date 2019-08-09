@@ -19,11 +19,12 @@ Test for a small version of education data.json
 ```
 python3 harvest.py \
   --name smalleducation \
-  --url https://datopian.gitlab.io/ckan-ng-harvest/small-education.json \
+  --url https://gitlab.com/datopian/ckan-ng-harvest/raw/develop/public/small-education.json \
   --harvest_source_id d6ce0a12-5d48-452e-b97d-14dcb8426899 \
   --ckan_owner_org_id my-local-test-organization-v2 \
   --catalog_url http://ckan:5000 \
-  --ckan_api_key 79744bbe-f27b-46c8-a1e0-8f7264746c86
+  --ckan_api_key 79744bbe-f27b-46c8-a1e0-8f7264746c86 \
+  --limit_dataset 10  # just test 10 datasets
 ```
 
 This process runs 3 parts: flow, flow1 and flow2

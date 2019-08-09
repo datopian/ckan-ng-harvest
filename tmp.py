@@ -7,11 +7,10 @@ logger.setLevel(logging.DEBUG)
 import csv
 
 
-"""
-
-CKAN_API_KEY = '79744bbe-f27b-46c8-a1e0-8f7264746c86'  # put your own local API key
+CKAN_API_KEY = '2de6add4-bd1c-4f66-9e2b-37f4bc3ddd0f'  # put your own local API key
 cpa = CKANPortalAPI(base_url='http://ckan:5000', api_key=CKAN_API_KEY)
 
+"""
 res = cpa.delete_package(ckan_package_id_or_name='62bd2967-e74d-4bd8-8a80-138b2c8056d7')
 res = cpa.create_harvest_source(title='Energy JSON test {}'.format(randint(1, 999999)),
                                         url='http://www.energy.gov/data.json',
@@ -21,9 +20,6 @@ res = cpa.create_harvest_source(title='Energy JSON test {}'.format(randint(1, 99
 print(res)
 """
 
-""" already imported
+
 # import all data.gov harvest sources
-cpa.import_harvest_sources(catalog_url='https://catalog.data.gov',
-                           owner_org_id='my-local-test-organization-v2'
-                           )
-"""
+cpa.import_harvest_sources(catalog_url='https://catalog.data.gov')

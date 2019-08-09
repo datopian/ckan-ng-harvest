@@ -62,10 +62,13 @@ def get_data_json_from_url(url):
     datajson.save_validation_errors(path=config.get_datajson_headers_validation_errors_path())
 
     # the real dataset list
+    c = 0
     for dataset in datajson.datasets:
-        # add headers (previously called catalog_values)
-        dataset['headers'] = datajson.headers
-        yield(dataset)
+        c += 1
+        if config.LIMIT_DATASETS == 0 or c <= config.LIMIT_DATASETS:
+            # add headers (previously called catalog_values)
+            dataset['headers'] = datajson.headers
+            yield(dataset)
 
 
 def clean_duplicated_identifiers(rows):

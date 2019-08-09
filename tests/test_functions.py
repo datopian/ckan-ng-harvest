@@ -42,6 +42,17 @@ class FunctionsTestClass(unittest.TestCase):
 
         self.assertEqual(total, 1762)
 
+    def test_limit(self):
+        url = f'{base_url}/healthdata.gov.data.json'
+        total = 0
+        import config
+        config.LIMIT_DATASETS = 15
+        for dataset in get_data_json_from_url(url=url):
+            self.assertIsInstance(dataset, dict)
+            total += 1
+
+        self.assertEqual(total, 15)
+
     def test_clean_duplicated_identifiers_bad_field(self):
         rows = [{'bad_field_identifier': 'ya/&54'}]
 
