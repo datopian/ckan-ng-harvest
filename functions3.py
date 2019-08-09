@@ -253,7 +253,7 @@ def send_validation_error_email(errors):
         recipients = []
         for user in admin_users:
             member_details = get_user_info(user[0])
-            if member_details['email']:
+            if member_details.get('email', None) is not None:
                 recipients.append({
                     'name': member_details['name'],
                     'email': member_details['email']
