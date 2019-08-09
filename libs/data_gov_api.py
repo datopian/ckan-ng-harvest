@@ -175,7 +175,9 @@ class CKANPortalAPI:
         """
         pass
 
-    def create_package(self, ckan_package):
+    def create_package(self, ckan_package,
+                       skip_if_name_duplicated=False,  # if name already exists do not create
+                       ):
         """ POST to CKAN API to create a new package/dataset
             ckan_package is just a python dict
             https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
@@ -195,22 +197,27 @@ class CKANPortalAPI:
             raise
 
         content = req.content
-
-        if req.status_code >= 400:
-
-            error = ('ERROR creating [STATUS] CKAN package: {}'
-                     '\n\t Status code: {}'
-                     '\n\t content:{}'
-                     '\n\t Dataset {}'.format(url, req.status_code, content, ckan_package))
-            logger.error(error)
-            raise Exception(error)
-
         try:
             json_content = json.loads(content)
         except Exception as e:
             error = 'ERROR parsing JSON data: {} [{}]'.format(content, e)
             logger.error(error)
             raise
+
+        if skip_if_name_duplicated and req.status_code == 409:
+            if json_content['error']['name'] == ["That URL is already in use."]:
+                return {'success': True}
+
+        if req.status_code >= 400:
+
+            error = ('ERROR creating CKAN package: {}'
+                     '\n\t Status code: {}'
+                     '\n\t content:{}'
+                     '\n\t Dataset {}'.format(url, req.status_code, content, ckan_package))
+            logger.error(error)
+            raise Exception(error)
+
+
 
         if not json_content['success']:
             error = 'API response failed: {}'.format(json_content.get('error', None))
@@ -248,7 +255,8 @@ class CKANPortalAPI:
         if type(ckan_package['config']) == dict:
             ckan_package['config'] = json.dumps(ckan_package['config'])
 
-        return self.create_package(ckan_package=ckan_package)
+        return self.create_package(ckan_package=ckan_package,
+                                   skip_if_name_duplicated=True)
 
     def generate_name(self, title):
         # names are unique in CKAN
@@ -484,13 +492,15 @@ class CKANPortalAPI:
                 res = self.create_organization(organization=organization)
                 owner_org_id = organization['name']
 
+                # res = self.delete_package(name)
                 res = self.create_harvest_source(title=external_harvest_source['title'],
-                                                 url=external_harvest_source['url'],
-                                                 owner_org_id=owner_org_id,
-                                                 name=name,
-                                                 notes=external_harvest_source['notes'],
-                                                 source_type=source_type,
-                                                 frequency=external_harvest_source['frequency'])
+                                                url=external_harvest_source['url'],
+                                                owner_org_id=owner_org_id,
+                                                name=name,
+                                                notes=external_harvest_source['notes'],
+                                                source_type=source_type,
+                                                frequency=external_harvest_source['frequency'])
+
                 if not res['success']:
                     raise Exception(f'Failed to import harvest source {name}')
                 else:
@@ -501,11 +511,13 @@ class CKANPortalAPI:
             organization is just a python dict
             https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.organization_create
         """
-
+        logger.info(f'**** Creating Organization {organization}')
         if check_if_exists:
+            logger.info(f'Exists Organization? {organization}')
             res = self.show_organization(organization_id_or_name=organization['name'])
             if res['success']:
                 # do not create
+                logger.info(f'Avoid create Organization {organization}')
                 return res
 
         url = '{}{}'.format(self.base_url, self.organization_create_url)
