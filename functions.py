@@ -62,6 +62,9 @@ def get_data_json_from_url(url):
     datajson.save_validation_errors(path=config.get_datajson_headers_validation_errors_path())
 
     # the real dataset list
+
+    if config.LIMIT_DATASETS > 0:
+        datajson.datasets = datajson.datasets[:config.LIMIT_DATASETS]
     for dataset in datajson.datasets:
         # add headers (previously called catalog_values)
         dataset['headers'] = datajson.headers

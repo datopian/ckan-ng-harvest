@@ -35,7 +35,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         # error if duplicated
         dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
         dataset_name = slugify(dataset_title)
-        package = {'name': dataset_name, 'title': dataset_title, 'owner_org': 'my-local-test-organization-v2'}
+        package = {'name': dataset_name, 'title': dataset_title, 'owner_org': CKAN_ORG_ID}
         res = cpa.create_package(ckan_package=package)
         print(res)
         self.assertTrue(res['success'])
@@ -50,7 +50,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         tags = [{'name': 'tag001'}, {'name': 'tag002'}]
 
         package = {'name': dataset_name,
-                   'title': dataset_title, 'owner_org': 'my-local-test-organization-v2',
+                   'title': dataset_title, 'owner_org': CKAN_ORG_ID,
                    'tags': tags}
         res = cpa.create_package(ckan_package=package)
         print(res)
@@ -69,18 +69,15 @@ class CKANPortalAPITestClass(unittest.TestCase):
                                         frequency='WEEKLY')
 
         self.assertTrue(res['success'])
-        dataset_name = res['result']['name']
-        dataset_id = res['result']['id']
+        harvest_source = res['result']
 
         # read it
-        res = cpa.show_package(ckan_package_id_or_name=dataset_id)
+        res = cpa.show_package(ckan_package_id_or_name=harvest_source['id'])
         self.assertTrue(res['success'])
-        dataset = res['result']
-        self.assertEqual(dataset['url'], url)
-        self.assertEqual(dataset['title'], title)
-        self.assertEqual(dataset['type'], 'harvest')
-        self.assertEqual(dataset['source_type'], 'datajson')
-        print(dataset)
+        self.assertEqual(harvest_source['url'], url)
+        self.assertEqual(harvest_source['title'], title)
+        self.assertEqual(harvest_source['type'], 'harvest')
+        self.assertEqual(harvest_source['source_type'], 'datajson')
 
         # search for it
         results = cpa.search_harvest_packages(rows=1000,
@@ -91,19 +88,50 @@ class CKANPortalAPITestClass(unittest.TestCase):
         created_ok = False
         for datasets in results:
             for dataset in datasets:
-                print('FOUND: {}'.format(dataset['name']))
-                if dataset['name'] == dataset_name:
+                # print('FOUND: {}'.format(dataset['name']))
+                if dataset['name'] == harvest_source['name']:
                     created_ok = True
 
-        # ---------------------------------------------------------
-        # FIXME The dataset was created OK but the search didn't find it.
-        # Nopt sure what's happening
         assert created_ok == True
-        # ---------------------------------------------------------
 
-        # delete it
-        res2 = cpa.delete_package(ckan_package_id_or_name=dataset_name)
-        self.assertTrue(res['success'])
+        # create a dataset with this harvest_soure_id
+        dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
+        dataset_name = slugify(dataset_title)
+        tags = [{'name': 'tag81'}, {'name': 'tag82'}]
+
+        randval = random.randint(1, 999)
+        extras = [
+            {'key': 'harvest_source_id', 'value': harvest_source['id']},
+            {'key': 'harvest_source_title', 'value': harvest_source['title']},
+            {'key': 'harvest_ng_source_id', 'value': harvest_source['id']},
+            {'key': 'harvest_ng_source_title', 'value': harvest_source['title']},
+            {'key': 'try_a_extra', 'value': randval}
+            ]
+
+        package = {'name': dataset_name,
+                   'title': dataset_title, 'owner_org': CKAN_ORG_ID,
+                   'tags': tags,
+                   'extras': extras}
+        res2 = cpa.create_package(ckan_package=package)
+        self.assertTrue(res2['success'])
+
+        # read full dataset
+        res3 = cpa.show_package(ckan_package_id_or_name=dataset_name)
+        self.assertTrue(res3['success'])
+        ckan_dataset = res3['result']
+
+        # delete both
+        res4 = cpa.delete_package(ckan_package_id_or_name=ckan_dataset['id'])
+        self.assertTrue(res4['success'])
+
+        res5 = cpa.delete_package(ckan_package_id_or_name=harvest_source['id'])
+        self.assertTrue(res5['success'])
+
+        assert 'extras' in ckan_dataset
+        assert [str(randval)] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'try_a_extra']
+        assert [harvest_source['id']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_ng_source_id']
+        # this fails, harvest process is more complex that just add an extra
+        # assert [harvest_source['id']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_source_id']
 
     def test_get_admins(self):
 

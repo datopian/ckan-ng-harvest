@@ -217,7 +217,7 @@ def write_final_report():
 
 
 def build_validation_error_email(error_items):
-    #header errors
+    # header errors
     errors = {}
     header_errors_path = config.get_datajson_headers_validation_errors_path()
     f = open(header_errors_path, "r")
@@ -227,8 +227,13 @@ def build_validation_error_email(error_items):
     #dataset errors
     errors['dataset_errors'] = []
     for item in error_items:
-        if len(item['comparison_results']['new_data']['validation_errors']) > 0:
-            errors['dataset_errors'].append(item['comparison_results']['new_data']['validation_errors'])
+        new_data = item['comparison_results']['new_data']
+        if new_data is None:
+            continue
+        if 'validation_errors' not in new_data or new_data['validation_errors'] is None:
+            continue
+        if len(new_data['validation_errors']) > 0:
+            errors['dataset_errors'].append(new_data['validation_errors'])
 
     #duplicate errors
     flow_1_results_path = config.get_flow1_datasets_result_path()
@@ -253,7 +258,7 @@ def send_validation_error_email(errors):
         recipients = []
         for user in admin_users:
             member_details = get_user_info(user[0])
-            if member_details['email']:
+            if member_details.get('email', None) is not None:
                 recipients.append({
                     'name': member_details['name'],
                     'email': member_details['email']

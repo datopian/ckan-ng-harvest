@@ -61,7 +61,8 @@ for results in cpa.search_harvest_packages(harvest_type='harvest', source_type='
                 --harvest_source_id {{ params.harvest_source_id }} \
                 --ckan_owner_org_id {{ params.ckan_org_id }} \
                 --catalog_url {{ params.catalog_url }} \
-                --ckan_api_key {{ params.ckan_api_key }}
+                --ckan_api_key {{ params.ckan_api_key }} \
+                --limit_dataset 10 # limit for test, remove for production
             """
 
         name = harvest_source['name']

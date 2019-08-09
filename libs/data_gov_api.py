@@ -44,9 +44,10 @@ class CKANPortalAPI:
             headers['X-CKAN-API-Key'] = self.api_key
         return headers
 
-    def search_harvest_packages(self, rows=1000, harvest_source_id=None,  # just one harvest source
-                                                 harvest_type=None,  # harvest for harvest sources
-                                                 source_type=None):  # datajson for
+    def search_harvest_packages(self, rows=1000,
+                                harvest_source_id=None,  # just one harvest source
+                                harvest_type=None,  # harvest for harvest sources
+                                source_type=None):  # datajson for
         """ search harvested packages or harvest sources
             "rows" is the page size.
             You could search for an specific harvest_source_id """
@@ -62,7 +63,8 @@ class CKANPortalAPI:
 
             params = {'start': start, 'rows': rows}  # , 'sort': sort}
             if harvest_source_id is not None:
-                params['q'] = f'harvest_source_id:{harvest_source_id}'
+                # params['q'] = f'harvest_source_id:{harvest_source_id}'
+                params['ext_harvest_source_id'] = harvest_source_id
             elif harvest_type is not None:
                 # at my local instance I need this.
                 # I not sure why, in another public instances is not needed
@@ -100,14 +102,14 @@ class CKANPortalAPI:
             results = result['results']
             real_results_count = len(results)
             self.total_packages += real_results_count
-            logger.debug(f'{real_results_count} results')
+            logger.info(f'{real_results_count} results')
 
             if real_results_count == 0:
                 url = None
             else:
                 start += rows
                 self.package_list += results
-                logger.info(f'datasets found: {results}')
+                logger.debug(f'datasets found: {results}')
                 yield(results)
 
     def get_all_packages(self, harvest_source_id=None,  # just one harvest source
@@ -449,7 +451,6 @@ class CKANPortalAPI:
         return json_content
 
     def import_harvest_sources(self, catalog_url,
-                               owner_org_id,  # we use our local org
                                harvest_type='harvest',
                                source_type='datajson',
                                delete_local_harvest_sources=True):
@@ -459,18 +460,30 @@ class CKANPortalAPI:
             logger.info(f'Deleting local harvest sources')
             for harvest_sources in self.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
                 for harvest_source in harvest_sources:
-                    harvest_source_id = harvest_source['id']
-                    res = self.delete_package(ckan_package_id_or_name=harvest_source_id)
+                    harvest_source_name = harvest_source['name']
+                    logger.info(f'Deleting local harvest {harvest_source_name}')
+                    res = self.delete_package(ckan_package_id_or_name=harvest_source_name)
                     if not res['success']:
-                        raise Exception(f'Failed to delete ID {harvest_source_id}')
+                        raise Exception(f'Failed to delete {harvest_source_name}')
                     else:
-                        logger.info(f'Deleted ID {harvest_source_id}')
+                        logger.info(f'Deleted {harvest_source_name}')
 
         logger.info(f'Getting external harvest sources for {catalog_url}')
         external_portal = CKANPortalAPI(base_url=catalog_url)
+
         for external_harvest_sources in external_portal.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
             for external_harvest_source in external_harvest_sources:
                 name = external_harvest_source['name']
+
+                organization = external_harvest_source['organization']
+                logger.info(f'**** Importing Organization {organization}')
+                # copy organization locally
+                del organization['id']  # drop original ID
+                del organization['created']
+                del organization['revision_id']
+                res = self.create_organization(organization=organization)
+                owner_org_id = organization['name']
+
                 res = self.create_harvest_source(title=external_harvest_source['title'],
                                                  url=external_harvest_source['url'],
                                                  owner_org_id=owner_org_id,
@@ -481,7 +494,7 @@ class CKANPortalAPI:
                 if not res['success']:
                     raise Exception(f'Failed to import harvest source {name}')
                 else:
-                    logger.info(f'Deleted ID {harvest_source_id}')
+                    logger.info(f'Deleted {name}')
 
     def create_organization(self, organization, check_if_exists=True):
         """ POST to CKAN API to create a new organization
