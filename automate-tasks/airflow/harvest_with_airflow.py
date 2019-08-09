@@ -3,6 +3,11 @@ Harvester DAGs
  This file must live at the airflow dags folder
 """
 
+app_path = '/home/hudson/dev/datopian/harvesting-data-json-v2'
+env_path = '/home/hudson/envs/data_json_etl'
+import sys
+sys.path.append(app_path)
+
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta
@@ -25,6 +30,7 @@ default_args = {
     # 'end_date': datetime(2020, 2, 1),
 }
 
+logger.info('CREATING DAG')
 dag = DAG('harvest_all_data_gov', default_args=default_args,
           schedule_interval=timedelta(weeks=1))
 
@@ -47,7 +53,9 @@ for results in cpa.search_harvest_packages(harvest_type='harvest', source_type='
         organization = harvest_source['organization']
 
         templated_harvest_command = """
-            python3 harvest.py \
+            source {{ params.env_path }}/bin/activate
+            cd {{ params.app_path }}
+            python harvest.py \
                 --name {{ params.name }} \
                 --url {{ params.data_json_url }} \
                 --harvest_source_id {{ params.harvest_source_id }} \
@@ -61,6 +69,8 @@ for results in cpa.search_harvest_packages(harvest_type='harvest', source_type='
         # we need to get our local organizaion ID
         ckan_org_id = harvest_source['owner_org']
         params = {
+            'env_path': env_path,
+            'app_path': app_path,
             'name': name,
             'data_json_url': url,
             'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID
