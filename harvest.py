@@ -24,4 +24,9 @@ commands = [f'python3 flow.py --name {args.name} --url {args.url} --limit_datase
 
 for cmd in commands:
     logger.info(f'**************\nExecute: {cmd}\n**************')
-    os.system(cmd)
+    res = os.system(cmd)
+    if res == 0:
+        logger.info(f'**************\nCOMD OK: {cmd}\n**************')
+    else:
+        raise Exception(f'Error executing {cmd}')
+
