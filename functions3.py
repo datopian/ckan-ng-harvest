@@ -185,7 +185,7 @@ def write_results_to_ckan(rows):
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL, api_key=config.CKAN_API_KEY)
 
             try:
-                ckan_response = cpa.delete_package(ckan_package_ir_or_name=ckan_id)
+                ckan_response = cpa.delete_package(ckan_package_id_or_name=ckan_id)
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 

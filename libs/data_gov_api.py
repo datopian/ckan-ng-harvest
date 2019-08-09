@@ -20,6 +20,9 @@ class CKANPortalAPI:
     package_update_url = '/api/3/action/package_update'
     package_delete_url = '/api/3/action/package_delete'
     package_show_url = '/api/3/action/package_show'
+    organization_create_url = '/api/3/action/organization_create'
+    organization_update_url = '/api/3/action/organization_update'
+    organization_show_url = '/api/3/action/organization_show'
 
     # search for harvest sources
     package_search_harvested_sources_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'  # all the sources in a CKAN instance (959 results in data.gov)
@@ -292,13 +295,13 @@ class CKANPortalAPI:
 
         return json_content
 
-    def delete_package(self, ckan_package_ir_or_name):
+    def delete_package(self, ckan_package_id_or_name):
         """ POST to CKAN API to delete a new package/dataset
             https://docs.ckan.org/en/2.8/api/#ckan.logic.action.delete.package_delete
         """
         url = '{}{}'.format(self.base_url, self.package_delete_url)
         headers = self.get_request_headers(include_api_key=True)
-        data = {'id': ckan_package_ir_or_name}
+        data = {'id': ckan_package_id_or_name}
         logger.error(f'POST {url} headers:{headers} data:{data}')
         try:
             req = requests.post(url, data=data, headers=headers)
@@ -325,12 +328,12 @@ class CKANPortalAPI:
 
         return json_content
 
-    def show_package(self, ckan_package_ir_or_name):
+    def show_package(self, ckan_package_id_or_name):
         """ GET to CKAN API to show a package/dataset """
 
         url = '{}{}'.format(self.base_url, self.package_show_url)
         headers = self.get_request_headers()
-        data = {'id': ckan_package_ir_or_name}
+        data = {'id': ckan_package_id_or_name}
         logger.info(f'POST {url} headers:{headers} data:{data}')
         try:
             req = requests.get(url, params=data, headers=headers)
@@ -338,6 +341,7 @@ class CKANPortalAPI:
             error = 'ERROR showing CKAN package: {} [{}]'.format(url, e)
             raise
 
+        content = req.content
         if req.status_code >= 400:
             error = 'ERROR showing CKAN package: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
             logger.error(error)
@@ -456,7 +460,7 @@ class CKANPortalAPI:
             for harvest_sources in self.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
                 for harvest_source in harvest_sources:
                     harvest_source_id = harvest_source['id']
-                    res = self.delete_package(ckan_package_ir_or_name=harvest_source_id)
+                    res = self.delete_package(ckan_package_id_or_name=harvest_source_id)
                     if not res['success']:
                         raise Exception(f'Failed to delete ID {harvest_source_id}')
                     else:
@@ -478,5 +482,87 @@ class CKANPortalAPI:
                     raise Exception(f'Failed to import harvest source {name}')
                 else:
                     logger.info(f'Deleted ID {harvest_source_id}')
+
+    def create_organization(self, organization, check_if_exists=True):
+        """ POST to CKAN API to create a new organization
+            organization is just a python dict
+            https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.organization_create
+        """
+
+        if check_if_exists:
+            res = self.show_organization(organization_id_or_name=organization['name'])
+            if res['success']:
+                # do not create
+                return res
+
+        url = '{}{}'.format(self.base_url, self.organization_create_url)
+        headers = self.get_request_headers(include_api_key=True)
+
+        headers['Content-Type'] = 'application/json'
+        organization = json.dumps(organization)
+
+        logger.info(f'POST {url} headers:{headers} data:{organization}')
+
+        try:
+            req = requests.post(url, data=organization, headers=headers)
+        except Exception as e:
+            error = 'ERROR creating [POST] organization: {} [{}]'.format(url, e)
+            raise
+
+        content = req.content
+
+        if req.status_code >= 400:
+
+            error = ('ERROR creating [STATUS] organization: {}'
+                     '\n\t Status code: {}'
+                     '\n\t content:{}'
+                     '\n\t Dataset {}'.format(url, req.status_code, content, organization))
+            logger.error(error)
+            raise Exception(error)
+
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data: {} [{}]'.format(content, e)
+            logger.error(error)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            logger.error(error)
+
+        return json_content
+
+    def show_organization(self, organization_id_or_name):
+        """ GET to CKAN API to show a organization """
+
+        url = '{}{}'.format(self.base_url, self.organization_show_url)
+        headers = self.get_request_headers()
+        data = {'id': organization_id_or_name}
+        logger.info(f'POST {url} headers:{headers} data:{data}')
+        try:
+            req = requests.get(url, params=data, headers=headers)
+        except Exception as e:
+            error = 'ERROR showing organization: {} [{}]'.format(url, e)
+            raise
+
+        content = req.content
+
+        if req.status_code >= 400 and req.status_code != 404:
+            error = 'ERROR showing organization: {} \n\t Status code: {} \n\t content:{}'.format(url, req.status_code, content)
+            logger.error(error)
+            raise Exception(error)
+
+        try:
+            json_content = json.loads(content)
+        except Exception as e:
+            error = 'ERROR parsing JSON data from show_organization: {} [{}]'.format(content, e)
+            raise
+
+        if not json_content['success']:
+            error = 'API response failed: {}'.format(json_content.get('error', None))
+            logger.error(error)
+
+        return json_content
 
 

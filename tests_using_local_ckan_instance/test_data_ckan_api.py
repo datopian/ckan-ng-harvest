@@ -73,7 +73,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         dataset_id = res['result']['id']
 
         # read it
-        res = cpa.show_package(ckan_package_ir_or_name=dataset_id)
+        res = cpa.show_package(ckan_package_id_or_name=dataset_id)
         self.assertTrue(res['success'])
         dataset = res['result']
         self.assertEqual(dataset['url'], url)
@@ -102,7 +102,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         # ---------------------------------------------------------
 
         # delete it
-        res2 = cpa.delete_package(ckan_package_ir_or_name=dataset_name)
+        res2 = cpa.delete_package(ckan_package_id_or_name=dataset_name)
         self.assertTrue(res['success'])
 
     def test_get_admins(self):
@@ -119,4 +119,34 @@ class CKANPortalAPITestClass(unittest.TestCase):
 
         res = cpa.get_user_info(user_id=CKAN_VALID_USER_ID)
         print(res)
+        self.assertTrue(res['success'])
+
+    def test_create_organization(self):
+
+        cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
+
+        title = 'Organization number {}'.format(random.randint(1, 999999))
+        name = slugify(title)
+
+        organization = {
+            'name': name,  # (string) – the name of the organization
+            'id': '',  #  (string) – the id of the organization (optional)
+            'title': title,  #  (string) – the title of the organization (optional)
+            'description': 'Description {}'.format(title),  #  (string) – the description of the organization (optional)
+            'image_url': 'http://sociologycanvas.pbworks.com/f/1357178020/1357178020/Structure.JPG',  #  (string) – the URL to an image to be displayed on the organization’s page (optional)
+            'state': 'active',  #  (string) – the current state of the organization, e.g. 'active' or 'deleted'
+            'approval_status': 'approved'  #  (string) – (optional)
+        }
+
+        res = cpa.create_organization(organization=organization)
+        print(res)
+        self.assertTrue(res['success'])
+
+        # try to duplicate ir
+        res = cpa.create_organization(organization=organization, check_if_exists=True)
+        print(res)
+        self.assertTrue(res['success'])
+
+        res = cpa.show_organization(organization_id_or_name=name)
+        print('**************\n{}\n****************\n'.format(res))
         self.assertTrue(res['success'])

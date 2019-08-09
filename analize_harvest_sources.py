@@ -9,7 +9,7 @@ cpa = CKANPortalAPI(base_url='https://catalog.data.gov')
 
 # write results as CSV
 csvfile = open('harvest_datasets_datagov_analysis.csv', 'w')
-fieldnames = ['url', 'title', 'error', 'source_type', 'frecuency',
+fieldnames = ['url', 'title', 'error', 'source_type', 'frequency',
               'collections', 'child_datasets',
               'download_ok',
               # 'download_error',
@@ -41,13 +41,13 @@ for results in cpa.search_harvest_packages(harvest_type='harvest', source_type='
 
         title = local_harvest_source['title']
         source_type = local_harvest_source['source_type']
-        frecuency = local_harvest_source.get('frecuency', None)
+        frequency = local_harvest_source.get('frequency', None)
 
         # for final results
         result = {'url': url,
                   'title': title,
                   'source_type': source_type,
-                  'frecuency': frecuency,
+                  'frequency': frequency,
                   'error': '',
                   'child_datasets': 0,
                   'collections': 0}
