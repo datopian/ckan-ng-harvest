@@ -48,12 +48,12 @@ for results in cpa.search_harvest_packages(harvest_type='harvest', source_type='
 
         templated_harvest_command = """
             python3 harvest.py \
-                --name {{ name }} \
-                --url {{ data_json_url }} \
-                --harvest_source_id {{ harvest_source_id }} \
-                --ckan_owner_org_id {{ ckan_org_id }} \
-                --catalog_url {{ catalog_url }} \
-                --ckan_api_key {{ ckan_api_key }}
+                --name {{ params.name }} \
+                --url {{ params.data_json_url }} \
+                --harvest_source_id {{ params.harvest_source_id }} \
+                --ckan_owner_org_id {{ params.ckan_org_id }} \
+                --catalog_url {{ params.catalog_url }} \
+                --ckan_api_key {{ params.ckan_api_key }}
             """
 
         name = harvest_source['name']
