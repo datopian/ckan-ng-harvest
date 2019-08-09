@@ -18,12 +18,12 @@ Test for a small version of education data.json
 
 ```
 python3 harvest.py \
-  --name smalleducation \
+  --name boisetest \
   --url https://gitlab.com/datopian/ckan-ng-harvest/raw/develop/public/small-education.json \
-  --harvest_source_id d6ce0a12-5d48-452e-b97d-14dcb8426899 \
-  --ckan_owner_org_id my-local-test-organization-v2 \
+  --harvest_source_id 79195ccb-0def-4bd2-a5f7-c05433056347 \
+  --ckan_owner_org_id city-of-boise \
   --catalog_url http://ckan:5000 \
-  --ckan_api_key 79744bbe-f27b-46c8-a1e0-8f7264746c86 \
+  --ckan_api_key 2de6add4-bd1c-4f66-9e2b-37f4bc3ddd0f \
   --limit_dataset 10  # just test 10 datasets
 ```
 
