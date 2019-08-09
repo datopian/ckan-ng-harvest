@@ -63,7 +63,8 @@ class CKANPortalAPI:
 
             params = {'start': start, 'rows': rows}  # , 'sort': sort}
             if harvest_source_id is not None:
-                params['q'] = f'harvest_source_id:{harvest_source_id}'
+                # params['q'] = f'harvest_source_id:{harvest_source_id}'
+                params['ext_harvest_source_id'] = harvest_source_id
             elif harvest_type is not None:
                 # at my local instance I need this.
                 # I not sure why, in another public instances is not needed
