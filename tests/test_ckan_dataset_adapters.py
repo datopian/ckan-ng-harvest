@@ -90,6 +90,13 @@ class TestCKANDatasetAdapter(object):
         assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
         assert ['USA GOV > Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
 
+        t2 = self.test_datajson_dataset
+        t2['harvest_source_id'] = 'XXXXX'
+
+        djss.original_dataset = t2
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ['XXXXX'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_source_id']
+
     def test_collections(self):
         djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
         # ORG is required!

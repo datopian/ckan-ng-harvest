@@ -25,13 +25,3 @@ commands = [f'python3 flow.py --name {args.name} --url {args.url} --limit_datase
 for cmd in commands:
     logger.info(f'**************\nExecute: {cmd}\n**************')
     os.system(cmd)
-
-""" local example
-python3 harvest.py \
-    --name agriculture \
-    --url http://www.usda.gov/data.json \
-    --harvest_source_id 50ca39af-9ddb-466d-8cf3-84d67a204346 \
-    --ckan_owner_org_id my-local-test-organization-v2 \
-    --catalog_url http://ckan:5000 \
-    --ckan_api_key 79744bbe-f27b-46c8-a1e0-8f7264746c86
-"""

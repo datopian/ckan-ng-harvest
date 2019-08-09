@@ -44,9 +44,10 @@ class CKANPortalAPI:
             headers['X-CKAN-API-Key'] = self.api_key
         return headers
 
-    def search_harvest_packages(self, rows=1000, harvest_source_id=None,  # just one harvest source
-                                                 harvest_type=None,  # harvest for harvest sources
-                                                 source_type=None):  # datajson for
+    def search_harvest_packages(self, rows=1000,
+                                harvest_source_id=None,  # just one harvest source
+                                harvest_type=None,  # harvest for harvest sources
+                                source_type=None):  # datajson for
         """ search harvested packages or harvest sources
             "rows" is the page size.
             You could search for an specific harvest_source_id """

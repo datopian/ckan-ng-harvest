@@ -35,7 +35,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         # error if duplicated
         dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
         dataset_name = slugify(dataset_title)
-        package = {'name': dataset_name, 'title': dataset_title, 'owner_org': 'my-local-test-organization-v2'}
+        package = {'name': dataset_name, 'title': dataset_title, 'owner_org': CKAN_ORG_ID}
         res = cpa.create_package(ckan_package=package)
         print(res)
         self.assertTrue(res['success'])
@@ -50,7 +50,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         tags = [{'name': 'tag001'}, {'name': 'tag002'}]
 
         package = {'name': dataset_name,
-                   'title': dataset_title, 'owner_org': 'my-local-test-organization-v2',
+                   'title': dataset_title, 'owner_org': CKAN_ORG_ID,
                    'tags': tags}
         res = cpa.create_package(ckan_package=package)
         print(res)
@@ -95,11 +95,21 @@ class CKANPortalAPITestClass(unittest.TestCase):
                 if dataset['name'] == dataset_name:
                     created_ok = True
 
-        # ---------------------------------------------------------
-        # FIXME The dataset was created OK but the search didn't find it.
-        # Nopt sure what's happening
         assert created_ok == True
-        # ---------------------------------------------------------
+
+        # create a dataset with this harvest_soure_id
+        dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
+        dataset_name = slugify(dataset_title)
+        tags = [{'name': 'tag001'}, {'name': 'tag002'}]
+        extras = [{'key': 'harvest_source_id', 'value': dataset_id}]
+
+        package = {'name': dataset_name,
+                   'title': dataset_title, 'owner_org': CKAN_ORG_ID,
+                   'tags': tags,
+                   'extras': extras}
+        res = cpa.create_package(ckan_package=package)
+        print(res)
+        self.assertTrue(res['success'])
 
         # delete it
         res2 = cpa.delete_package(ckan_package_id_or_name=dataset_name)
