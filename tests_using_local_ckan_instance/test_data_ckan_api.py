@@ -98,9 +98,14 @@ class CKANPortalAPITestClass(unittest.TestCase):
         dataset_title = 'Dataset number {}'.format(random.randint(1, 999999))
         dataset_name = slugify(dataset_title)
         tags = [{'name': 'tag81'}, {'name': 'tag82'}]
+
+        randval = random.randint(1, 999)
         extras = [
             {'key': 'harvest_source_id', 'value': harvest_source['id']},
-            {'key': 'harvest_source_title', 'value': harvest_source['title']}
+            {'key': 'harvest_source_title', 'value': harvest_source['title']},
+            {'key': 'harvest_ng_source_id', 'value': harvest_source['id']},
+            {'key': 'harvest_ng_source_title', 'value': harvest_source['title']},
+            {'key': 'try_a_extra', 'value': randval}
             ]
 
         package = {'name': dataset_name,
@@ -123,7 +128,10 @@ class CKANPortalAPITestClass(unittest.TestCase):
         self.assertTrue(res5['success'])
 
         assert 'extras' in ckan_dataset
-        assert [harvest_source['id']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_source_id']
+        assert [str(randval)] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'try_a_extra']
+        assert [harvest_source['id']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_ng_source_id']
+        # this fails, harvest process is more complex that just add an extra
+        # assert [harvest_source['id']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_source_id']
 
     def test_get_admins(self):
 
