@@ -38,12 +38,13 @@ logger.info(f'DAG created {dag}')
 catalog_url = 'http://ckan:5000'
 catalog_api_key = '2de6add4-bd1c-4f66-9e2b-37f4bc3ddd0f'
 
-cpa = CKANPortalAPI(base_url=catalog_url)
+cpa = CKANPortalAPI(base_url=catalog_url, api_key=catalog_api_key)
 urls = []
 last_task = None
 
-for results in cpa.search_harvest_packages(harvest_type='harvest', source_type='datajson'):
-    for harvest_source in results:
+results = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type='datajson')
+for datasets in results:
+    for harvest_source in datasets:
 
         url = harvest_source['url']
         if url in urls:  # avoid duplicates

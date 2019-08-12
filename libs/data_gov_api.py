@@ -504,7 +504,7 @@ class CKANPortalAPI:
                 if not res['success']:
                     raise Exception(f'Failed to import harvest source {name}')
                 else:
-                    logger.info(f'Deleted {name}')
+                    logger.info(f'Created {name}')
 
     def create_organization(self, organization, check_if_exists=True):
         """ POST to CKAN API to create a new organization
