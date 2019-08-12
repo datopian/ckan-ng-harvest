@@ -81,8 +81,8 @@ class CKANPortalAPITestClass(unittest.TestCase):
 
         # search for it
         results = cpa.search_harvest_packages(rows=1000,
-                                               harvest_type='harvest',  # harvest for harvest sources
-                                               # source_type='datajson'
+                                               harvest_type='harvest',
+                                               source_type='datajson'
                                                )
 
         created_ok = False
