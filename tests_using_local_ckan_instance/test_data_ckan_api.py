@@ -150,7 +150,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
                     # we just expect one dataset
                     error = '{} != {} ------ {}'.format(dataset['name'], dataset_name, dataset)
                     logger.error(error)
-                    # assert error == False
+                    assert error == False
 
         assert connected_ok == True
         assert total_datasets_in_source == 1
