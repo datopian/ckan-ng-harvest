@@ -3,6 +3,7 @@ from libs.data_gov_api import CKANPortalAPI
 import random
 from slugify import slugify
 import json
+from logs import logger
 # put you settings in the local_settings hidden-to-github file
 from tests_using_local_ckan_instance.settings import (HARVEST_SOURCE_ID,
                                                       CKAN_API_KEY,
@@ -57,8 +58,10 @@ class CKANPortalAPITestClass(unittest.TestCase):
         self.assertTrue(res['success'])
 
     def test_create_harvest_source(self):
-
+        logger.info('Creating harvest source')
         cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
+        cpa.delete_all_harvest_sources(harvest_type='harvest', source_type='datajson')
+
         title = 'Energy JSON test {}'.format(random.randint(1, 999999))
         url = 'http://www.energy.gov/data-{}.json'.format(random.randint(1, 999999))
         res = cpa.create_harvest_source(title=title,
@@ -70,6 +73,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
 
         self.assertTrue(res['success'])
         harvest_source = res['result']
+        logger.info('Created: {}'.format(res['success']))
 
         # read it
         res = cpa.show_package(ckan_package_id_or_name=harvest_source['id'])
@@ -86,11 +90,15 @@ class CKANPortalAPITestClass(unittest.TestCase):
                                                )
 
         created_ok = False
+
         for datasets in results:
             for dataset in datasets:
                 # print('FOUND: {}'.format(dataset['name']))
                 if dataset['name'] == harvest_source['name']:
                     created_ok = True
+                    logger.info('Found!')
+                else:
+                    logger.info('Other harvest source: {}'.format(dataset['name']))
 
         assert created_ok == True
 
@@ -103,6 +111,7 @@ class CKANPortalAPITestClass(unittest.TestCase):
         extras = [
             {'key': 'harvest_source_id', 'value': harvest_source['id']},
             {'key': 'harvest_source_title', 'value': harvest_source['title']},
+            # {'key': 'harvest_object_id', 'value': harvest_source['id']},  # ? not sure
             {'key': 'harvest_ng_source_id', 'value': harvest_source['id']},
             {'key': 'harvest_ng_source_title', 'value': harvest_source['title']},
             {'key': 'try_a_extra', 'value': randval}
@@ -114,24 +123,50 @@ class CKANPortalAPITestClass(unittest.TestCase):
                    'extras': extras}
         res2 = cpa.create_package(ckan_package=package)
         self.assertTrue(res2['success'])
+        logger.info('Package with harvest source: {}'.format(res2['success']))
 
         # read full dataset
         res3 = cpa.show_package(ckan_package_id_or_name=dataset_name)
         self.assertTrue(res3['success'])
         ckan_dataset = res3['result']
-
-        # delete both
-        res4 = cpa.delete_package(ckan_package_id_or_name=ckan_dataset['id'])
-        self.assertTrue(res4['success'])
-
-        res5 = cpa.delete_package(ckan_package_id_or_name=harvest_source['id'])
-        self.assertTrue(res5['success'])
+        logger.info('Package with harvest source readed: {}'.format(ckan_dataset))
 
         assert 'extras' in ckan_dataset
         assert [str(randval)] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'try_a_extra']
+        # my custom ID (not connected to a real harvest ID)
         assert [harvest_source['id']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_ng_source_id']
+
+        # check if this package is related to harvest source
+        total_datasets_in_source = 0
+        datasets_from_source = cpa.search_harvest_packages(harvest_source_id=harvest_source['id'])
+        connected_ok = False
+        for datasets in datasets_from_source:
+            for dataset in datasets:
+                total_datasets_in_source += 1
+                if dataset['name'] == dataset_name:
+                    connected_ok = True
+                    logger.info('Found!')
+                else:
+                    # we just expect one dataset
+                    error = '{} != {} ------ {}'.format(dataset['name'], dataset_name, dataset)
+                    logger.error(error)
+                    # assert error == False
+
+        assert connected_ok == True
+        assert total_datasets_in_source == 1
+        logger.info(f' +++++++++++++ total_datasets_in_source={total_datasets_in_source}')
+
         # this fails, harvest process is more complex that just add an extra
         # assert [harvest_source['id']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_source_id']
+
+        # delete both
+        logger.info('Delete CKAN package: {}'.format(ckan_dataset['id']))
+        res4 = cpa.delete_package(ckan_package_id_or_name=ckan_dataset['id'])
+        self.assertTrue(res4['success'])
+
+        logger.info('Delete Harvest source: {}'.format(harvest_source['id']))
+        res5 = cpa.delete_package(ckan_package_id_or_name=harvest_source['id'])
+        self.assertTrue(res5['success'])
 
     def test_get_admins(self):
 

@@ -63,8 +63,25 @@ class CKANPortalAPI:
 
             params = {'start': start, 'rows': rows}  # , 'sort': sort}
             if harvest_source_id is not None:
+                # you can't search by any extras
+                # https://github.com/ckan/ckan/blob/30ca7aae2f2aca6a19a2e6ed29148f8428e25c86/ckan/logic/action/get.py#L1852
+                # params['ext_harvest_source_id'] = harvest_source_id
+                # params['ext_harvest_ng_source_id'] = harvest_source_id
+                # params['extras'] = {'ext_harvest_ng_source_id': harvest_source_id}
                 # params['q'] = f'harvest_source_id:{harvest_source_id}'
-                params['ext_harvest_source_id'] = harvest_source_id
+
+                # ---------------
+                # this must work
+                # ---------------
+                # https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/helpers.py#L38
+                # params['fq'] = f'+harvest_source_id:"{harvest_source_id}"'
+                # but is not working. For some reason exta harvest_source_id doesn't save
+
+                # out new extra is working
+                params['fq'] = f'+harvest_ng_source_id:"{harvest_source_id}"'
+
+
+
             elif harvest_type is not None:
                 # at my local instance I need this.
                 # I not sure why, in another public instances is not needed
@@ -79,7 +96,8 @@ class CKANPortalAPI:
 
             headers = self.get_request_headers()
             try:
-                req = requests.get(url, params=params, headers=headers)
+                # req = requests.get(url, params=params, headers=headers)
+                req = requests.post(url, data=params, headers=headers)
             except Exception as e:
                 error = 'ERROR Donwloading package list: {} [{}]'.format(url, e)
                 raise ValueError('Failed to get package list at {}'.format(url))
@@ -216,8 +234,6 @@ class CKANPortalAPI:
                      '\n\t Dataset {}'.format(url, req.status_code, content, ckan_package))
             logger.error(error)
             raise Exception(error)
-
-
 
         if not json_content['success']:
             error = 'API response failed: {}'.format(json_content.get('error', None))
@@ -458,6 +474,23 @@ class CKANPortalAPI:
 
         return json_content
 
+    def delete_all_harvest_sources(self, harvest_type='harvest', source_type='datajson'):
+        logger.info(f'Deleting local harvest sources')
+        deleted = 0
+        for harvest_sources in self.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
+            for harvest_source in harvest_sources:
+                harvest_source_name = harvest_source['name']
+                logger.info(f'Deleting local harvest {harvest_source_name}')
+                res = self.delete_package(ckan_package_id_or_name=harvest_source_name)
+                if not res['success']:
+                    raise Exception(f'Failed to delete {harvest_source_name}')
+                else:
+                    logger.info(f'Deleted {harvest_source_name}')
+                    deleted += 1
+
+        logger.info(f'{deleted} harvest sources deleted')
+        return deleted
+
     def import_harvest_sources(self, catalog_url,
                                harvest_type='harvest',
                                source_type='datajson',
@@ -465,16 +498,7 @@ class CKANPortalAPI:
         """ import harvest sources from another CKAN open data portal """
 
         if delete_local_harvest_sources:
-            logger.info(f'Deleting local harvest sources')
-            for harvest_sources in self.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
-                for harvest_source in harvest_sources:
-                    harvest_source_name = harvest_source['name']
-                    logger.info(f'Deleting local harvest {harvest_source_name}')
-                    res = self.delete_package(ckan_package_id_or_name=harvest_source_name)
-                    if not res['success']:
-                        raise Exception(f'Failed to delete {harvest_source_name}')
-                    else:
-                        logger.info(f'Deleted {harvest_source_name}')
+            deleted = self.delete_all_harvest_sources()
 
         logger.info(f'Getting external harvest sources for {catalog_url}')
         external_portal = CKANPortalAPI(base_url=catalog_url)
