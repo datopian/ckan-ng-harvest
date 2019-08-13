@@ -44,7 +44,9 @@ class CKANPortalAPI:
             headers['X-CKAN-API-Key'] = self.api_key
         return headers
 
-    def search_harvest_packages(self, rows=1000,
+    def search_harvest_packages(self,
+                                rows=1000,
+                                method='POST',  # POST work in CKAN 2.8, fails in 2.3
                                 harvest_source_id=None,  # just one harvest source
                                 harvest_type=None,  # harvest for harvest sources
                                 source_type=None):  # datajson for
@@ -75,7 +77,7 @@ class CKANPortalAPI:
                 # ---------------
                 # https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/helpers.py#L38
                 # params['fq'] = f'+harvest_source_id:"{harvest_source_id}"'
-                # but is not working. For some reason exta harvest_source_id doesn't save
+                # but is not working. For some reason exta harvest_source_id doesn't exists
 
                 # out new extra is working
                 params['fq'] = f'+harvest_ng_source_id:"{harvest_source_id}"'
@@ -86,7 +88,6 @@ class CKANPortalAPI:
                 params['fq'] = f'+dataset_type:{harvest_type}'
                 if source_type is not None:
                     params['q'] = f'(type:{harvest_type} source_type:{source_type})'
-
                 else:
                     params['q'] = f'(type:{harvest_type})'
 
@@ -94,13 +95,25 @@ class CKANPortalAPI:
 
             headers = self.get_request_headers()
             try:
-                # req = requests.get(url, params=params, headers=headers)
-                req = requests.post(url, data=params, headers=headers)
+                if method == 'POST':  # depend on CKAN version
+                    req = requests.post(url, data=params, headers=headers)
+                else:
+                    req = requests.get(url, params=params, headers=headers)
+
             except Exception as e:
                 error = 'ERROR Donwloading package list: {} [{}]'.format(url, e)
                 raise ValueError('Failed to get package list at {}'.format(url))
 
             content = req.content
+
+            if req.status_code >= 400:
+                error = ('ERROR searching CKAN package: {}'
+                         '\n\t Status code: {}'
+                         '\n\t Params: {}'
+                         '\n\t content:{}'.format(url, req.status_code, params, content))
+                logger.error(error)
+                raise Exception(error)
+
             try:
                 json_content = json.loads(content)  # check for encoding errors
             except Exception as e:
@@ -192,7 +205,7 @@ class CKANPortalAPI:
         pass
 
     def create_package(self, ckan_package,
-                       skip_if_name_duplicated=False,  # if name already exists do not create
+                       on_duplicated='RAISE',  # if name already exists 'RAISE' 'SKIP' | 'DELETE'
                        ):
         """ POST to CKAN API to create a new package/dataset
             ckan_package is just a python dict
@@ -202,12 +215,12 @@ class CKANPortalAPI:
         headers = self.get_request_headers(include_api_key=True)
 
         headers['Content-Type'] = 'application/json'
-        ckan_package = json.dumps(ckan_package)
+        ckan_package_str = json.dumps(ckan_package)
 
         logger.info(f'POST {url} headers:{headers} data:{ckan_package}')
 
         try:
-            req = requests.post(url, data=ckan_package, headers=headers)
+            req = requests.post(url, data=ckan_package_str, headers=headers)
         except Exception as e:
             error = 'ERROR creating [POST] CKAN package: {} [{}]'.format(url, e)
             raise
@@ -220,12 +233,22 @@ class CKANPortalAPI:
             logger.error(error)
             raise
 
-        if skip_if_name_duplicated and req.status_code == 409:
+        if req.status_code == 409:
             if json_content['error']['name'] == ["That URL is already in use."]:
-                return {'success': True}
-
-        if req.status_code >= 400:
-
+                logger.error(f'Package Already exists! ACTION: {on_duplicated}')
+                if on_duplicated == 'SKIP':
+                    return {'success': True}
+                elif on_duplicated == 'DELETE':
+                    self.delete_package(ckan_package_id_or_name=ckan_package['name'])
+                    return self.create_package(ckan_package=ckan_package, on_duplicated='RAISE')
+                elif on_duplicated == 'RAISE':
+                    error = ('DUPLICATED CKAN package: {}'
+                             '\n\t Status code: {}'
+                             '\n\t content:{}'
+                             '\n\t Dataset {}'.format(url, req.status_code, content, ckan_package))
+                    logger.error(error)
+                    raise Exception(error)
+        elif req.status_code >= 400:
             error = ('ERROR creating CKAN package: {}'
                      '\n\t Status code: {}'
                      '\n\t content:{}'
@@ -270,7 +293,7 @@ class CKANPortalAPI:
             ckan_package['config'] = json.dumps(ckan_package['config'])
 
         return self.create_package(ckan_package=ckan_package,
-                                   skip_if_name_duplicated=True)
+                                   on_duplicated='DELETE')
 
     def generate_name(self, title):
         # names are unique in CKAN
@@ -490,6 +513,7 @@ class CKANPortalAPI:
         return deleted
 
     def import_harvest_sources(self, catalog_url,
+                               method='GET',  # depend on CKAN version, GET for older versions
                                harvest_type='harvest',
                                source_type='datajson',
                                delete_local_harvest_sources=True):
@@ -501,7 +525,11 @@ class CKANPortalAPI:
         logger.info(f'Getting external harvest sources for {catalog_url}')
         external_portal = CKANPortalAPI(base_url=catalog_url)
 
-        for external_harvest_sources in external_portal.search_harvest_packages(harvest_type=harvest_type, source_type=source_type):
+        total_sources = 0
+        search_external = external_portal.search_harvest_packages(method=method,
+                                                                  harvest_type=harvest_type,
+                                                                  source_type=source_type)
+        for external_harvest_sources in search_external:
             for external_harvest_source in external_harvest_sources:
                 name = external_harvest_source['name']
 
@@ -527,6 +555,9 @@ class CKANPortalAPI:
                     raise Exception(f'Failed to import harvest source {name}')
                 else:
                     logger.info(f'Created {name}')
+                    total_sources += 1
+
+        return total_sources
 
     def create_organization(self, organization, check_if_exists=True):
         """ POST to CKAN API to create a new organization
