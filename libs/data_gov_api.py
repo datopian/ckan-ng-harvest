@@ -80,8 +80,6 @@ class CKANPortalAPI:
                 # out new extra is working
                 params['fq'] = f'+harvest_ng_source_id:"{harvest_source_id}"'
 
-
-
             elif harvest_type is not None:
                 # at my local instance I need this.
                 # I not sure why, in another public instances is not needed
