@@ -25,12 +25,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--url", type=str, help="URL of the data.json")
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
 parser.add_argument("--limit_dataset", type=int, default=0, help="Limit datasets to harvest on each source. Defualt=0 => no limit")
+parser.add_argument("--catalog_url", type=str, help="URL for write CKAN API")
 
 args = parser.parse_args()
 
 config.SOURCE_NAME = args.name  # Nice name of the source
 config.SOURCE_URL = args.url  # data.json final URL
 config.LIMIT_DATASETS = args.limit_dataset
+config.CKAN_CATALOG_URL = args.catalog_url
 
 res = Flow(
     # get data.json and yield all datasets

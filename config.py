@@ -50,6 +50,10 @@ def get_datajson_headers_validation_errors_path():
     """ local path for data-json-errors.json source file """
     return os.path.join(get_base_path(), 'data-json-headers-errors.json')
 
+def get_datajson_validation_errors_path():
+    """ local path for data-json-errors.json source file """
+    return os.path.join(get_base_path(), 'data-json-errors.json')
+
 def get_ckan_results_cache_path():
     """ local path for data.json source file """
     return os.path.join(get_base_path(), 'ckan-results.json')
