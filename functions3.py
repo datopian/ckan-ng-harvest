@@ -216,7 +216,7 @@ def write_final_report():
     pass
 
 
-def build_validation_error_email(error_items=None):
+def build_validation_error_email(error_items=[]):
     # json errors
     errors = {}
     json_errors_path = config.get_datajson_validation_errors_path()
@@ -232,16 +232,15 @@ def build_validation_error_email(error_items=None):
     errors['header_errors'] = header_errors
 
     #dataset errors
-    if error_items:
-        errors['dataset_errors'] = []
-        for item in error_items:
-            new_data = item['comparison_results']['new_data']
-            if new_data is None:
-                continue
-            if 'validation_errors' not in new_data or new_data['validation_errors'] is None:
-                continue
-            if len(new_data['validation_errors']) > 0:
-                errors['dataset_errors'].append(new_data['validation_errors'])
+    errors['dataset_errors'] = []
+    for item in error_items:
+        new_data = item['comparison_results']['new_data']
+        if new_data is None:
+            continue
+        if 'validation_errors' not in new_data or new_data['validation_errors'] is None:
+            continue
+        if len(new_data['validation_errors']) > 0:
+            errors['dataset_errors'].append(new_data['validation_errors'])
 
     #duplicate errors
     flow_1_results_path = config.get_flow1_datasets_result_path()
