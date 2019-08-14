@@ -611,7 +611,9 @@ class CKANPortalAPI:
 
         return json_content
 
-    def show_organization(self, organization_id_or_name):
+    def show_organization(self,
+                          organization_id_or_name,
+                          method='POST'):  # troubles using 2.3 and 2.8 CKAN versions):
         """ GET to CKAN API to show a organization """
 
         url = '{}{}'.format(self.base_url, self.organization_show_url)
@@ -619,7 +621,10 @@ class CKANPortalAPI:
         data = {'id': organization_id_or_name}
         logger.info(f'POST {url} headers:{headers} data:{data}')
         try:
-            req = requests.get(url, params=data, headers=headers)
+            if method == 'POST':
+                req = requests.post(url, data=data, headers=headers)
+            else:
+                req = requests.get(url, params=data, headers=headers)
         except Exception as e:
             error = 'ERROR showing organization: {} [{}]'.format(url, e)
             raise
