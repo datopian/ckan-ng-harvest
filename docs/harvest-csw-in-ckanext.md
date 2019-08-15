@@ -10,3 +10,14 @@ Inherit from:
 ### Diffing algorithm
 
 Harvester [uses IDs](https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/csw.py#L113) to detect changes.  
+
+
+### Real Life cases
+
+From catalog.data.gov:
+ - Alaska LCC CSW Server: http://metadata.arcticlcc.org/csw
+ - NC OneMap CSW: http://data.nconemap.com/geoportal/csw?Request=GetCapabilities&Service=CSW&Version=2.0.2
+ - USACE Geospatial CSW: http://metadata.usace.army.mil/geoportal/csw?Request=GetCapabilities&Service=CSW&Version=2.0.2
+ - 2017_arealm: https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/arealm/
+ - GeoNode State CSW: http://geonode.state.gov/catalogue/csw?service=CSW&version=2.0.2&request=GetRecords&typenames=csw:Record&elementsetname=brief
+ - OpenTopography CSW: https://portal.opentopography.org/geoportal/csw
