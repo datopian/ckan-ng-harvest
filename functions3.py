@@ -244,18 +244,17 @@ def build_validation_error_email(error_items=[]):
 
     #duplicate errors
     flow_1_results_path = config.get_flow1_datasets_result_path()
-    if os.path.exists(flow_1_results_path):
-        f = open(flow_1_results_path, "r")
-        flow_1_results = f.read()
-        errors['dataset_duplicates'] = []
+    f = open(flow_1_results_path, "r")
+    flow_1_results = f.read()
+    if flow_1_results:
         flow_1_json_results = json.loads(flow_1_results)
-
+        errors['dataset_duplicates'] = []
         for item in flow_1_json_results:
             if 'is_duplicate' in item:
                 errors['dataset_duplicates'].append(item)
 
-        #send validation email
-        send_validation_error_email(errors)
+    #send validation email
+    send_validation_error_email(errors)
 
 
 def send_validation_error_email(errors):

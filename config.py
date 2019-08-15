@@ -36,11 +36,12 @@ def get_flow2_data_package_result_path():
     """ local path for data.json source file """
     return os.path.join(get_base_path(), 'flow2-data-package-result.json')
 
-
-def get_flow1_datasets_result_path():
+def get_flow1_datasets_result_path(create=True):
     """ local path for data.json source file """
-    return os.path.join(get_base_path(), 'flow1-datasets-results.json')
-
+    path = os.path.join(get_base_path(), 'flow1-datasets-results.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
 def get_flow2_datasets_result_path():
     return os.path.join(get_base_path(), 'flow2-datasets-results.json')
