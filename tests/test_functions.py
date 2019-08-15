@@ -1,13 +1,16 @@
 """
 Tests all functions used in flow file
 """
-import unittest
+from unittest import TestCase, mock
 from functions import clean_duplicated_identifiers, get_data_json_from_url
+from functions3 import build_validation_error_email
 
 base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
 
+def mocked_build_validation_error_email():
+    return 'Mock Validation email'
 
-class FunctionsTestClass(unittest.TestCase):
+class FunctionsTestClass(TestCase):
 
     def test_404_get_data_json(self):
         url = f'{base_url}/DO-NOT-EXISTS.json'
@@ -16,7 +19,8 @@ class FunctionsTestClass(unittest.TestCase):
                 print(dataset)
         self.assertTrue('HTTP error: 404' in str(context.exception))
 
-    def test_bad_get_data_json(self):
+    @mock.patch('functions3.build_validation_error_email', side_effect=mocked_build_validation_error_email)
+    def test_bad_get_data_json(self, mock):
         url = f'{base_url}/bad.json'
         with self.assertRaises(Exception) as context:
             for dataset in get_data_json_from_url(url=url):
