@@ -1,26 +1,30 @@
 from libs.data_gov_api import CKANPortalAPI
-from libs.data_gov_api import logger
-import logging
-logger.setLevel(logging.DEBUG)
+import argparse
+from settings import CKAN_BASE_URL, CKAN_API_KEY
 
 
-CKAN_API_KEY = '2de6add4-bd1c-4f66-9e2b-37f4bc3ddd0f'  # put your own local API key
-cpa = CKANPortalAPI(base_url='http://ckan:5000', api_key=CKAN_API_KEY)
+parser = argparse.ArgumentParser()
+parser.add_argument("--import_from_url", type=str, help="CKAN instance URL to imprt from")
+parser.add_argument("--harvest_type", type=str, default='harvest', help="Dataset type for harvest is 'harvest'")
+parser.add_argument("--source_type", type=str, default='datajson', help="Tipe of harvest source: datajson|csw|waf etc")
+parser.add_argument("--method", type=str, default='GET', help="POST fails on CKAN 2.3, now is working")
 
-# import all data.gov harvest sources
-harvest_type = 'harvest'
-source_type = 'datajson'
-total_sources = cpa.import_harvest_sources(catalog_url='https://catalog.data.gov',
-                                           method='GET',
-                                           harvest_type=harvest_type,
-                                           source_type=source_type,
+args = parser.parse_args()
+
+cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
+
+total_sources = cpa.import_harvest_sources(catalog_url=args.import_from_url,
+                                           method=args.method,
+                                           on_duplicated='DELETE',
+                                           harvest_type=args.harvest_type,
+                                           source_type=args.source_type,
                                            delete_local_harvest_sources=True)
 
 # search
 total_searched = 0
 for harvest_sources in cpa.search_harvest_packages(method='POST',
-                                                   harvest_type=harvest_type,
-                                                   source_type=source_type):
+                                                   harvest_type=args.harvest_type,
+                                                   source_type=args.source_type):
     for harvest_source in harvest_sources:
         total_searched += 1
 

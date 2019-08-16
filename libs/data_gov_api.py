@@ -79,7 +79,7 @@ class CKANPortalAPI:
                 # params['fq'] = f'+harvest_source_id:"{harvest_source_id}"'
                 # but is not working. For some reason exta harvest_source_id doesn't exists
 
-                # out new extra is working
+                # our new extra is working
                 params['fq'] = f'+harvest_ng_source_id:"{harvest_source_id}"'
 
             elif harvest_type is not None:
@@ -234,7 +234,11 @@ class CKANPortalAPI:
             raise
 
         if req.status_code == 409:
-            if json_content['error']['name'] == ["That URL is already in use."]:
+            logger.info(f'409 json_content: {json_content}')
+            # another posible [error] = {'owner_org': ['Organization does not exist']}
+
+            # Check for duplicates
+            if json_content['error'].get('name', None) == ["That URL is already in use."]:
                 logger.error(f'Package Already exists! ACTION: {on_duplicated}')
                 if on_duplicated == 'SKIP':
                     return {'success': True}
@@ -248,7 +252,8 @@ class CKANPortalAPI:
                              '\n\t Dataset {}'.format(url, req.status_code, content, ckan_package))
                     logger.error(error)
                     raise Exception(error)
-        elif req.status_code >= 400:
+
+        if req.status_code >= 400:
             error = ('ERROR creating CKAN package: {}'
                      '\n\t Status code: {}'
                      '\n\t content:{}'
@@ -265,7 +270,8 @@ class CKANPortalAPI:
     def create_harvest_source(self, title, url, owner_org_id, name=None,
                               notes='',
                               source_type='datajson',
-                              frequency='MANUAL'):
+                              frequency='MANUAL',
+                              on_duplicated='DELETE'):
         """ create a harvest source (is just a CKAN dataset/package),
             required to try locally harcesting process
             Previous: https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/logic/action/create.py#L27"""
@@ -292,8 +298,7 @@ class CKANPortalAPI:
         if type(ckan_package['config']) == dict:
             ckan_package['config'] = json.dumps(ckan_package['config'])
 
-        return self.create_package(ckan_package=ckan_package,
-                                   on_duplicated='DELETE')
+        return self.create_package(ckan_package=ckan_package, on_duplicated=on_duplicated)
 
     def generate_name(self, title):
         # names are unique in CKAN
@@ -514,6 +519,7 @@ class CKANPortalAPI:
 
     def import_harvest_sources(self, catalog_url,
                                method='GET',  # depend on CKAN version, GET for older versions
+                               on_duplicated='DELETE',
                                harvest_type='harvest',
                                source_type='datajson',
                                delete_local_harvest_sources=True):
@@ -549,7 +555,8 @@ class CKANPortalAPI:
                                                 name=name,
                                                 notes=external_harvest_source['notes'],
                                                 source_type=source_type,
-                                                frequency=external_harvest_source['frequency'])
+                                                frequency=external_harvest_source['frequency'],
+                                                on_duplicated=on_duplicated)
 
                 if not res['success']:
                     raise Exception(f'Failed to import harvest source {name}')

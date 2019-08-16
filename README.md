@@ -9,12 +9,62 @@ The harvest process includes:
 
 Current process: [using ckan extensions](harvest-in-ckanext.md).  
 
-Process using [dataflows](https://github.com/datahq/dataflows) and [datapackages](https://github.com/frictionlessdata/datapackage-py):  
+Process using [dataflows](https://github.com/datahq/dataflows) and [datapackages](https://github.com/frictionlessdata/datapackage-py).  
+
+## Settings
+
+The files _settings.py_ (empty) and _local_settings.py_ (ignored from repo) are to define your local configuration (url, api key, etc).  
+
+
+## Harvest sources
+
+The _data.json_ harvest sources are CKAN packages with and URL to this file.  
+We can import all the harvest sources from a productive CKAN instance with the command
+
+### Some tools
+
+#### Read harvest sources
+```
+# Get CSW harvest sources at _data.gov_
+python3 read_harvest_sources.py --base_url https://catalog.data.gov --source_type csw --method GET  
+# CKAN 2.3 fail with POST, current versions works fine with POST
+
+# Get your local data.json harvest sources
+python3 read_harvest_sources.py --base_url http://ckan:5000 --source_type datajson --method POST
+```
+
+#### Import harvest sources
+```
+# import all CSW harvest sources from data.gov
+python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET --source_type csw
+```
 
 # Full harvest local test
 
-We need a local CKAN instance running ar http://ckan:5000.  
+We need a local CKAN instance with harvesting extensions running.  
+For example you could use [this docker image](https://gitlab.com/avdata99/docker-ckan-harvesting/) at http://ckan:5000.  
 Test for a small version of education data.json
+
+```
+usage: harvest.py [-h] [--url URL] [--name NAME]
+                  [--harvest_source_id HARVEST_SOURCE_ID]
+                  [--ckan_owner_org_id CKAN_OWNER_ORG_ID]
+                  [--catalog_url CATALOG_URL] [--ckan_api_key CKAN_API_KEY]
+                  [--limit_dataset LIMIT_DATASET]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --url                 URL of the data.json
+  --name                Name of the resource (for generate the containing folder)
+  --harvest_source_id   Source ID for filter CKAN API
+  --ckan_owner_org_id   A name of a local organization existing at CKAN instance
+  --catalog_url         URL for write CKAN API
+  --ckan_api_key        API KEY working at CKAN instance 
+  --limit_dataset       Limit datasets to harvest on each source. Defualt=0 =>
+                        no limit
+```
+
+Example:
 
 ```
 python3 harvest.py \

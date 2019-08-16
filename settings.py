@@ -6,4 +6,4 @@ CKAN_ORG_ID = ''  # create in you local instance and get the ID
 CKAN_VALID_USER_ID = ''  # string, something like 13373386-636f-420f-aff0-0102087bfa28
 
 # replace with you local values in this ignored file
-from .local_settings import *
+from local_settings import *

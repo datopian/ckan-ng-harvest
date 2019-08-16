@@ -5,12 +5,12 @@ from slugify import slugify
 import json
 from logs import logger
 # put you settings in the local_settings hidden-to-github file
-from tests_using_local_ckan_instance.settings import (HARVEST_SOURCE_ID,
-                                                      CKAN_API_KEY,
-                                                      CKAN_BASE_URL,
-                                                      CKAN_ORG_ID,
-                                                      CKAN_VALID_USER_ID
-                                                      )
+from settings import (HARVEST_SOURCE_ID,
+                       CKAN_API_KEY,
+                       CKAN_BASE_URL,
+                       CKAN_ORG_ID,
+                       CKAN_VALID_USER_ID
+                      )
 
 
 class CKANPortalAPITestClass(unittest.TestCase):
