@@ -42,8 +42,8 @@ def get_data_json_from_url(url):
     if not ret:
         datajson.validation_errors = 'Error loading JSON data: {}'.format(info)
         datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
-        build_validation_error_email()
         logger.error(datajson.validation_errors)
+        build_validation_error_email()
         raise Exception(datajson.validation_errors)
 
     logger.info('JSON OK')
