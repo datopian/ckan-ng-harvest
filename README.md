@@ -125,8 +125,8 @@ COMD OK: python3 flow3.py --name rrb --ckan_owner_org_id rrb-gov --catalog_url h
 
 You can see the harvested datasets at you CKAN instance
 
-![h0](imgs/harvest00.png)
-![h0](imgs/harvest01.png)
+![h0](imgs/harvested00.png)
+![h0](imgs/harvested01.png)
 
 
 ## Internal scripts
