@@ -43,12 +43,20 @@ You can import harvest sources from another CKAN instance.
 python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
 ```
 
+#### Analyze 
+
+Creates a CSV file with all the harvest sources. Analyze each one to validate it, count datastets and resources.
+
+```
+python3 analize_harvest_sources.py 
+```
+
 ### Harvest one source
 
 You need:
  - a _name_ for the harvest source
  - url of the data.json
- - harvest_source_id: the ID of the harvest soure
+ - harvest_source_id: the ID of the harvest source
  - ckan_owner_org_id: name of the organization for all the harvested datasets
  - catalog_url you CKAN instance 
  - ckan_api_key you CKAN API key
@@ -128,6 +136,9 @@ You can see the harvested datasets at you CKAN instance
 ![h0](imgs/harvested00.png)
 ![h0](imgs/harvested01.png)
 
+## Harvest ALL sources
+
+We create [a script](https://gitlab.com/datopian/ckan-ng-harvest/blob/develop/automate-tasks/airflow/harvest_with_airflow.py) to put ALL the harvest sources in a queue using [Airflow](https://gitlab.com/datopian/ckan-ng-harvest/blob/develop/automate-tasks/airflow/README.md).  
 
 
 ### Tests
@@ -137,3 +148,8 @@ We have two tests. [One](tests_using_local_ckan_instance/README.md) requires tha
 python -m pytest -v tests/
 python -m pytest -v tests_using_local_ckan_instance/
 ```
+
+
+
+
+

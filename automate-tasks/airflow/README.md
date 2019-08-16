@@ -7,9 +7,7 @@ You can connect the tasks in a DAG as you want (which one depends on which).
 Tasks could be built from Jinja templates.
 It has a nice and comfortable UI.  
 
-You can also use _Sensors_: you can wait for certain files or database changes for activate anoter jobs.
-
-I read some people on the web ([1](https://medium.com/videoamp/what-we-learned-migrating-off-cron-to-airflow-b391841a0da4), [2](https://medium.com/@rbahaguejr/airflow-a-beautiful-cron-alternative-or-replacement-for-data-pipelines-b6fb6d0cddef)) saying good things about Airflow.  
+You can also use _Sensors_: you can wait for certain files or database changes for activate anoter jobs. 
 
 ## Airflow code
 
