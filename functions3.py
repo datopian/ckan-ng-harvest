@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 import pytz
 import hashlib
-
+import os.path
 
 def hash_dataset(datasetdict):
     # hash the dataset.
@@ -216,7 +216,14 @@ def write_final_report():
     pass
 
 
-def build_validation_error_email(error_items):
+def build_validation_error_email(error_items=[]):
+    # json errors
+    errors = {}
+    json_errors_path = config.get_datajson_validation_errors_path()
+    f = open(json_errors_path, "r")
+    json_validation_errors = f.read()
+    errors['json_validation_errors'] = json_validation_errors
+
     # header errors
     errors = {}
     header_errors_path = config.get_datajson_headers_validation_errors_path()
@@ -239,12 +246,12 @@ def build_validation_error_email(error_items):
     flow_1_results_path = config.get_flow1_datasets_result_path()
     f = open(flow_1_results_path, "r")
     flow_1_results = f.read()
-    errors['dataset_duplicates'] = []
-    flow_1_json_results = json.loads(flow_1_results)
-
-    for item in flow_1_json_results:
-        if 'is_duplicate' in item:
-            errors['dataset_duplicates'].append(item)
+    if flow_1_results:
+        flow_1_json_results = json.loads(flow_1_results)
+        errors['dataset_duplicates'] = []
+        for item in flow_1_json_results:
+            if 'is_duplicate' in item:
+                errors['dataset_duplicates'].append(item)
 
     #send validation email
     send_validation_error_email(errors)

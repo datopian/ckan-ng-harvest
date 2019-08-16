@@ -22,43 +22,67 @@ def get_base_path():
     return base_path
 
 
-def get_datajson_cache_path():
+def get_datajson_cache_path(create=True):
     """ local path for data.json source file """
-    return os.path.join(get_base_path(), 'data.json')
+    path =  os.path.join(get_base_path(), 'data.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
-
-def get_flow1_data_package_result_path():
+def get_flow1_data_package_result_path(create=True):
     """ local path for data.json source file """
-    return os.path.join(get_base_path(), 'flow1-data-package-result.json')
+    path =  os.path.join(get_base_path(), 'flow1-data-package-result.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
-
-def get_flow2_data_package_result_path():
+def get_flow2_data_package_result_path(create=True):
     """ local path for data.json source file """
-    return os.path.join(get_base_path(), 'flow2-data-package-result.json')
+    path = os.path.join(get_base_path(), 'flow2-data-package-result.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
-
-def get_flow1_datasets_result_path():
+def get_flow1_datasets_result_path(create=True):
     """ local path for data.json source file """
-    return os.path.join(get_base_path(), 'flow1-datasets-results.json')
+    path = os.path.join(get_base_path(), 'flow1-datasets-results.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
+def get_flow2_datasets_result_path(create=True):
+    path = os.path.join(get_base_path(), 'flow2-datasets-results.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
-def get_flow2_datasets_result_path():
-    return os.path.join(get_base_path(), 'flow2-datasets-results.json')
-
-
-def get_datajson_headers_validation_errors_path():
+def get_datajson_headers_validation_errors_path(create=True):
     """ local path for data-json-errors.json source file """
-    return os.path.join(get_base_path(), 'data-json-headers-errors.json')
+    path =  os.path.join(get_base_path(), 'data-json-headers-errors.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
-def get_ckan_results_cache_path():
+def get_datajson_validation_errors_path(create=True):
+    """ local path for data-json-errors.json source file """
+    path =  os.path.join(get_base_path(), 'data-json-errors.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
+
+def get_ckan_results_cache_path(create=True):
     """ local path for data.json source file """
-    return os.path.join(get_base_path(), 'ckan-results.json')
+    path =  os.path.join(get_base_path(), 'ckan-results.json')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
-
-def get_comparison_results_path():
+def get_comparison_results_path(create=True):
     """ local path for data.json source file """
-    return os.path.join(get_base_path(), 'compare-results.csv')
-
+    path =  os.path.join(get_base_path(), 'compare-results.csv')
+    if not os.path.isfile(path):
+        open(path, 'w').close()
+    return path
 
 def get_data_packages_folder_path():
     """ local path for data.json source file """

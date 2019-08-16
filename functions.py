@@ -6,6 +6,7 @@ from libs.data_gov_api import CKANPortalAPI
 from libs.data_json import DataJSON
 from libs.data_json import DataJSONDataset
 from datapackage import Package, Resource
+from functions3 import build_validation_error_email
 from slugify import slugify
 import config
 import base64
@@ -39,9 +40,14 @@ def get_data_json_from_url(url):
 
     ret, info = datajson.load_data_json()
     if not ret:
-        error = 'Error loading JSON data: {}'.format(info)
-        logger.error(error)
-        raise Exception(error)
+        datajson.validation_errors = 'Error loading JSON data: {}'.format(info)
+        datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
+        logger.error(datajson.validation_errors)
+        try:
+            build_validation_error_email()
+        except Exception as e:
+            logger.error('Error sending validation email: {}'.format(e))
+        raise Exception(datajson.validation_errors)
 
     logger.info('JSON OK')
     ret, info = datajson.validate_json()
