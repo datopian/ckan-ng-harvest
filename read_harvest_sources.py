@@ -18,4 +18,9 @@ for harvest_sources in cpa.search_harvest_packages(method=args.method,
                                                    harvest_type=args.harvest_type,
                                                    source_type=args.source_type):
     for dataset in harvest_sources:
-        print('Harvest source: {} [{}]'.format(dataset['title'], dataset['source_type']))
+        print('Harvest source: {} {} \n\t{} {} {}\n\t{}'.format(dataset['title'],
+                                                        dataset['id'],
+                                                        dataset['name'],
+                                                        dataset['source_type'],
+                                                        dataset['url'],
+                                                        dataset['organization']))
