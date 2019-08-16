@@ -30,21 +30,39 @@ default_args = {
     # 'end_date': datetime(2020, 2, 1),
 }
 
-logger.info('CREATING DAG')
-dag = DAG('harvest_all_data_gov', default_args=default_args,
-          schedule_interval=timedelta(weeks=1))
+dags = {}  # une dag for each _frquency_
+valid_frequencies = {'DAILY': {'interval': timedelta(days=1)},
+                     'WEEKLY': {'interval': timedelta(weeks=1)},
+                     'MONTHLY': {'interval': timedelta(days=30)},
+                     'MANUAL': {'interval': timedelta(days=20)},
+                     'BIWEEKLY': {'interval': timedelta(weeks=2)}
+                     }  # TODO how for manual ?
 
-logger.info(f'DAG created {dag}')
 catalog_url = 'http://ckan:5000'
 catalog_api_key = '2de6add4-bd1c-4f66-9e2b-37f4bc3ddd0f'
 
 cpa = CKANPortalAPI(base_url=catalog_url, api_key=catalog_api_key)
 urls = []
-last_task = None
 
 results = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type='datajson')
 for datasets in results:
     for harvest_source in datasets:
+
+        frequency = harvest_source.get('frequency', 'MONTHLY').upper()
+        if frequency not in valid_frequencies:
+            raise Exception(f'Unknown frequency: {frequency}')
+        if frequency not in dags:
+            logger.info('CREATING DAG')
+            interval = valid_frequencies[frequency]['interval']
+            dags[frequency] = {'dag': DAG(f'HARVEST_{frequency}',
+                                    default_args=default_args,
+                                    schedule_interval=interval),
+                               'last_task': None}
+
+            logger.info(f'DAG created {frequency}')
+
+        # set actual dag for this task
+        dag = dags[frequency]['dag']
 
         url = harvest_source['url']
         if url in urls:  # avoid duplicates
@@ -87,9 +105,10 @@ for datasets in results:
             params=params,
             dag=dag)
 
+        last_task = dags[frequency]['last_task']
         if last_task is not None:
             task.set_upstream(last_task)
 
-        last_task = task
+        dags[frequency]['last_task'] = task
 
         logger.info(f'task added {task}')
