@@ -60,9 +60,6 @@ You need:
  - ckan_owner_org_id: name of the organization for all the harvested datasets
  - catalog_url you CKAN instance 
  - ckan_api_key you CKAN API key
-  
-Harvest source: RRB JSON e058dafa-75db-4480-a90a-c1026e3005e2 
-rrb-json datajson https://secure.rrb.gov/data.json
 
 Example using data from _read_harvest_sources_ and a local CKAN instance
 

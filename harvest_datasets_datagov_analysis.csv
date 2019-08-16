@@ -698,3 +698,372 @@ https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017
 http://www2.census.gov/geo/datadotgov/necta/,Census TIGER 2012 New England City and Town Area,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
 http://ebola-data.un.org/Guinea/Guinea_WADC00021_OHDR_2014_Cellphone_Coverage,Harvest Source - Ebola Data Call Collection - Guinea Cellphone Coverage - OHDR,,waf,MANUAL,-1,-1,,,,,-1,-1,,
 http://ebola-data.un.org/Liberia/Liberia_WADC00077_OHDR_Health_Facilities_No_Cell_Service,Harvest Source - Ebola Data Call Collection - Liberia Health Facilities with No Cell Service - OHDR,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+ebola-data.un.org/Guinea/Guinea_WADC00249_COD_Admin1,Harvest Source - Ebola Data Call Collection - Guinea First Administrative Boundaries -COD,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://geospatial.gatech.edu/Metadata/ParkFacilities.xml,Coa Parks,,single-doc,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2015gz/KMLFiles/concity_500k_try3/,2014_nation_concity_500k_try3,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Liberia/Liberia_WADC00035_OHDR_Railroads,Harvest Source - Ebola Data Call Collection - Liberia Railroads - OHDR,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Liberia/Liberia_WADC00115_OHDR_2008Population,Harvest Source - Ebola Data Call Collection - Liberia 2008 Population - OHDR,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2015gz/KMLFiles/division_5m/,2014_kml_division_5m,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/roads/,All Roads County-based Shapefile,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Guinea/Guinea_WADC00357_OSM_Places,Harvest Source - Ebola Data Call Collection - Guinea Paces - OSM,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2014/cbsa/,2014 Metropolitan Statistical Area/Micropolitan Statistical Area,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2014gz/csa_5m/,2014csa5m,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://www2.census.gov/geo/datadotgov/facesal/,Census TIGER 2012 Topological Faces-Area Landmark Relationship,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Sierra_Leone/sierra_leone_wadc00366_divagis_administrative_areas_2,Harvest Source – Ebola Data Call Collection - Sierra Leone Administrative Areas Level 2 - DivaGIS,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016gz/kml_division_5/,kml_division_5,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016gz/kml_place_500/,2016_kml_place_500,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016gz/kml_region_5/,2016_kml_region_5,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2014/necta/,2014 Current New England City and Town Area,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Sierra_Leone/sierra_leone_wadc00196_divagis_water_inland_areas,Harvest Source – Ebola Data Call Collection - Sierra Leone Water Inland Areas - DivaGIS,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2015gz/CartographicShapefiles/cd114_5m/,2014_cd114_5m,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://thor-f5.er.usgs.gov/ngtoc/metadata/waf/elevation/dsm_ifsar/,Alaska Digital Surface Models (DSMs) - USGS National Map,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2014/coastline/,2014 Coastline,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Guinea/Guinea_WADC00257_COD_Primary_Schools,Harvest Source - Ebola Data Call Collection - Guinea Primary Schools - COD,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016Cartographic/csa_5/,2017_csa_5,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/state/,Current State and Equivalent National,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Sierra_Leone/Sierra_Leone_WADC00127_OHDR_2014_Active_Orgs,Harvest Source – Ebola Data Call Collection - Sierra Leone 2014 Active Organizations- OHDR,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2015/puma10/,2015TigerPuma10,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/rails/,Rails National Shapefile,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2013gz/sldl_500/,"State-State Legislative District (Lower Chamber) 1:500,00",,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016Cartographic/csa_20/,2017_csa_20,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Sierra_Leone/sierra_leone_wadc00240_divagis_roads,Harvest Source – Ebola Data Call Collection - Sierra Leone Roads - DivaGIS,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://cdmo.baruch.sc.edu/geodata,NERRS CDMO,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2013gz/sldu_500/,"2013 State-State Legislative District (Upper Chamber) 1:500,000",,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2014gz/subbarrio_500k/,2014subbarrio_500k,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Liberia/Liberia_WADC00387_OSM_Roads,Harvest Source - Ebola Data Call Collection - Liberia Roads - OSM,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2015gz/CartographicShapefiles/csa_5m/,2014_csa_5m,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2015/tbg/,2015TigerTbg,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016Cartographic/cd115_20/,2017_cd115_20,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Liberia/Liberia_WADC00119_OHDR_2007Poverty,Harvest Source - Ebola Data Call Collection - Liberia Poverty 2007 - OHDR,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016Cartographic/concity_500/,2017_concity_500,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Liberia/Liberia_WADC00037_OHDR_Liberia_Watercourses2007,Harvest Source - Ebola Data Call Collection - Liberia Water Courses - OHDR,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016gz/cbsa_500/,2016_cbsa_500,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2015gz/KMLFiles/aiannh_500k/,2014_kml_aiannh_500k,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/addrfeat/,2017_addrfeat,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2014/nectadiv/,2014 Current NECTA Division,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/scsd/,Current Secondary School Districts Shapefile,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/faces/,2018_faces,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/linearwater/,2018_linearwater,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/roads/,2017_roads,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://geonode.state.gov/catalogue/csw?service=CSW&version=2.0.2&request=GetRecords&typenames=csw:Record&elementsetname=brief,GeoNode State CSW,,csw,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/metdiv/,2017_metdiv,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://portal.opentopography.org/geoportal/csw,OpenTopography CSW,,csw,MANUAL,-1,-1,,,,,-1,-1,,
+https://data.doi.gov/data.json,doi.data.json,"Validation error (truncated): Error validating JsonSchema: 'hasEmail' is a required property
+
+Failed ...",datajson,MANUAL,0,0,True,True,False,1.1,47002,91651,{'dcat:Dataset': 47002},{'dcat:Distribution': 91651}
+http://www2.census.gov/geo/datadotgov/tabblock/,Census TIGER 2012 Current Block,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/estate/,Current Estate Shapefile (U.S. Virgin Islands Only),,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/puma10/,2017_puma10,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://data.noaa.gov/data-nonspatial-harvest.json,NOAA Patents Json,Download error (truncated): https://data.noaa.gov/data-nonspatial-harvest.json HTTP error: 404 ...,datajson,MANUAL,0,0,False,,,,,,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/facesal/,2017_facesal,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/ttract/,Current Tribal Census Tract National,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://gishubdata.nd.gov/data.json,North Dakota GIS Hub Data Portal Data.json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,MONTHLY,0,0,True,True,False,1.1,336,1344,{'dcat:Dataset': 336},{'dcat:Distribution': 1344}
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/bg/,Current Block Group State-based,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TL2011/tad/,Census TIGER 2012 Traffic Analysis District,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://maps.bts.dot.gov/webservices/NTADmetadata,National Transportation Atlas Database (NTAD) Metadata,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/necta/,Current New England City and Town Area (NECTA) National Shapefile,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/sldl/,Current State Legislative District (SLD) Lower Chamber,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://portal.gis.ca.gov/geoportal/csw/discovery,State of California Geoportal,,geoportal,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/facesah/,2017_facesah,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/areawater/,2017_areawater,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/scsd/,2017_scsd,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/pointlm/,2017_pointlm,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/sldl/,2017_sldl,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/sldu/,2017_sldu,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://data.ca.gov/data.json,State of California,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,MANUAL,0,0,True,True,False,1.1,2053,12251,{'dcat:Dataset': 2053},{'dcat:Distribution': 12251}
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2014/placeec/,2012  Economic Census Place Shapefile,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/tract/,2017_tract,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/state/,2017_state,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/tbg/,2017_tbg,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/primaryroads/,2017_primaryroads,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/ttract/,2017_ttract,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/unsd/,2017_unsd,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2016/sldu/,2016_sldu,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/place/,2017_place,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://cloud.insideidaho.org/appsOutput/metadataWAF/xml/,Idaho Geospatial Data Clearinghouse,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://www.defense.gov/data.json,DOD JSON,Parsing error (truncated): ERROR parsing JSON data: 'utf-8' codec can't decode byte 0x92 in posit ...,datajson,MANUAL,0,0,True,False,,,,,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2016/aitsn/,2016_aitsn,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://www.gisinventory.net/harvest/local-government/,NSGIC GIS Inventory - Local Govt HS,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://rossi.urs-tally.com/Content/data.json,Florida Regional Offshore Sand Source Inventory (ROSSI),Validation error (truncated): Missing describedBy KEY ...,datajson,MANUAL,0,0,True,True,False,,0,0,{},{}
+http://data.edc.uri.edu/rigis/metadata,Rhode Island GIS (RIGIS),,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2015gz/KMLFiles/division_500k/,2014_kml_division_500k,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Guinea/Guinea_WADC00351_DivaGIS_Administrative_Areas_1,Harvest Source - Ebola Data Call Collection - Guinea Administrative Areas 1 - DIVA-GIS,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2016Cartographic/cbsa_500/,2017_cbsa_500,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://www2.census.gov/geo/datadotgov/edges/,Census TIGER 2012 All Lines Shapefiles,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2016/place/,2016_place,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Guinea/Guinea_WADC00175_DivaGIS_Gazetteer,Harvest Source - Ebola Data Call Collection - Guinea Gazetteer - DIVA-GIS,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/CPMB/boundary/2015gz/CartographicShapefiles/cousub_500k/,2014_cousub_500k,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2015/prisecroads/,2015TigerPrisecroads,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/uac10/,2010 Census Urban Area National,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://edg.epa.gov/data/Public/ORD/NHEERL/metadata/ORDNHEERLAED.json,ORD-NHEERL-AED Non Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,1,1,{'dcat:Dataset': 1},{'dcat:Distribution': 1}
+https://edg.epa.gov/data/PUBLIC/OCSPP/OPPT/metadata/OCSPP-OPPT.json,OCSPP-OPPT Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,14,14,{'dcat:Dataset': 14},{'dcat:Distribution': 14}
+https://edg.epa.gov/data/PUBLIC/OAR/OTAQ/metadata/OAR-OTAQ.json,OAR-OTAQ Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,10,8,{'dcat:Dataset': 10},{'dcat:Distribution': 8}
+https://edg.epa.gov/data/PUBLIC/OAR/ORIA/metadata/OAR-ORIA.json,OAR-ORIA Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,17,13,"{'dcat:Dataset': 16, 'unknown': 1}",{'dcat:Distribution': 13}
+https://edg.epa.gov/data/Public/ORD/NCEA/metadata/ORD_NCEA.json,ORD-NCEA Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,3,0,{'dcat:Dataset': 3},{}
+https://edg.epa.gov/data/Public/R4/metadata/Region4.json,Region 4 Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,10,2,{'dcat:Dataset': 10},{'dcat:Distribution': 2}
+https://edg.epa.gov/data/Public/R3/metadata/Region3.json,Region 3 Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,2,0,{'dcat:Dataset': 2},{}
+https://edg.epa.gov/data/Public/R7/metadata/R7.json,Region 7 Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,8,0,{'dcat:Dataset': 8},{}
+https://edg.epa.gov/data/Public/ORD/metadata/ORD_Patents.json,ORD_Patents,,datajson,MONTHLY,0,0,True,True,True,1.1,8,8,{'dcat:Dataset': 8},{'dcat:Distribution': 8}
+http://thor-f5.er.usgs.gov/ngtoc/metadata/waf/elevation/opr_dem/arcgrid/,Original Product Resolution (OPR) Source Digital Elevation Models (DEMs) - USGS National Map,,waf-collection,MONTHLY,-1,-1,,,,,-1,-1,,
+https://edg.epa.gov/data/PUBLIC/OLEM/OSWER-EF.JSON,OLEM Envirofacts Records,,datajson,MONTHLY,35,5,True,True,True,1.1,5,10,{'dcat:Dataset': 5},{'dcat:Distribution': 10}
+https://edg.epa.gov/data/PUBLIC/OEI/METADATA/TRI.json,Toxics Release Inventory Metadata,,datajson,MONTHLY,0,0,True,True,True,1.1,1,4,{'dcat:Dataset': 1},{'dcat:Distribution': 4}
+https://edg.epa.gov/data/PUBLIC/R9/metadata/R9.json,Region 9 Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,1,0,{'dcat:Dataset': 1},{}
+https://edg.epa.gov/data/PUBLIC/OCSPP/OPPT/Metadata/RSEI.json,OCSPP-OPPT RSEI Records,,datajson,MONTHLY,0,0,True,True,True,1.1,1,1,{'dcat:Dataset': 1},{'dcat:Distribution': 1}
+https://edg.epa.gov/data/Public/OCFO/metadata/DataAct.json,Data Act Harvest,,datajson,MONTHLY,0,0,True,True,True,1.1,66,198,{'dcat:Dataset': 66},{'dcat:Distribution': 198}
+https://edg.epa.gov/data/PUBLIC/OGC/metadata/OGC.json,OGC Non-Geo Records,,datajson,MONTHLY,0,0,True,True,True,1.1,3,0,{'dcat:Dataset': 3},{}
+https://hazards.fema.gov/filedownload/metadata/NFHL/,fema-mip-nfhl,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R06/,FEMA-R06,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R01/,FEMA-R01,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R08/,FEMA-R08,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R04/,FEMA-R04,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R10/,FEMA-R10,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/tabblock10/,2017_tabblock10,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://services3.arcgis.com/x6xO7EAZaW454AtZ/ArcGIS/rest/services/USBoundary/FeatureServer/0,International Boundary Between United States and Mexico Approved in 2009 by Minute 315,,arcgis,MONTHLY,-1,-1,,,,,-1,-1,,
+http://ebola-data.un.org/Liberia/Liberia_WADC00170_CGIAR_SRTM_LBR_msk_alt,Harvest Source - Ebola Data Call Collection - Liberia DEM Mask - CGIAR,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/uac10/,2017_uac10,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/aiannh/,2018_aiannh,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/subbarrio/,2017_subbarrio,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/zcta510/,2017_zcta510,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/concity/,2018_concity,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/aitsn/,2018_aitsn,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/county/,2018_county,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://www.fdic.gov/data.json,FDIC data.json,Validation error (truncated): Missing describedBy KEY ...,datajson,WEEKLY,0,0,True,True,False,,0,0,{},{}
+https://data.seattle.gov/data.json?version=2,Seattle JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,604,2642,{'dcat:Dataset': 604},{'dcat:Distribution': 2642}
+https://gis-cityofsfgis.opendata.arcgis.com/data.json,City of Sioux Falls Data.json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,146,580,{'dcat:Dataset': 146},{'dcat:Distribution': 580}
+https://data.arlingtonva.us/data.json/,Arlington County Data.json Harvest Source,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,200,600,{'dcat:Dataset': 200},{'dcat:Distribution': 600}
+https://data.tempe.gov/data.json,City of Tempe Data.json Harvest Source,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,103,320,{'dcat:Dataset': 103},{'dcat:Distribution': 320}
+http://data.providenceri.gov/data.json,City of Providence Data.json Harvest Source,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,217,574,{'dcat:Dataset': 217},{'dcat:Distribution': 574}
+https://opendurham.nc.gov/data.json,"City and County of Durham, North Carolina Data.json Harvest Source",Download error (truncated): ERROR Donwloading data: https://opendurham.nc.gov/data.json [HTTPSConn ...,datajson,WEEKLY,0,0,False,,,,,,,
+http://data.fairfaxcountygis.opendata.arcgis.com/data.json,"Fairfax County, Virginia Data.json","Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,181,1064,{'dcat:Dataset': 181},{'dcat:Distribution': 1064}
+https://data.bloomington.in.gov/data.json ,Bloomington Indiana Data.json,Download error (truncated): https://data.bloomington.in.gov/data.json  HTTP error: 404 ...,datajson,WEEKLY,0,0,False,,,,,,,
+https://nycopendata.socrata.com/data.json?version=2,NYC JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,2557,9717,{'dcat:Dataset': 2557},{'dcat:Distribution': 9717}
+https://data.honolulu.gov/data.json?version=2,honolulu json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,210,342,{'dcat:Dataset': 210},{'dcat:Distribution': 342}
+https://datacatalog.cookcountyil.gov/data.json?version=2,cookcountyil json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,558,2295,{'dcat:Dataset': 558},{'dcat:Distribution': 2295}
+https://data.austintexas.gov/data.json,City of Austin Data.json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,1522,3507,{'dcat:Dataset': 1522},{'dcat:Distribution': 3507}
+https://data.nola.gov/data.json ,New Orleans Data.json,Download error (truncated): https://data.nola.gov/data.json  HTTP error: 404 ...,datajson,WEEKLY,0,0,False,,,,,,,
+http://data.brla.gov/data.json,City of Baton Rouge Data.json,Download error (truncated): ERROR Donwloading data: http://data.brla.gov/data.json [HTTPConnection ...,datajson,WEEKLY,0,0,False,,,,,,,
+https://data.hartford.gov/data.json,Hartford Data.json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,73,289,{'dcat:Dataset': 73},{'dcat:Distribution': 289}
+http://public.chesva.opendata.arcgis.com/data.json,City of Chesapeake Data.json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,33,185,{'dcat:Dataset': 33},{'dcat:Distribution': 185}
+https://data.srcity.org/data.json,Santa Rosa CA Data.json,Download error (truncated): https://data.srcity.org/data.json HTTP error: 404 ...,datajson,WEEKLY,0,0,False,,,,,,,
+http://www.geostor.arkansas.gov/metadata/,Arkansas Geographic Information Office,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://data.lacity.org/data.json,Los Angeles data.json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,305,1498,{'dcat:Dataset': 305},{'dcat:Distribution': 1498}
+https://data.kingcounty.gov/data.json?version=2,kingcounty json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,261,1071,{'dcat:Dataset': 261},{'dcat:Distribution': 1071}
+https://data.somervillema.gov/data.json?version=2,somervillema json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,48,138,{'dcat:Dataset': 48},{'dcat:Distribution': 138}
+http://phlapi.com/data.json,phlapi json,Validation error (truncated): Data.json is a simple list ...,datajson,WEEKLY,0,0,True,True,False,,0,0,{},{}
+https://data.sfgov.org/data.json?version=2,SFO JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,568,2361,{'dcat:Dataset': 568},{'dcat:Distribution': 2361}
+https://data.muni.org/data.json,Municipality of Anchorage,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,32,144,{'dcat:Dataset': 32},{'dcat:Distribution': 144}
+https://geohub-loudoungis.opendata.arcgis.com/data.json,Loudoun County Virginia Data Source,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,121,480,{'dcat:Dataset': 121},{'dcat:Distribution': 480}
+http://data-lakecountyil.opendata.arcgis.com/data.json,"Open data from Lake County, Illinois","Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,1473,3182,{'dcat:Dataset': 1473},{'dcat:Distribution': 3182}
+https://data.cityofchicago.org/data.json?version=2,Chicago JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,752,2824,{'dcat:Dataset': 752},{'dcat:Distribution': 2824}
+https://data.baltimorecity.gov/data.json?version=2,Baltimore JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,453,1521,{'dcat:Dataset': 453},{'dcat:Distribution': 1521}
+https://data.montgomerycountymd.gov/data.json?version=2,montgomerycountymd json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,290,1189,{'dcat:Dataset': 290},{'dcat:Distribution': 1189}
+http://data.louisvilleky.gov/data.json,Louisville Open Data,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,222,358,{'dcat:Dataset': 222},{'dcat:Distribution': 358}
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/cbsa/,2018_cbsa,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/cd116/,116th Congressional District,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/cnecta/,2018_cnecta,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/cousub/,2018_cousub,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/csa/,2018-csa,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/estate/,2018_estate,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/elsd/,2018_elsd,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R02/,FEMA-R02,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/bg/,2018_bg,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/anrc/,2018_anrc,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/coastline/,2018_coastline,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://thor-f5.er.usgs.gov/ngtoc/metadata/waf/elevation/1_meter/img/,1 meter Digital Elevation Models (DEMs) - USGS National,,waf-collection,WEEKLY,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/scsd/,2018_scsd,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R03/,FEMA-R03,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R07/,FEMA-R07,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://hazards.fema.gov/filedownload/metadata/R09/,FEMA-R09,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/arealm/,2018_arealm,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/facesal/,2018_facesal,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/place/,2018_place,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+http://www.mngeo.state.mn.us/chouse/mpca_metadata_xml/,Minnesota Pollution Control Agency,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+http://www.mngeo.state.mn.us/chouse/metadata_xml/,Minnesota Geospatial Information Office,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/prisecroads/,2018_prisecroads,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://thor-f5.er.usgs.gov/ngtoc/metadata/waf/services/overlays/,USGS Theme Overlay Map Services from The National Map,,waf,DAILY,-1,-1,,,,,-1,-1,,
+http://thor-f5.er.usgs.gov/ngtoc/metadata/waf/transportation/ntd/,USGS National Transportation Dataset (NTD) Downloadable Data Collection,,waf-collection,WEEKLY,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/facesmil/,2018_facesmil,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://thor-f5.er.usgs.gov/ngtoc/metadata/waf/gnis/,USGS Geographic Names Information System (GNIS),,waf-collection,WEEKLY,-1,-1,,,,,-1,-1,,
+https://edg.epa.gov/WAFer_harvest/ISO/,Environmental Dataset Gateway ISO Geospatial Metadata,,waf,BIWEEKLY,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/mil/,2018_mil,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://edg.epa.gov/WAFer_harvest/FGDC/,Environmental Dataset Gateway FGDC CSDGM,,waf,BIWEEKLY,-1,-1,,,,,-1,-1,,
+https://edg.epa.gov/data/PUBLIC/OEI/METADATA/EDI_metadata.json,U.S. EPA Enterprise Data Inventory,,datajson,BIWEEKLY,0,0,True,True,True,1.1,1,1,{'dcat:Dataset': 1},{'dcat:Distribution': 1}
+https://www.chapelhillopendata.org/data.json,Chapel Hill Open Data,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,62,260,{'dcat:Dataset': 62},{'dcat:Distribution': 260}
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/puma10/,2018_puma10,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://data.ny.gov/data.json?version=2,NY State JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,679,2611,{'dcat:Dataset': 679},{'dcat:Distribution': 2611}
+https://data.hawaii.gov/data.json?version=2,hawaii json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,787,3083,{'dcat:Dataset': 787},{'dcat:Distribution': 3083}
+https://data.townofcary.org/data.json,"Town of Cary, NC Data.json Harvest Source","Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,36,160,{'dcat:Dataset': 36},{'dcat:Distribution': 160}
+https://opendata.maryland.gov/data.json,md json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,1052,2354,{'dcat:Dataset': 1052},{'dcat:Distribution': 2354}
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/necta/,2018-necta,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/nectadiv/,2018_nectadiv,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://www.dggs.dnr.state.ak.us/metadata/,Alaska Division of Geological and Geophysical Surveys,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://data.wa.gov/data.json?version=2,WA JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,1566,4578,{'dcat:Dataset': 1566},{'dcat:Distribution': 4578}
+https://data.ct.gov/data.json,Connecticut Data.json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,631,2498,{'dcat:Dataset': 631},{'dcat:Distribution': 2498}
+https://data.mo.gov/data.json?version=2,MO JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,223,829,{'dcat:Dataset': 223},{'dcat:Distribution': 829}
+https://data.oregon.gov/data.json?version=2,oregon json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,665,2661,{'dcat:Dataset': 665},{'dcat:Distribution': 2661}
+http://data.wake.opendata.arcgis.com/data.json,Wake County Open Data Json Harvest Source,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,317,1778,{'dcat:Dataset': 317},{'dcat:Distribution': 1778}
+https://data.iowa.gov/data.json,IOWA Json file,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,22,126,{'dcat:Dataset': 22},{'dcat:Distribution': 126}
+https://data.ok.gov/data.json?version=2,OK JSON,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,WEEKLY,0,0,True,True,False,1.1,319,843,{'dcat:Dataset': 319},{'dcat:Distribution': 843}
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/tbg/,2018_tbg,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://dnr.alaska.gov/mdfiles,"Alaska Department of Natural Resources, IRM",,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/metdiv/,2018_metdiv,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+http://opendata.fcc.gov/data.json,FCC Data.json,"Validation error (truncated): Error validating JsonSchema: 'keyword' is a required property
+
+Failed  ...",datajson,DAILY,0,0,True,True,False,1.1,34,129,{'dcat:Dataset': 34},{'dcat:Distribution': 129}
+https://pasteur.epa.gov/metadata.json,EPA ScienceHub,Validation error (truncated): Missing describedBy KEY ...,datajson,DAILY,0,0,True,True,False,,0,0,{},{}
+http://www.loc.gov/data.json,Library of Congress Data.json,,datajson,DAILY,0,0,True,True,True,1.1,9,100,{'dcat:Dataset': 9},{'dcat:Distribution': 100}
+http://www.ftc.gov/data.json,data.json,,datajson,DAILY,0,0,True,True,True,1.1,89,104,{'unknown': 89},{'unknown': 104}
+https://data.mcc.gov/data.json,MCC Data.json,,datajson,DAILY,0,0,True,True,True,1.1,184,1077,{'dcat:Dataset': 184},{'dcat:Distribution': 1077}
+https://open.gsa.gov/data.json,GSA JSON,,datajson,DAILY,44,137,True,True,True,1.1,241,259,{'dcat:Dataset': 241},{'dcat:Distribution': 259}
+https://secure.rrb.gov/data.json,RRB JSON,,datajson,DAILY,0,0,True,True,True,1.1,16,16,{'dcat:Dataset': 16},{'dcat:Distribution': 16}
+http://www.nitrd.gov/data.json,NIRTD JSON,,datajson,DAILY,0,0,True,True,True,1.1,90,93,{'dcat:Dataset': 90},{'dcat:Distribution': 93}
+http://www.dol.gov/data.json,DOL JSON,,datajson,DAILY,0,0,True,True,True,1.1,396,584,{'dcat:Dataset': 396},{'dcat:Distribution': 584}
+http://www.justice.gov/data.json,DOJ JSON,,datajson,DAILY,0,0,True,True,True,1.1,1193,1194,{'dcat:Dataset': 1193},{'dcat:Distribution': 1194}
+http://www.ed.gov/data.json,Education JSON,Download error (truncated): ERROR Donwloading data: http://www.ed.gov/data.json [HTTPSConnectionPo ...,datajson,DAILY,0,0,False,,,,,,,
+https://healthdata.gov/data.json,Healthdata.gov,"Validation error (truncated): Error validating JsonSchema: 'programCode' is a required property
+
+Fai ...",datajson,DAILY,0,0,True,True,False,1.1,1769,3950,{'dcat:Dataset': 1769},{'dcat:Distribution': 3950}
+https://www.va.gov/data/EDI_JSON/data.json,VA JSON,,datajson,DAILY,63,2280,True,True,True,1.1,3793,3634,{'dcat:Dataset': 3793},{'dcat:Distribution': 3634}
+http://www.sba.gov/data.json,SBA JSON,,datajson,DAILY,74,671,True,True,True,1.1,786,799,{'dcat:Dataset': 786},{'dcat:Distribution': 799}
+https://hazards.fema.gov/filedownload/metadata/R05/,FEMA-R05,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+http://www.usda.gov/data.json,USDA JSON,,datajson,DAILY,75,22,True,True,True,1.1,1680,3745,{'unknown': 1680},{'dcat:Distribution': 3745}
+https://flcbusiness.federallabs.org/data.json,Federal Laboratory Consortium Data.json,Parsing error (truncated): ERROR parsing JSON data: Expecting value: line 1 column 1 (char 0) ...,datajson,DAILY,0,0,True,False,,,,,,
+https://thor-f5.er.usgs.gov/ngtoc/metadata/waf/planned/,The National Map Acquisition Plans,,waf,DAILY,-1,-1,,,,,-1,-1,,
+http://www.archives.gov/data.json,NARA Data.json,,datajson,DAILY,81,50,True,True,True,1.1,99,105,{'dcat:Dataset': 99},{'dcat:Distribution': 105}
+http://eeoc.gov/data.json,EEOC Data.json Harvest Source,,datajson,DAILY,0,0,True,True,True,1.1,124,130,"{'dcat:Dataset': 123, 'unknown': 1}",{'dcat:Distribution': 130}
+http://www.nrc.gov/data.json,NRC Data.json Harvest Source,Download error (truncated): ERROR Donwloading data: http://www.nrc.gov/data.json [HTTPSConnectionP ...,datajson,DAILY,0,0,False,,,,,,,
+http://www.neh.gov/data.json,NEH Data.json,,datajson,DAILY,0,0,True,True,True,1.1,37,37,{'dcat:Dataset': 37},{'dcat:Distribution': 37}
+https://data.transportation.gov/data.json,DOT Socrata Data.json,"Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+Fail ...",datajson,DAILY,278,3387,True,True,False,1.1,4142,4449,{'dcat:Dataset': 4142},{'dcat:Distribution': 4449}
+http://www.dhs.gov/data.json,DHS datajson source,Validation error (truncated): Missing describedBy KEY ...,datajson,DAILY,0,0,True,True,False,,0,0,{},{}
+http://www.nsf.gov/data.json,NSF JSON,,datajson,DAILY,283,76,True,True,True,1.1,173,184,{'dcat:Dataset': 173},{'dcat:Distribution': 184}
+https://geospatial-usace.opendata.arcgis.com/data.json,geospatial-usace,,datajson,WEEKLY,0,0,True,True,True,1.1,133,514,{'dcat:Dataset': 133},{'dcat:Distribution': 514}
+http://www.treasury.gov/data.json,Treasury JSON,,datajson,DAILY,0,0,True,True,True,1.1,278,322,{'dcat:Dataset': 278},{'dcat:Distribution': 322}
+https://data.usaid.gov/data.json,USAID JSON,"Validation error (truncated): Error validating JsonSchema: 'keyword' is a required property
+
+Failed  ...",datajson,DAILY,445,457,True,True,False,1.1,754,1814,{'dcat:Dataset': 754},{'dcat:Distribution': 1814}
+http://www.energy.gov/data.json,Energy JSON,Validation error (truncated): Error validating JsonSchema: '[[REDACTED-EX B6]]' is not of type 'arra ...,datajson,DAILY,465,255,True,True,False,1.1,2981,3587,{'dcat:Dataset': 2981},"{'dcat:Distribution': 2590, 'unknown': 997}"
+https://www.imls.gov/data.json,IMLS JSON,,datajson,DAILY,0,0,True,True,True,1.1,78,306,{'dcat:Dataset': 78},{'dcat:Distribution': 306}
+https://www.hud.gov/sites/documents/HUDPUBLICDATASET.JSON,HUD JSON,Download error (truncated): ERROR Donwloading data: https://www.hud.gov/sites/documents/HUDPUBLICD ...,datajson,DAILY,0,0,False,,,,,,,
+http://www.state.gov/data.json,State JSON,,datajson,DAILY,0,0,True,True,True,1.1,371,740,{'dcat:Dataset': 371},{'dcat:Distribution': 740}
+http://www.ssa.gov/data.json,SSA JSON,unknown Distribution: None,datajson,DAILY,493,1956,True,True,False,1.1,1956,1773,{'unknown': 1956},{'unknown': 1773}
+https://edg.epa.gov/data/PUBLIC/OEI/metadata/OEI-OIAA.json,OEI-OIAA Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,2,3,{'dcat:Dataset': 2},{'dcat:Distribution': 3}
+https://edg.epa.gov/data/PUBLIC/OEI/metadata/OEI-OIC.json,OEI-OIC Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,25,65,{'dcat:Dataset': 25},{'dcat:Distribution': 65}
+https://edg.epa.gov/data/Public/R6/metadata/Region6.json,Region 6 Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,6,0,{'dcat:Dataset': 6},{}
+https://edg.epa.gov/data/PUBLIC/R1/metadata/Region1.json,Region 1 Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,1,0,{'dcat:Dataset': 1},{}
+https://edg.epa.gov/data/Public/ORD/NHEERL/metadata/PubCentral.json,EPA Pub Central,,datajson,WEEKLY,0,0,True,True,True,1.1,1,2,{'dcat:Dataset': 1},{'dcat:Distribution': 2}
+https://edg.epa.gov/data/PUBLIC/OEI/metadata/OEI.json,OEI Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,8,7,{'dcat:Dataset': 8},{'dcat:Distribution': 7}
+https://edg.epa.gov/data/Public/R5/R5.json,Region 5 Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,2,0,{'dcat:Dataset': 2},{}
+https://edg.epa.gov/data/Public/OW/metadata/OW.json,OW Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,58,0,{'dcat:Dataset': 58},{}
+https://data.cdc.gov/data.json,https://data.cdc.gov/data.json,"Validation error (truncated): Error validating JsonSchema: 'keyword' is a required property
+
+Failed  ...",datajson,DAILY,0,0,True,True,False,1.1,475,1711,{'dcat:Dataset': 475},{'dcat:Distribution': 1711}
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/sldu/,2018_sldu,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/unsd/,2018_unsd,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/sldl/,2018_sldl,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/tabblock10/,2018_tabblock10,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/tract/,2018_tract,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/zcta/,2018_zcta,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/state/,2018_state,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/pointlm/,2018_pointlm,,waf-collection,MANUAL,-1,-1,,,,,-1,-1,,
+https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2018/uac/,2018_uac,,waf,MANUAL,-1,-1,,,,,-1,-1,,
+https://thor-f5.er.usgs.gov/ngtoc/metadata/waf/services/base_maps/,USGS Cached Base Map Services from The National Map,,waf,WEEKLY,-1,-1,,,,,-1,-1,,
+http://www.commerce.gov/data-nonspatial-harvest.json,Commerce Non Spatial Data.json Harvest Source,Download error (truncated): ERROR Donwloading data: http://www.commerce.gov/data-nonspatial-harves ...,datajson,DAILY,0,0,False,,,,,,,
+http://pbgc.gov/data.json,PBGC Data.json Source,,datajson,DAILY,0,0,True,True,True,1.1,10,10,{'dcat:Dataset': 10},{'dcat:Distribution': 10}
+https://app.ntsb.gov/data.json,NTSB json,,datajson,DAILY,0,0,True,True,True,1.1,24,24,{'dcat:Dataset': 24},{'dcat:Distribution': 24}
+https://edg.epa.gov/data/PUBLIC/ORD/NERL/metadata/ORD_NERL_ESD.json,ORD-NERL-ESD Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,2,0,{'dcat:Dataset': 2},{}
+https://edg.epa.gov/data/Public/OCSPP/OPPT/metadata/OCSPP-RAD.json,OCSPP-OPPT ECO_EFCTS,,datajson,WEEKLY,0,0,True,True,True,1.1,1,1,{'dcat:Dataset': 1},{'dcat:Distribution': 1}
+https://edg.epa.gov/data/PUBLIC/OCSPP/OPP/metadata/OCSPP-OPP.json,OCSPP-OPP Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,6,5,{'dcat:Dataset': 6},{'dcat:Distribution': 5}
+https://edg.epa.gov/data/PUBLIC/OAR/OAQPS/metadata/OAR-OAQPS.json,OAR-OAQPS Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,41,35,"{'unknown': 1, 'dcat:Dataset': 40}",{'dcat:Distribution': 35}
+https://edg.epa.gov/data/PUBLIC/OAR/OAP/metadata/OAR-OAP.json,OAR-OAP Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,34,24,{'dcat:Dataset': 34},{'dcat:Distribution': 24}
+https://edg.epa.gov/data/PUBLIC/OCFO/metadata/OCFO.json,OCFO Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,8,1,{'dcat:Dataset': 8},{'dcat:Distribution': 1}
+https://edg.epa.gov/data/PUBLIC/OECA/metadata/OECA.json,OECA Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,8,7,{'dcat:Dataset': 8},{'dcat:Distribution': 7}
+https://edg.epa.gov/data/PUBLIC/ORD/metadata/ORD.json,ORD Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,18,2,{'dcat:Dataset': 18},{'dcat:Distribution': 2}
+https://edg.epa.gov/data/Public/OECA/Metadata/OECA-ECHO.json,OECA ECHO Records,,datajson,WEEKLY,0,0,True,True,True,1.1,20,23,{'dcat:Dataset': 20},{'dcat:Distribution': 23}
+http://data.energystar.gov/data.json,EnergyStar,"Validation error (truncated): Error validating JsonSchema: 'keyword' is a required property
+
+Failed  ...",datajson,WEEKLY,0,0,True,True,False,1.1,63,248,{'dcat:Dataset': 63},{'dcat:Distribution': 248}
+http://thor-f5.er.usgs.gov/ngtoc/metadata/waf/elevation/lidar_point_cloud/las/,USGS Lidar Point Cloud LAS Harvest Source,,waf-collection,WEEKLY,-1,-1,,,,,-1,-1,,
+http://thor-f5.er.usgs.gov/ngtoc/metadata/waf/orthoimagery/naip/,FSA 10:1 NAIP Imagery Collection,,waf-collection,WEEKLY,-1,-1,,,,,-1,-1,,
+http://thor-f5.er.usgs.gov/ngtoc/metadata/htmc/,USGS Historical Topographic Maps,,waf-collection,WEEKLY,-1,-1,,,,,-1,-1,,
+http://thor-f5.er.usgs.gov/ngtoc/metadata/waf/combined/vector/,USGS Combined Vector Downloadable Data Collection,,waf-collection,WEEKLY,-1,-1,,,,,-1,-1,,
+https://thor-f5.er.usgs.gov/ngtoc/metadata/waf/ustopo/geopdf/,USGS US Topo Maps,,waf-collection,WEEKLY,-1,-1,,,,,-1,-1,,
+https://edg.epa.gov/data/PUBLIC/OEI/METADATA/FRS-NonGeo.json,FRS Non-Geo Records,,datajson,WEEKLY,494,119,True,True,True,1.1,120,239,{'dcat:Dataset': 120},{'dcat:Distribution': 239}
+http://data.exim.gov/data.json,Exim Data.json,,datajson,WEEKLY,0,0,True,True,True,1.1,1,4,{'dcat:Dataset': 1},{'dcat:Distribution': 4}
+https://edg.epa.gov/data/PUBLIC/OARM/metadata/OARM.json,OARM Non-Geo Records,,datajson,WEEKLY,0,0,True,True,True,1.1,1,1,{'dcat:Dataset': 1},{'dcat:Distribution': 1}
+http://www.pasda.psu.edu/metadata/harvest/,Pennsylvania Geospatial Data Clearinghouse,,waf,MANUAL,-1,-1,,,,,-1,-1,,
