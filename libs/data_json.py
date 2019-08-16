@@ -67,8 +67,8 @@ class DataJSON:
             return False, "No URL defined"
 
         try:
-            req = requests.get(self.url, timeout=timeout,
-                               verify=False  # avoid SSL verification
+            req = requests.get(self.url, timeout=timeout
+                               # ,verify=False  # avoid SSL verification
                                # e.g fails at https://www2.ed.gov/data.json
                                # "Adding certificate verification is strongly advised"
                                # FIXME: maybe notify error and continue
