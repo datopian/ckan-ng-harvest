@@ -90,6 +90,7 @@ def set_extra(self, ckan_dataset, key, value):
         ckan_dataset['extras'].append({'key': key, 'value': value})
     return ckan_dataset
 
+
 def write_results_to_ckan(rows):
     """ each row it's a dataset to delete/update/create """
 
@@ -165,10 +166,6 @@ def write_results_to_ckan(rows):
                 # raise Exception('We are not ready to harvest 1.0 schema datasets. Check if this kind of dataset still exists')
             # ORG is required!
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
-
-            if datajson_dataset.get('collection_pkg_id', None) == '':
-                results['warnings'].append('Failed to get the collection_pkg_id')
-
             ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
 
         if action == 'create':
@@ -180,7 +177,7 @@ def write_results_to_ckan(rows):
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 
-            results = {'success': ckan_response['success']}
+            results['success'] = ckan_response['success']
             results['ckan_response'] = ckan_response
 
             if ckan_response['success']:
@@ -190,6 +187,8 @@ def write_results_to_ckan(rows):
                 comparison_results['ckan_id'] = ckan_response['result']['id']
             else:
                 actions[action]['fails'] += 1
+                error = 'Error creating dataset: {}'.format(ckan_response['error'])
+                results['errors'].append(error)
 
         elif action == 'update':
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
@@ -200,13 +199,15 @@ def write_results_to_ckan(rows):
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 
-            results = {'success': ckan_response['success']}
+            results['success'] = ckan_response['success']
             results['ckan_response'] = ckan_response
 
             if ckan_response['success']:
                 actions[action]['success'] += 1
             else:
                 actions[action]['fails'] += 1
+                error = 'Error updating dataset: {}'.format(ckan_response['error'])
+                results['errors'].append(error)
 
         elif action == 'delete':
             ckan_id = row['comparison_results']['ckan_id']
