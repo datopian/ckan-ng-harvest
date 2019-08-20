@@ -63,14 +63,14 @@ def assing_collection_pkg_id(rows):
             else:
                 # update ckan package
                 ckan_dataset = res3['result']
-                ckan_dataset = set_extra(ckan_dataset,
-                                         'collection_pkg_id',
-                                         new_ckan_identifier)
+                ckan_dataset = set_extra(ckan_dataset=ckan_dataset,
+                                         key='collection_package_id',
+                                         value=new_ckan_identifier)
 
                 try:
                     ckan_response = cpa.update_package(ckan_package=ckan_dataset)
                 except Exception as e:
-                    error = f'Error updating collection_pkg_id at {ckan_dataset}: {e}'
+                    error = f'Error updating collection_package_id at {ckan_dataset}: {e}'
                     comparison_results['action_results']['errors'].append(error)
 
         else:
@@ -80,7 +80,7 @@ def assing_collection_pkg_id(rows):
         yield row
 
 
-def set_extra(self, ckan_dataset, key, value):
+def set_extra(ckan_dataset, key, value):
     found = False
     for extra in ckan_dataset['extras']:
         if extra['key'] == key:
@@ -201,6 +201,7 @@ def write_results_to_ckan(rows):
 
             results['success'] = ckan_response['success']
             results['ckan_response'] = ckan_response
+            # row['id'] = comparison_results['ckan_id']
 
             if ckan_response['success']:
                 actions[action]['success'] += 1

@@ -141,6 +141,72 @@ class CKANPortalAPI:
                 logger.debug(f'datasets found: {results}')
                 yield(results)
 
+    def search_packages(self,
+                        rows=1000,
+                        method='POST',  # POST work in CKAN 2.8, fails in 2.3
+                        search_params={}
+                        ):  # datajson for
+        """ search packages.
+            "rows" is the page size.
+            """
+
+        start = 0
+
+        url = '{}{}'.format(self.base_url, self.package_search_url)
+        page = 0
+        # TODO check for a real paginated version
+        while url:
+            page += 1
+
+            params = {'start': start, 'rows': rows}
+            params.update(search_params)
+            logger.info(f'Searching packages {url} PAGE:{page} start:{start}, rows:{rows} with params: {params}')
+
+            headers = self.get_request_headers()
+            try:
+                if method == 'POST':  # depend on CKAN version
+                    req = requests.post(url, data=params, headers=headers)
+                else:
+                    req = requests.get(url, params=params, headers=headers)
+
+            except Exception as e:
+                error = 'ERROR Donwloading package list: {} [{}]'.format(url, e)
+                raise ValueError('Failed to get package list at {}'.format(url))
+
+            content = req.content
+
+            if req.status_code >= 400:
+                error = ('ERROR searching CKAN package: {}'
+                         '\n\t Status code: {}'
+                         '\n\t Params: {}'
+                         '\n\t content:{}'.format(url, req.status_code, params, content))
+                logger.error(error)
+                raise Exception(error)
+
+            try:
+                json_content = json.loads(content)  # check for encoding errors
+            except Exception as e:
+                error = 'ERROR parsing JSON data: {} [{}]'.format(content, e)
+                raise ValueError(error)
+
+            if not json_content['success']:
+                error = 'API response failed: {}'.format(json_content.get('error', None))
+                raise ValueError(error)
+
+            result = json_content['result']
+            results = result['results']
+            real_results_count = len(results)
+            self.total_packages += real_results_count
+            logger.info(f'{real_results_count} results')
+
+            if real_results_count == 0:
+                url = None
+            else:
+                start += rows
+                self.package_list += results
+                logger.debug(f'datasets found: {results}')
+                yield(results)
+
     def get_all_packages(self, harvest_source_id=None,  # just one harvest source
                                 harvest_type=None,  # 'harvest' for harvest sources
                                 source_type=None):
