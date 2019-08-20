@@ -62,6 +62,9 @@ class TestCKANHarvest(object):
         djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
         djss.ckan_owner_org_id = CKAN_ORG_ID
         package = djss.transform_to_ckan_dataset()
+        assert 'extras' in package
+        assert [['005:45']] == [extra['value'] for extra in package['extras'] if extra['key'] == 'bureauCode']
+        assert [['005:047']] == [extra['value'] for extra in package['extras'] if extra['key'] == 'programCode']
 
         cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
         res = cpa.create_package(ckan_package=package, on_duplicated='DELETE')
