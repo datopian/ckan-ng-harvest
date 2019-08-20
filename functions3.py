@@ -8,6 +8,7 @@ import pytz
 import hashlib
 import os.path
 
+
 def hash_dataset(datasetdict):
     # hash the dataset.
     # We change the way that previous harvester do this
@@ -25,7 +26,7 @@ def assing_collection_pkg_id(rows):
     # create a list of datajson identifiers -> CKAN indetifiers
     # to detect collection IDs
     related_ids = {}
-    missing_rows = []
+    need_update_rows = []  # need to save the collection_pkg_id
     for row in rows:
         comparison_results = row['comparison_results']
         action = comparison_results['action']
@@ -43,26 +44,51 @@ def assing_collection_pkg_id(rows):
             if is_part_of is None:
                 yield row
             else:
-                new_ckan_identifier = related_ids.get(is_part_of, None)
-                if new_ckan_identifier is not None:
-                    datajson_dataset['collection_pkg_id'] = new_ckan_identifier
-                    yield row
-                else:
-                    # the CKAN ID is not loaded at related_ids at the moment. Try it later
-                    missing_rows.append(row)
+                need_update_rows.append(row)
 
-    for row in missing_rows:
+    cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
+                        api_key=config.CKAN_API_KEY)
+
+    for row in need_update_rows:
         comparison_results = row['comparison_results']
         datajson_dataset = comparison_results['new_data']
         old_identifier = datajson_dataset['isPartOf']  # ID at data.json
         new_ckan_identifier = related_ids.get(old_identifier, None)
         if new_ckan_identifier is not None:
-            datajson_dataset['collection_pkg_id'] = new_ckan_identifier
+
+            res3 = cpa.show_package(ckan_package_id_or_name=row['id'])
+            if res3['success'] != True:
+                error = 'Unable to read package for update collection_pkg_id'
+                comparison_results['action_results']['errors'].append(error)
+            else:
+                # update ckan package
+                ckan_dataset = res3['result']
+                ckan_dataset = set_extra(ckan_dataset=ckan_dataset,
+                                         key='collection_package_id',
+                                         value=new_ckan_identifier)
+
+                try:
+                    ckan_response = cpa.update_package(ckan_package=ckan_dataset)
+                except Exception as e:
+                    error = f'Error updating collection_package_id at {ckan_dataset}: {e}'
+                    comparison_results['action_results']['errors'].append(error)
+
         else:
-            # Maybe the CKAN dataset has not been created yet.
-            datajson_dataset['collection_pkg_id'] = ''
+            error = f'Unable to detect the collection_pkg_id at {row}'
+            comparison_results['action_results']['errors'].append(error)
 
         yield row
+
+
+def set_extra(ckan_dataset, key, value):
+    found = False
+    for extra in ckan_dataset['extras']:
+        if extra['key'] == key:
+            extra['value'] = value
+            found = True
+    if not found:
+        ckan_dataset['extras'].append({'key': key, 'value': value})
+    return ckan_dataset
 
 
 def write_results_to_ckan(rows):
@@ -140,10 +166,6 @@ def write_results_to_ckan(rows):
                 # raise Exception('We are not ready to harvest 1.0 schema datasets. Check if this kind of dataset still exists')
             # ORG is required!
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
-
-            if datajson_dataset.get('collection_pkg_id', None) == '':
-                results['warnings'].append('Failed to get the collection_pkg_id')
-
             ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
 
         if action == 'create':
@@ -155,13 +177,18 @@ def write_results_to_ckan(rows):
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 
-            results = {'success': ckan_response['success']}
+            results['success'] = ckan_response['success']
             results['ckan_response'] = ckan_response
 
             if ckan_response['success']:
                 actions[action]['success'] += 1
+                # add this new CKAN ID in the case we need as collection_pkg_id
+                row['id'] = ckan_response['result']['id']
+                comparison_results['ckan_id'] = ckan_response['result']['id']
             else:
                 actions[action]['fails'] += 1
+                error = 'Error creating dataset: {}'.format(ckan_response['error'])
+                results['errors'].append(error)
 
         elif action == 'update':
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
@@ -172,13 +199,16 @@ def write_results_to_ckan(rows):
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 
-            results = {'success': ckan_response['success']}
+            results['success'] = ckan_response['success']
             results['ckan_response'] = ckan_response
+            # row['id'] = comparison_results['ckan_id']
 
             if ckan_response['success']:
                 actions[action]['success'] += 1
             else:
                 actions[action]['fails'] += 1
+                error = 'Error updating dataset: {}'.format(ckan_response['error'])
+                results['errors'].append(error)
 
         elif action == 'delete':
             ckan_id = row['comparison_results']['ckan_id']

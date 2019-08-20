@@ -123,7 +123,7 @@ for datasets in results:
             dag=dag  # set actual dag for this task
             )
 
-        logger.info(f'set {dag} dag for the task: {task}')
+        logger.info(f'set {dag} dag for the task: {task.bash_command}')
 
         last_task = dags[frequency]['last_task']
         if last_task is not None:

@@ -34,9 +34,8 @@ config.SOURCE_ID = args.harvest_source_id
 
 res = Flow(
     load(load_source=config.get_flow2_datasets_result_path()),
-    assing_collection_pkg_id,
     write_results_to_ckan,
-
+    assing_collection_pkg_id,
 ).results()
 
 build_validation_error_email(res[0][0])
