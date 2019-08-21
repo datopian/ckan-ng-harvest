@@ -62,7 +62,6 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
         if defaults is not None:
             with_config_defaults += 1
 
-
         title = local_harvest_source['title']
         source_type = local_harvest_source['source_type']
         frequency = local_harvest_source.get('frequency', None)
