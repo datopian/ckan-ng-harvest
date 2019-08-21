@@ -2,6 +2,8 @@ from libs.data_gov_api import CKANPortalAPI
 from libs.data_json import DataJSON
 from logs import logger
 import csv
+import json
+import config
 
 
 # search each data.json source and analyze them
@@ -23,6 +25,9 @@ results = []
 colections_ids = set()
 c = 0
 urls = []
+with_configs = 0
+with_config_filters = 0
+with_config_defaults = 0
 
 for results in cpa.search_harvest_packages(harvest_type='harvest',
                                            method='GET'
@@ -38,6 +43,25 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
             urls.append(url)
 
         c += 1
+        name = local_harvest_source.get('name', 'UNNAMED')
+        hspath = config.get_harvest_sources_path(hs_name=name)
+        f = open(hspath, 'w')
+        f.write(json.dumps(local_harvest_source, indent=2))
+        f.close()
+        logger.info(f'{hspath} saved')
+
+        # check for config.filters and config.defaults
+        config_str = local_harvest_source.get('config', '{}')
+        configs = json.loads(config_str)
+        if configs != {}:
+            with_configs += 1
+        filters = configs.get('filters', None)
+        if filters is not None:
+            with_config_filters += 1
+        defaults = configs.get('defaults', None)
+        if defaults is not None:
+            with_config_defaults += 1
+
 
         title = local_harvest_source['title']
         source_type = local_harvest_source['source_type']
@@ -139,3 +163,10 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
         writer.writerow(result)
 
 csvfile.close()
+
+print('----------------------------------------------')
+print('Finish {} sources'.format(len(results)))
+print(f' - whit config: {with_configs}')
+print(f'   - whit config filters: {with_config_filters}')
+print(f'   - whit config defaults: {with_config_defaults}')
+print('----------------------------------------------')
