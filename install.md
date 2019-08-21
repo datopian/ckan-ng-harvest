@@ -4,8 +4,8 @@ This tool does not need a CKAN instance to work. It works as a set of independen
 
 ## Requirements
 
-Python 3.6
-requirement.txt file.
+Python 3.6  
+requirement.txt file  
 Tested on:
  - Ubuntu 18.04 LTS
  - MacOSX
