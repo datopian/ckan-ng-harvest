@@ -21,6 +21,8 @@ context.update(reports)
 results = context['results']
 actions = {}  # create | delete | update
 validation_errors = []
+action_errors = []
+action_warnings = []
 for result in results:
     comparison_results = result['comparison_results']
     action = comparison_results['action']
@@ -39,11 +41,13 @@ for result in results:
     else:
         actions[action]['fails'] += 1
 
-    warnings = action_results['warnings']
-    errors = action_results['errors']
+    action_warnings += action_results['warnings']
+    action_errors += action_results['errors']
 
 context['actions'] = actions
 context['validation_errors'] = validation_errors
+context['action_warnings'] = action_warnings
+context['action_errors'] = action_errors
 
 f = open('templates/harvest-report.html')
 template = Template(f.read())

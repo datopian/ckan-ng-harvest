@@ -33,6 +33,19 @@
         <li>{{ action }}: {{ values.total }}. Succeed: {{ values.success }}, fails: {{ values.fails }}</li>
         {% endfor %}
     </ul>
+    <p>Errors: {{ action_errors|length }}</p>
+    {% if action_errors|length > 0 %}
+    <ul> {% for error in action_errors %}
+        <li>{{ error }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <p>Warnings: {{ action_warnings|length }}</p>
+    {% if action_warnings|length > 0 %}
+    <ul> {% for warning in action_warnings %}
+        <li>{{ warning }}</li>{% endfor %}
+    </ul>
+    {% endif %}
 </div>
 
 <div>
