@@ -64,7 +64,7 @@ def get_data_json_from_url(url):
     # save data.json
     datajson.save_data_json(path=config.get_datajson_cache_path())
     # save headers errors
-    datajson.save_validation_errors(path=config.get_datajson_headers_validation_errors_path())
+    datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
 
     # the real dataset list
 

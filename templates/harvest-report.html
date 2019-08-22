@@ -4,15 +4,6 @@
 <div>
     <h3>Data JSON source</h3>
     <p>Total Datasets: {{data_json.dataset|length}}</p>
-    <p>Header errors: {{ data_json_headers_errors|length }}</p>
-    {% if data_json_headers_errors|length > 0 %}
-    <ul> {% for he in data_json_headers_errors %}
-        <li>{{ he }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-</div>
-<div>
     <p>Validation errors: {{ data_json_validation_errors|length }}</p>
     {% if data_json_validation_errors|length > 0 %}
     <ul> {% for ve in data_json_validation_errors %}
