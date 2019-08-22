@@ -1,2 +1,53 @@
 <h1>Harvest report</h1>
-<h2>Source: {{ source.title }}</h2>
+<h2>Source: {{ name }}</h2>
+
+<div>
+    <h3>Data JSON source</h3>
+    <p>Total Datasets: {{data_json.dataset|length}}</p>
+    <p>Header errors: {{ data_json_headers_errors|length }}</p>
+    {% if data_json_headers_errors|length > 0 %}
+    <ul> {% for he in data_json_headers_errors %}
+        <li>{{ he }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+<div>
+    <p>Validation errors: {{ data_json_validation_errors|length }}</p>
+    {% if data_json_validation_errors|length > 0 %}
+    <ul> {% for ve in data_json_validation_errors %}
+        <li>{{ ve }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+<div>
+    <h3>Final process</h3>
+    <p>Processed: {{results|length}} </p>
+</div>
+
+<div>
+    <p>Actions</p>
+    <ul> {% for action, values in actions.items() %}
+        <li>{{ action }}: {{ values.total }}. Succeed: {{ values.succees }}, fails: {{ values.fails }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div>
+    <p>Validation errors: {{ validation_errors|length }}</p>
+    {% if validation_errors|length > 0 %}
+    <ul> {% for ve in validation_errors %}
+        {% for title, errors in ve.items() %}
+        <li>{{ title }}</li>
+        <ul>{% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+            {% endfor %}
+        </ul>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
