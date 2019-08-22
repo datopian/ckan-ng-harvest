@@ -8,7 +8,7 @@ import config
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")
+parser.add_argument("--name", type=str, help="Name of the resource (for generating the containing folder)")
 args = parser.parse_args()
 
 context = {}
@@ -17,7 +17,7 @@ context['name'] = config.SOURCE_NAME
 reports = config.get_report_files()
 context.update(reports)
 
-# analize results
+# analyze results
 results = context['results']
 actions = {}  # create | delete | update
 validation_errors = []
