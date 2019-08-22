@@ -28,8 +28,9 @@ for result in results:
         actions[action] = {'total': 0, 'success': 0, 'fails': 0}
     actions[action]['total'] += 1
 
-    if len(comparison_results['new_data'].get('validation_errors', [])) > 0:
-        validation_errors += comparison_results['new_data']['validation_errors']
+    if action in ['create', 'update']:  # delete has no new_data
+        if len(comparison_results['new_data'].get('validation_errors', [])) > 0:
+            validation_errors += comparison_results['new_data']['validation_errors']
 
     action_results = comparison_results['action_results']
     success = action_results['success']

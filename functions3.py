@@ -219,13 +219,16 @@ def write_results_to_ckan(rows):
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 
-            results = {'success': ckan_response['success']}
+            results['success'] = ckan_response['success']
             results['ckan_response'] = ckan_response
+            error = 'Error updating dataset: {}'.format(ckan_response['error'])
+            results['errors'].append(error)
 
             if ckan_response['success']:
                 actions[action]['success'] += 1
             else:
                 actions[action]['fails'] += 1
+
 
         elif action == 'ignore':
             continue
