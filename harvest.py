@@ -16,6 +16,10 @@ parser.add_argument("--limit_dataset", type=int, default=0, help="Limit datasets
 
 args = parser.parse_args()
 
+def write_final_report(name):
+    cmd = f'python3 create_report.py --name {name}'
+    res = os.system(cmd)
+
 logger.info('Starting full harvest process')
 
 commands = [f'python3 flow.py --name {args.name} --url {args.url} --limit_dataset {args.limit_dataset}',
@@ -28,5 +32,9 @@ for cmd in commands:
     if res == 0:
         logger.info(f'**************\nCOMD OK: {cmd}\n**************')
     else:
+        # create final report
+        write_final_report(args.name)
         raise Exception(f'Error executing {cmd}')
+
+write_final_report(args.name)
 

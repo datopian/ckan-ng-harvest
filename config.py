@@ -1,5 +1,6 @@
 import os
 from slugify import slugify
+import json
 
 DATA_FOLDER_PATH = 'data'
 SOURCE_NAME = ''  # the source nage, e.g. Dep of Agriculture
@@ -61,14 +62,6 @@ def get_flow2_datasets_result_path(create=True):
     return path
 
 
-def get_datajson_headers_validation_errors_path(create=True):
-    """ local path for data-json-errors.json source file """
-    path =  os.path.join(get_base_path(), 'data-json-headers-errors.json')
-    if not os.path.isfile(path):
-        open(path, 'w').close()
-    return path
-
-
 def get_datajson_validation_errors_path(create=True):
     """ local path for data-json-errors.json source file """
     path =  os.path.join(get_base_path(), 'data-json-errors.json')
@@ -119,3 +112,31 @@ def get_harvest_sources_path(hs_name):
     final_path = os.path.join(base_path, f'harvest-source-{hs_name}.json')
 
     return final_path
+
+
+def get_json_data_or_none(path):
+    if not os.path.isfile(path):
+        return None
+    else:
+        f = open(path, 'r')
+        try:
+            j = json.load(f)
+        except Exception as e:
+            j = {'error': str(e)}
+        f.close()
+        return j
+
+
+def get_report_files():
+    # collect important files to write a final report
+    data_json_file = get_datajson_cache_path(create=False)
+    results_file = get_flow2_datasets_result_path(create=False)
+    data_json_validation_errors_file = get_datajson_validation_errors_path(create=False)
+
+    return {'data_json': get_json_data_or_none(data_json_file),
+            'results': get_json_data_or_none(results_file),
+            'data_json_validation_errors': get_json_data_or_none(data_json_validation_errors_file)
+            }
+
+def get_html_report_path():
+    return os.path.join(get_base_path(), 'final-report.html')
