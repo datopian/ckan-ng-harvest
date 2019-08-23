@@ -130,6 +130,7 @@ class HarvestedSources:
                 if not ret:
                     self.summary_data['harvest_sources_failed'] += 1
                     continue
+                hs.render_template(template_path='templates/harvest-report.html', save=True)
 
                 data = hs.get_json_data()
                 self.all_data.append(data)
