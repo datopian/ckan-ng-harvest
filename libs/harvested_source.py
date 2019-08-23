@@ -1,10 +1,12 @@
 import config
 from jinja2 import Template
+import os
+from logs import logger
 
 
 class HarvestedSource:
     """
-    Analize all data from a previously harvested source
+    Analize all data from a particular previously harvested source
     """
     name = None  # source name (and folder name)
 
@@ -30,9 +32,18 @@ class HarvestedSource:
         validation_errors = []
         action_errors = []
         action_warnings = []
+        # print(f'Result: {self.results}')
+        if type(self.results) != list:
+            logger.error(f'Unexpected results: {self.results}')
+            return
+
         for result in self.results:
-            # print(f'Result: {self.results}')
-            comparison_results = result['comparison_results']
+
+            # print(f'Result: {result}')
+            comparison_results = result.get('comparison_results', None)
+            if comparison_results is None:
+                # this is bad. This source is broken
+                return
             action = comparison_results['action']
             if action not in actions.keys():
                 actions[action] = {'total': 0, 'success': 0, 'fails': 0}
@@ -42,15 +53,15 @@ class HarvestedSource:
                 if len(comparison_results['new_data'].get('validation_errors', [])) > 0:
                     validation_errors += comparison_results['new_data']['validation_errors']
 
-            action_results = comparison_results['action_results']
-            success = action_results['success']
+            action_results = comparison_results.get('action_results', {})
+            success = action_results.get('success', False)
             if success:
                 actions[action]['success'] += 1
             else:
                 actions[action]['fails'] += 1
 
             action_warnings += action_results.get('warnings', [])
-            action_errors += action_results['errors']
+            action_errors += action_results.get('errors', [])
 
         self.final_results['actions'] = actions
         self.final_results['validation_errors'] = validation_errors
@@ -85,3 +96,43 @@ class HarvestedSource:
         f = open(report_path, 'w')
         f.write(html)
         f.close()
+
+
+class HarvestedSources:
+    """
+    Analize ALL harvested sources. Iterate and process all
+    """
+    base_folder = None
+    all_data = []  # one row per harvest source
+    summary_data = {}
+
+    def __init__(self, base_folder=None):
+        self.base_folder = config.DATA_FOLDER_PATH if base_folder is None else base_folder
+
+    def process_all(self):
+
+        logger.info(f'Inspecting {self.base_folder} folder')
+        for subdir, dirs, files in os.walk(self.base_folder):
+            for name in dirs:
+                if name == 'harvest_sources':
+                    continue
+                logger.info(f'Processing {name} folder')
+                hs = HarvestedSource(name=name)
+                hs.process_results()
+
+                data = hs.get_json_data()
+                self.all_data.append(data)
+
+                if 'data_json_datasets' not in self.summary_data:
+                    self.summary_data['data_json_datasets'] = 0
+
+                if type(data['data_json']) == list:
+                    datasets = []
+                    logger.error(f'{name}: Data JSON Source is a list. Must be a dict')
+                if type(data['data_json']) == dict:
+                    datasets = data['data_json'].get('dataset', [])
+                if len(datasets) == 0:
+                    logger.error(f'Source with 0 datasets {name}')
+                self.summary_data['data_json_datasets'] += len(datasets)
+                logger.info(' - Total datasets: {}'.format(self.summary_data['data_json_datasets']))
+                # hs.render_template(template_path='templates/harvest-report.html', save=True)
