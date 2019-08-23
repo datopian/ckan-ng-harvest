@@ -35,7 +35,7 @@ class HarvestedSource:
         # print(f'Result: {self.results}')
         if type(self.results) != list:
             logger.error(f'Unexpected results: {self.results}')
-            return
+            return False
 
         for result in self.results:
 
@@ -43,7 +43,7 @@ class HarvestedSource:
             comparison_results = result.get('comparison_results', None)
             if comparison_results is None:
                 # this is bad. This source is broken
-                return
+                return False
             action = comparison_results['action']
             if action not in actions.keys():
                 actions[action] = {'total': 0, 'success': 0, 'fails': 0}
@@ -67,6 +67,8 @@ class HarvestedSource:
         self.final_results['validation_errors'] = validation_errors
         self.final_results['action_warnings'] = action_warnings
         self.final_results['action_errors'] = action_errors
+
+        return True
 
     def get_json_data(self):
         data = {
@@ -104,7 +106,11 @@ class HarvestedSources:
     """
     base_folder = None
     all_data = []  # one row per harvest source
-    summary_data = {}
+    summary_data = {'harvest_sources_readed': 0,
+                    'harvest_sources_failed': 0,
+                    'total_data_json_datasets': 0,
+
+                    }
 
     def __init__(self, base_folder=None):
         self.base_folder = config.DATA_FOLDER_PATH if base_folder is None else base_folder
@@ -117,14 +123,16 @@ class HarvestedSources:
                 if name == 'harvest_sources':
                     continue
                 logger.info(f'Processing {name} folder')
+                self.summary_data['harvest_sources_readed'] += 1
+
                 hs = HarvestedSource(name=name)
-                hs.process_results()
+                ret = hs.process_results()
+                if not ret:
+                    self.summary_data['harvest_sources_failed'] += 1
+                    continue
 
                 data = hs.get_json_data()
                 self.all_data.append(data)
-
-                if 'data_json_datasets' not in self.summary_data:
-                    self.summary_data['data_json_datasets'] = 0
 
                 if type(data['data_json']) == list:
                     datasets = []
@@ -133,6 +141,16 @@ class HarvestedSources:
                     datasets = data['data_json'].get('dataset', [])
                 if len(datasets) == 0:
                     logger.error(f'Source with 0 datasets {name}')
-                self.summary_data['data_json_datasets'] += len(datasets)
-                logger.info(' - Total datasets: {}'.format(self.summary_data['data_json_datasets']))
+                self.summary_data['total_data_json_datasets'] += len(datasets)
+                logger.info(' - Total datasets: {}'.format(self.summary_data['total_data_json_datasets']))
                 # hs.render_template(template_path='templates/harvest-report.html', save=True)
+
+        harvest_sources_readed = self.summary_data['harvest_sources_readed']
+        harvest_sources_failed = self.summary_data['harvest_sources_failed']
+        total_data_json_datasets = self.summary_data['total_data_json_datasets']
+        logger.info('''**************
+                        Harvest sources readed: {}
+                        Harvest sources failed: {}
+                        Total datasets: {}'''.format(harvest_sources_readed,
+                                                     harvest_sources_failed,
+                                                     total_data_json_datasets))
