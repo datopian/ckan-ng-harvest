@@ -12,7 +12,7 @@ OpenTopography CSW: https://portal.opentopography.org/geoportal/csw
 """
 import requests
 from slugify import slugify
-from urllib.parse import urlparse, urlencode
+from urllib.parse import urlparse, urlencode, urlunparse
 
 
 class CSWSource:
@@ -26,7 +26,7 @@ class CSWSource:
 
     def get_original_url(self, harvest_id):
         # take the URL and add required params
-        parts = urlparse.urlparse(self.url)
+        parts = urlparse(self.url)
         # urlparse('http://www.cwi.nl:80/%7Eguido/Python.html?q=90&p=881')
         # ParseResult(scheme='http', netloc='www.cwi.nl:80', path='/%7Eguido/Python.html', params='', query='q=90&p=881', fragment='')
 
@@ -39,7 +39,7 @@ class CSWSource:
             'ID': harvest_id
         }
 
-        url = urlparse.urlunparse((
+        url = urlunparse((
             parts.scheme,
             parts.netloc,
             parts.path,
