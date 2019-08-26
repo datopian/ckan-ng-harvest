@@ -14,7 +14,7 @@ class CKANDatasetAdapter(ABC):
         self.original_dataset = original_dataset
 
     def get_base_ckan_dataset(self):
-        # base results
+        # creates the Dict base for a CKAN dataset
         # Check for required fields: https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
 
         pkg = {

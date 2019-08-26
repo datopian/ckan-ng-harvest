@@ -12,7 +12,7 @@ class CKANResourceAdapter(ABC):
         self.original_resource = original_resource
 
     def get_base_ckan_resource(self):
-        # base results
+        # Creates the Dict base for a CKAN resource
         # Check for required fields: https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.resource_create
 
         resource = {
