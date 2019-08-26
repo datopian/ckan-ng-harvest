@@ -1,5 +1,5 @@
 import pytest
-from libs.ckan_dataset_adapters import DataJSONSchema1_1
+from libs.adapters.datasets.data_json import DataJSONSchema1_1
 
 
 class TestCKANDatasetAdapter(object):

@@ -10,6 +10,7 @@ Inherit from:
     + Inherit from [SpatialHarvester](https://github.com/GSA/ckanext-spatial/blob/datagov/ckanext/spatial/harvesters/base.py#L112)
  - [CSWHarvester](https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/csw.py#L19). Inherit _SpatialHarvester_.  
     + Uses the [CswService](https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/lib/csw_client.py#L64) for talk to CSW service. Finally uses [OWSLib](https://github.com/geopython/OWSLib)
+    + Read the [harvest sample](https://github.com/geopython/OWSLib/blob/master/examples/csw-harvest.py)
 
 
 ## Gather, Fetch, Import

@@ -10,3 +10,8 @@ USACE Geospatial CSW: http://metadata.usace.army.mil/geoportal/csw?Request=GetCa
 GeoNode State CSW: http://geonode.state.gov/catalogue/csw?service=CSW&version=2.0.2&request=GetRecords&typenames=csw:Record&elementsetname=brief
 OpenTopography CSW: https://portal.opentopography.org/geoportal/csw
 """
+
+
+class CSWSource:
+    """ A CSW Harvest Source """
+    pass

@@ -1,6 +1,5 @@
 import unittest
 from libs.data_json import DataJSON
-from libs.ckan_dataset_adapters import DataJSONSchema1_1
 
 base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
 

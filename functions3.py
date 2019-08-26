@@ -1,6 +1,6 @@
 from logs import logger
 import config
-from libs.ckan_dataset_adapters import DataJSONSchema1_1
+from libs.adapters.datasets.data_json import DataJSONSchema1_1
 from libs.data_gov_api import CKANPortalAPI
 import json
 from datetime import datetime
