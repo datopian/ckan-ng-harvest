@@ -1,0 +1,154 @@
+{
+  "version": "2.0.2",
+  "identification": {
+    "type": "CSW",
+    "version": "2.0.2",
+    "title": "Esri Geoportal Server - OGC CSW",
+    "abstract": "A catalogue service that conforms to the HTTP protocol binding of the OpenGIS Catalogue Service ISO Metadata Application Profile specification (version 2.0.2)",
+    "keywords": [
+      "keyword1",
+      "keyword2"
+    ],
+    "accessconstraints": "unknown",
+    "fees": "unknown"
+  },
+  "provider": {
+    "name": "provider name",
+    "url": "http://localhost",
+    "contact": {
+      "name": "name",
+      "organization": null,
+      "site": "http://localhost",
+      "instructions": null,
+      "email": "email",
+      "country": "country"
+    }
+  },
+  "operations": [
+    {
+      "name": "GetCapabilities",
+      "formatOptions": [
+        "text/xml"
+      ],
+      "methods": [
+        {
+          "constraints": [],
+          "type": "Get",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        },
+        {
+          "constraints": [
+            {
+              "name": "PostEncoding",
+              "values": [
+                "XML",
+                "SOAP"
+              ]
+            }
+          ],
+          "type": "Post",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        }
+      ]
+    },
+    {
+      "name": "DescribeRecord",
+      "formatOptions": [
+        "text/xml"
+      ],
+      "methods": [
+        {
+          "constraints": [],
+          "type": "Get",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        },
+        {
+          "constraints": [
+            {
+              "name": "PostEncoding",
+              "values": [
+                "XML",
+                "SOAP"
+              ]
+            }
+          ],
+          "type": "Post",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        }
+      ]
+    },
+    {
+      "name": "GetRecords",
+      "formatOptions": [
+        "text/xml"
+      ],
+      "methods": [
+        {
+          "constraints": [],
+          "type": "Get",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        },
+        {
+          "constraints": [
+            {
+              "name": "PostEncoding",
+              "values": [
+                "XML",
+                "SOAP"
+              ]
+            }
+          ],
+          "type": "Post",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        }
+      ]
+    },
+    {
+      "name": "GetRecordById",
+      "formatOptions": [
+        "text/xml"
+      ],
+      "methods": [
+        {
+          "constraints": [],
+          "type": "Get",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        },
+        {
+          "constraints": [
+            {
+              "name": "PostEncoding",
+              "values": [
+                "XML",
+                "SOAP"
+              ]
+            }
+          ],
+          "type": "Post",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        }
+      ]
+    },
+    {
+      "name": "Transaction",
+      "formatOptions": [
+        "text/xml"
+      ],
+      "methods": [
+        {
+          "constraints": [
+            {
+              "name": "PostEncoding",
+              "values": [
+                "XML",
+                "SOAP"
+              ]
+            }
+          ],
+          "type": "Post",
+          "url": "https://portal.opentopography.org/geoportal/csw"
+        }
+      ]
+    }
+  ]
+}
