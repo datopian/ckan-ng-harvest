@@ -7,6 +7,15 @@ class TestCSWClass(object):
 
     base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
 
+    url_services = [
+            'http://metadata.arcticlcc.org/csw',
+            'http://data.nconemap.com/geoportal/csw?Request=GetCapabilities&Service=CSW&Version=2.0.2',
+            # 'http://metadata.usace.army.mil/geoportal/csw?Request=GetCapabilities&Service=CSW&Version=2.0.2',
+            # 'https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/arealm/',
+            # 'http://geonode.state.gov/catalogue/csw?service=CSW&version=2.0.2&request=GetRecords&typenames=csw:Record&elementsetname=brief',
+            'https://portal.opentopography.org/geoportal/csw'
+        ]
+
     def test_url(self):
         csw = CSWSource(url='http://cswtest.com/test?p=10')
         url = csw.get_original_url(harvest_id=99)
@@ -15,24 +24,25 @@ class TestCSWClass(object):
         new_url = 'http://cswtest.com/test?SERVICE=CSW&VERSION=2.0.2&REQUEST=GetRecordById&OUTPUTSCHEMA=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&OUTPUTFORMAT=application%2Fxml&ID=99'
         assert url == new_url
 
+    def test_clean_url(self):
+        csw = CSWSource(url='http://data.nconemap.com/geoportal/csw?Request=GetCapabilities&Service=CSW&Version=2.0.2')
+        url = csw.get_cleaned_url()
+        new_url = 'http://data.nconemap.com/geoportal/csw'
+        assert url == new_url
+
     def test_base_service_csw(self):
-        url_services = [
-            'http://metadata.arcticlcc.org/csw',
-            # 'http://data.nconemap.com/geoportal/csw?Request=GetCapabilities&Service=CSW&Version=2.0.2',
-            # 'http://metadata.usace.army.mil/geoportal/csw?Request=GetCapabilities&Service=CSW&Version=2.0.2',
-            # 'https://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2017/arealm/',
-            # 'http://geonode.state.gov/catalogue/csw?service=CSW&version=2.0.2&request=GetRecords&typenames=csw:Record&elementsetname=brief',
-            'https://portal.opentopography.org/geoportal/csw'
-        ]
-        for url in url_services:
+
+        for url in self.url_services:
+
             csw = CSWSource(url=url)
+            csw.url = csw.get_cleaned_url()
             csw.connect_csw()
             service = csw.csw
             # Check each service instance conforms to OWSLib interface
             service.alias = 'CSW'
             isinstance(service, CatalogueServiceWeb)
             # URL attribute
-            assert service.url == url
+            assert service.url == csw.url
             # version attribute
             assert service.version == '2.0.2'
             # Identification object

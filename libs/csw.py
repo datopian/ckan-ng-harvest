@@ -20,6 +20,7 @@ class CSWSource:
     """ A CSW Harvest Source """
 
     csw = None
+    csw_info = {}
 
     datasets = []  # all datasets included
     validation_errors = []
@@ -28,8 +29,66 @@ class CSWSource:
     def __init__(self, url):
         self.url = url
 
+    def get_cleaned_url(self):
+        # remove all URL params
+        parts = urlparse(self.url)
+        return urlunparse((parts.scheme, parts.netloc, parts.path, None, None, None))
+
     def connect_csw(self):
+        # connect to csw source
         self.csw = CatalogueServiceWeb(self.url)
+
+    def read_csw_info(self):
+        # read some info about csw info
+        csw_info = {}
+        if self.csw is None:
+            self.connect_csw()
+
+        service = self.csw
+        # Check each service instance conforms to OWSLib interface
+        service.alias = 'CSW'
+        csw_info['version'] = service.version
+        csw_info['identification'] = {}  # service.identification
+        csw_info['identification']['type'] = service.identification.type
+        csw_info['identification']['version'] = service.identification.version
+        csw_info['identification']['title'] = service.identification.title
+        csw_info['identification']['abstract'] = service.identification.abstract
+        csw_info['identification']['keywords'] = service.identification.keywords
+        csw_info['identification']['accessconstraints'] = service.identification.accessconstraints
+        csw_info['identification']['fees'] = service.identification.fees
+
+        csw_info['provider'] = {}
+        csw_info['provider']['name'] = service.provider.name
+        csw_info['provider']['url'] = service.provider.url
+        ctc = service.provider.contact
+        contact = {'name': ctc.name,
+                   'organization': ctc.organization,
+                   'site': ctc.site,
+                   'instructions': ctc.instructions,
+                   'email': ctc.email,
+                   'country': ctc.country}
+        csw_info['provider']['contact'] = contact
+
+        csw_info['operations'] = []
+        for op in service.operations:
+            methods = op.methods
+            for method in methods:
+                if type(method) == dict:
+                    constraints = []
+                    for k, v in method.items():
+                        if k == 'constraints':
+                            for c in v:
+                                mc = {'name': c.name, 'values': c.values}
+                                constraints.append(mc)
+                                method['constraints'] = constraints
+
+            operation = {'name': op.name,
+                         'formatOptions': op.formatOptions,
+                         'methods': methods}
+            csw_info['operations'].append(operation)
+
+        self.csw_info = csw_info
+        return csw_info
 
     def get_original_url(self, harvest_id=None):
         # take the URL and add required params
