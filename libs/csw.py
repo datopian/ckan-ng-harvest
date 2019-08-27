@@ -13,7 +13,7 @@ OpenTopography CSW: https://portal.opentopography.org/geoportal/csw
 import requests
 from slugify import slugify
 from urllib.parse import urlparse, urlencode, urlunparse
-from owslib.csw import CatalogueServiceWeb
+from owslib.csw import CatalogueServiceWeb, namespaces
 
 
 class CSWSource:
@@ -44,6 +44,69 @@ class CSWSource:
             self.errors.append(error)
             return False
         return True
+
+    def get_records(self, page=10):
+
+        # TODO get filters fom harvest source
+        # https://github.com/GSA/ckanext-spatial/blob/datagov/ckanext/spatial/harvesters/csw.py#L90
+        cql = None
+
+        # output schema
+        # outputschema: the outputSchema (default is 'http://www.opengis.net/cat/csw/2.0.2')
+        # "csw" at GeoDataGovGeoportalHarvester
+        # "gmd" at CSWHarvester
+        # outputschema = 'gmd'
+        outputschema = 'csw'
+
+        startposition = 0
+        kwa = {
+            "constraints": [],
+            "typenames": 'csw:Record',
+            "esn": 'brief',
+            "startposition": startposition,
+            "maxrecords": page,
+            "outputschema": namespaces[outputschema],
+            "cql": cql,
+            }
+
+        matches = 0
+        self.csw_info['records'] = []
+
+        while True:
+            try:
+                self.csw.getrecords2(**kwa)
+            except Exception as e:
+                error = f'Error getting records(2): {e}'
+                self.errors.append(error)
+                break
+            if self.csw.exceptionreport:
+                exceptions = self.csw.exceptionreport.exceptions
+                error = 'Error getting records: {}'.format(exceptions)
+                self.errors.append(error)
+                # raise Exception(error)
+                break
+
+            if matches == 0:
+                matches = self.csw.results['matches']
+
+            records = self.csw.records.items()
+
+            for record in records:
+                key, csw_record = record
+                value = csw_record_to_dict(csw_record)
+                self.csw_info['records'].append({key: value})
+                yield value
+
+            if len(records) == 0:
+                break
+
+            startposition += page
+            if startposition > matches:
+                break
+
+            kwa["startposition"] = startposition
+
+
 
     def read_csw_info(self):
         # read some info about csw
@@ -187,14 +250,37 @@ class CSWSource:
             package.save(target=package_path)
 
 
-class CSWDataset:
-    validation_errors = []
-
-    def validate_dataset(self, item):
-        errors = []
-
-        return errors
-
-    def check_required_field(self):
-
-        return True
+def csw_record_to_dict(csw_record):
+    # first test to underestand CSW Records
+    ret = {
+        'rdf': csw_record.rdf,
+        'identifier': csw_record.identifier,
+        'identifiers': csw_record.identifiers,
+        'type': csw_record.type,
+        'title': csw_record.title,
+        'alternative': csw_record.alternative,
+        'ispartof': csw_record.ispartof,
+        'abstract': csw_record.abstract,
+        'date': csw_record.date,
+        'created': csw_record.created,
+        'issued': csw_record.issued,
+        'relation': csw_record.relation,
+        'temporal': csw_record.temporal,
+        'uris': csw_record.uris,
+        'references': csw_record.references,
+        'modified': csw_record.modified,
+        'creator': csw_record.creator,
+        'publisher': csw_record.publisher,
+        'coverage': csw_record.coverage,
+        'contributor': csw_record.contributor,
+        'language': csw_record.language,
+        'source': csw_record.source,
+        'rightsholder': csw_record.rightsholder,
+        'accessrights': csw_record.accessrights,
+        'license': csw_record.license,
+        'format': csw_record.format,
+        'subjects': csw_record.subjects,
+        'rights': csw_record.rights,
+        'spatial': csw_record.spatial
+        }
+    return ret

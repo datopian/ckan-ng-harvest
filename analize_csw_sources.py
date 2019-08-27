@@ -31,6 +31,12 @@ for url in url_services:
     print(f'CSW source ok: {name}')
     hspath = config.get_harvest_sources_data_path(source_type='csw', name=name)
 
+    # get records
+    print(f' - Gettings records from {name}')
+    for record in csw.get_records():
+        print(record)
+
+    as_str = json.dumps(csw.csw_info, indent=2)
     f = open(hspath, 'w')
     f.write(as_str)
     f.close()
