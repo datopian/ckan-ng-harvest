@@ -30,25 +30,33 @@ class HarvestTestClass(unittest.TestCase):
                                                 source_type='datajson',
                                                 notes='Some tests about local harvesting sources creation',
                                                 frequency='WEEKLY')
-                                                
+
     HARVEST_SOURCE_ID = harvest_source['result']['id']
-    
+
     result = Popen(['python3 harvest.py --name {} --url {} --harvest_source_id {} --ckan_owner_org_id {} --catalog_url {} --ckan_api_key {}'.format(
-      NAME, 
-      URL, 
-      HARVEST_SOURCE_ID, 
-      CKAN_ORG_ID, 
-      CKAN_BASE_URL, 
-      CKAN_API_KEY)], 
+      NAME,
+      URL,
+      HARVEST_SOURCE_ID,
+      CKAN_ORG_ID,
+      CKAN_BASE_URL,
+      CKAN_API_KEY)],
       shell=True,
       stdout=PIPE)
-    
+
     result.communicate()
 
     self.assertEqual(result.returncode, 0)
 
-    package_show = cpa.show_package(ckan_package_id_or_name=HARVEST_SOURCE_ID)
-   
-    self.assertEqual(package_show['success'], True)
-    self.assertEqual(package_show['result']['title'], NAME)
-    self.assertEqual(package_show['result']['organization']['title'], CKAN_ORG_ID)
+    harvest_packages = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type='datajson')
+
+    created = False
+
+    for datasets in harvest_packages:
+      for dataset in datasets:
+        if dataset['name'] == harvest_source['result']['title']:
+          created = True
+          logger.info('Found!')
+        else:
+          logger.info('Other harvest source: {}'.format(dataset['name']))
+
+    self.assertEqual(created, True)
