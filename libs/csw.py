@@ -13,10 +13,14 @@ OpenTopography CSW: https://portal.opentopography.org/geoportal/csw
 import requests
 from slugify import slugify
 from urllib.parse import urlparse, urlencode, urlunparse
+from owslib.csw import CatalogueServiceWeb
 
 
 class CSWSource:
     """ A CSW Harvest Source """
+
+    csw = None
+
     datasets = []  # all datasets included
     validation_errors = []
     duplicates = []  # list of datasets with the same identifier
@@ -24,7 +28,10 @@ class CSWSource:
     def __init__(self, url):
         self.url = url
 
-    def get_original_url(self, harvest_id):
+    def connect_csw(self):
+        self.csw = CatalogueServiceWeb(self.url)
+
+    def get_original_url(self, harvest_id=None):
         # take the URL and add required params
         parts = urlparse(self.url)
         # urlparse('http://www.cwi.nl:80/%7Eguido/Python.html?q=90&p=881')
@@ -36,8 +43,9 @@ class CSWSource:
             'REQUEST': 'GetRecordById',
             'OUTPUTSCHEMA': 'http://www.isotc211.org/2005/gmd',
             'OUTPUTFORMAT': 'application/xml',
-            'ID': harvest_id
         }
+        if harvest_id is not None:
+            params['ID'] = harvest_id
 
         url = urlunparse((
             parts.scheme,
