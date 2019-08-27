@@ -104,12 +104,23 @@ def get_flow2_data_package_folder_path():
 
 
 def get_harvest_sources_path(hs_name):
-    base_path = os.path.join(DATA_FOLDER_PATH, 'harvest_sources')
+    base_path = os.path.join(DATA_FOLDER_PATH, 'harvest_sources/datasets')
 
     if not os.path.isdir(base_path):
         os.makedirs(base_path)
 
     final_path = os.path.join(base_path, f'harvest-source-{hs_name}.json')
+
+    return final_path
+
+
+def get_harvest_sources_data_path(source_type, name):
+    base_path = os.path.join(DATA_FOLDER_PATH, 'harvest_sources', source_type)
+
+    if not os.path.isdir(base_path):
+        os.makedirs(base_path)
+
+    final_path = os.path.join(base_path, f'{source_type}-{name}.json')
 
     return final_path
 

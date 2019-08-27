@@ -22,6 +22,7 @@ class CSWSource:
     csw = None
     csw_info = {}
 
+    errors = []
     datasets = []  # all datasets included
     validation_errors = []
     duplicates = []  # list of datasets with the same identifier
@@ -34,12 +35,18 @@ class CSWSource:
         parts = urlparse(self.url)
         return urlunparse((parts.scheme, parts.netloc, parts.path, None, None, None))
 
-    def connect_csw(self):
+    def connect_csw(self, timeout=120):
         # connect to csw source
-        self.csw = CatalogueServiceWeb(self.url)
+        try:
+            self.csw = CatalogueServiceWeb(self.url, timeout=timeout)
+        except Exception as e:
+            error = f'Error connection CSW: {e}'
+            self.errors.append(error)
+            return False
+        return True
 
     def read_csw_info(self):
-        # read some info about csw info
+        # read some info about csw
         csw_info = {}
         if self.csw is None:
             self.connect_csw()
