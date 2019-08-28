@@ -2,8 +2,6 @@ Short bug description. How to replicate the bug?
 
 ### Tasks
 
-*Task list*
-
 * [ ] ...
 * [ ] ...
 
