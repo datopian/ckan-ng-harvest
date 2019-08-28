@@ -1,9 +1,21 @@
+"""
+Analize some CSW sources for test CSW library
+"""
+
+# use always base project folder as base path for imports
+# move libs to a python package to fix this
+import sys
+from pathlib import Path
+FULL_BASE_PROJECT_PATH = str(Path().parent.parent.parent.absolute())
+print(FULL_BASE_PROJECT_PATH)
+sys.path.append(FULL_BASE_PROJECT_PATH)
+
+from slugify import slugify
 from libs.csw import CSWSource
 from logs import logger
 import csv
 import json
 import config
-from slugify import slugify
 
 url_services = [
             'http://metadata.arcticlcc.org/csw',
@@ -33,8 +45,17 @@ for url in url_services:
 
     # get records
     print(f' - Gettings records from {name}')
+    c = 0
     for record in csw.get_records():
-        print(record)
+        c += 1
+        # add extra info about the first resources for test
+        if c < 3:
+            idf = record['identifier']
+            print(f'idf full: {idf}')
+            record = csw.get_record(identifier=idf)
+            if record is None:
+                print(csw.errors)
+            print(record)
 
     as_str = json.dumps(csw.csw_info, indent=2)
     f = open(hspath, 'w')

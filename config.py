@@ -2,6 +2,7 @@ import os
 from slugify import slugify
 import json
 
+
 DATA_FOLDER_PATH = 'data'
 SOURCE_NAME = ''  # the source nage, e.g. Dep of Agriculture
 SOURCE_ID = ''  # the harvest source id

@@ -14,7 +14,7 @@ import requests
 from slugify import slugify
 from urllib.parse import urlparse, urlencode, urlunparse
 from owslib.csw import CatalogueServiceWeb, namespaces
-
+from owslib.ows import ExceptionReport
 
 class CSWSource:
     """ A CSW Harvest Source """
@@ -55,14 +55,14 @@ class CSWSource:
         # outputschema: the outputSchema (default is 'http://www.opengis.net/cat/csw/2.0.2')
         # "csw" at GeoDataGovGeoportalHarvester
         # "gmd" at CSWHarvester
-        # outputschema = 'gmd'
+        # outputschema = 'gmd'  # https://github.com/geopython/OWSLib/blob/master/owslib/csw.py#L551
         outputschema = 'csw'
 
         startposition = 0
         kwa = {
             "constraints": [],
             "typenames": 'csw:Record',
-            "esn": 'brief',
+            "esn": 'brief',  # esn: the ElementSetName 'full', 'brief' or 'summary' (default is 'full')
             "startposition": startposition,
             "maxrecords": page,
             "outputschema": namespaces[outputschema],
@@ -93,8 +93,9 @@ class CSWSource:
 
             for record in records:
                 key, csw_record = record
-                value = csw_record_to_dict(csw_record)
-                self.csw_info['records'].append({key: value})
+                value = self._xmd(csw_record)
+                # value = csw_record_to_dict(csw_record)
+                self.csw_info['records'].append(value)
                 yield value
 
             if len(records) == 0:
@@ -106,10 +107,60 @@ class CSWSource:
 
             kwa["startposition"] = startposition
 
+    def _xmd(self, obj):
+        # Dictize an object
+        # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/lib/csw_client.py#L28
+        md = {}
+        for attr in [x for x in dir(obj) if not x.startswith("_")]:
+            val = getattr(obj, attr)
+            if not val:
+                pass
+            elif callable(val):
+                pass
+            elif isinstance(val, str):
+                md[attr] = val
+            elif isinstance(val, int):
+                md[attr] = val
+            elif isinstance(val, list):
+                md[attr] = val
+            else:
+                md[attr] = self._xmd(val)
+        return md
+
+    def get_record(self, identifier, esn='full'):
+        #  Get Full record info
+        try:
+            records = self.csw.getrecordbyid([identifier], outputschema=namespaces['csw'])
+        except ExceptionReport as e:
+            self.errors.append(f'Error getting record {e}')
+            # 'Invalid parameter value: locator=outputSchema' is an XML error
+            return None
+
+        csw_record = self.csw.records[identifier]
+        # dict_csw_record = csw_record_to_dict(csw_record)
+        dict_csw_record = self._xmd(csw_record)
+
+        found = False
+        for record in self.csw_info['records']:
+            if record['identifier'] == identifier:
+                record = dict_csw_record
+                record['FULL'] = True
+                found = True
+        if not found:
+            record = None
+            self.errors.append(f'Identifier not found {identifier}')
+        return record
+
+    def get_local_record(self, identifier):
+        # iterate internal list of records and return one
+        for record in self.csw_info['records']:
+            if record['identifier'] == identifier:
+                return record
+        return None
 
 
     def read_csw_info(self):
-        # read some info about csw
+        # read some info about csw and put it in an internal dict
         csw_info = {}
         if self.csw is None:
             self.connect_csw()

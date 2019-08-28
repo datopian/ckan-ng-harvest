@@ -2,11 +2,9 @@ import json
 from logs import logger
 import os
 import requests
-from libs.data_gov_api import CKANPortalAPI
-from libs.data_json import DataJSON
-from libs.data_json import DataJSONDataset
+from libs.csw import CSWSource
 from datapackage import Package, Resource
-from functions3 import build_validation_error_email
+from slugify import slugify
 import config
 import base64
 
@@ -22,11 +20,10 @@ def validate_data_json(row):
     return errors
 
 
-def get_data_json_from_url(url):
-    logger.info(f'Geting data.json from {url}')
+def get_csw_from_url(url):
+    logger.info(f'Geting CSW from {url}')
 
-    datajson = DataJSON()
-    datajson.url = url
+    csw = CSWSource(url=url)
 
     ret, info = datajson.download_data_json(timeout=90)
     if not ret:
