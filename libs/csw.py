@@ -15,6 +15,7 @@ from slugify import slugify
 from urllib.parse import urlparse, urlencode, urlunparse
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.ows import ExceptionReport
+from owslib.etree import etree
 
 
 class CSWSource:
@@ -116,6 +117,8 @@ class CSWSource:
             if not val:
                 pass
             elif callable(val):
+                # name = getattr(val, '__name__', repr(val))
+                # md[attr] = f'callable: {name}'
                 pass
             elif isinstance(val, str):
                 md[attr] = val
@@ -144,6 +147,24 @@ class CSWSource:
         record.update(dict_csw_record)
         record['FULL'] = True
         record['outputschema'] = outputschema
+
+        # self.csw._exml is a <xml.etree.ElementTree.ElementTree object>
+        exml = self.csw._exml
+        # eexml = etree.ElementTree(exml)
+        # record['xml'] = etree.tostring(eexml, encoding='utf8', method='xml')
+
+        md_metadata = exml.find("/{http://www.isotc211.org/2005/gmd}MD_Metadata")
+        mi_metadata = exml.find("/{http://www.isotc211.org/2005/gmi}MI_Metadata")
+        md = md_metadata or mi_metadata
+        mdtree = etree.ElementTree(md)
+        try:
+            record['xml'] = etree.tostring(mdtree)
+        except Exception as e:
+            try:
+                record['xml'] = etree.tostring(md)
+            except Exception as e:
+                record['xml'] = 'Error parsing XML'
+
         self.csw_info['records'][identifier] = record
 
         return record
