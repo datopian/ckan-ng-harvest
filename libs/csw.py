@@ -16,6 +16,7 @@ from urllib.parse import urlparse, urlencode, urlunparse
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.ows import ExceptionReport
 
+
 class CSWSource:
     """ A CSW Harvest Source """
 
@@ -45,7 +46,7 @@ class CSWSource:
             return False
         return True
 
-    def get_records(self, page=10):
+    def get_records(self, page=10, outputschema='csw'):
 
         # TODO get filters fom harvest source
         # https://github.com/GSA/ckanext-spatial/blob/datagov/ckanext/spatial/harvesters/csw.py#L90
@@ -56,7 +57,6 @@ class CSWSource:
         # "csw" at GeoDataGovGeoportalHarvester
         # "gmd" at CSWHarvester
         # outputschema = 'gmd'  # https://github.com/geopython/OWSLib/blob/master/owslib/csw.py#L551
-        outputschema = 'csw'
 
         startposition = 0
         kwa = {
@@ -70,7 +70,7 @@ class CSWSource:
             }
 
         matches = 0
-        self.csw_info['records'] = []
+        self.csw_info['records'] = {}
 
         while True:
             try:
@@ -95,7 +95,7 @@ class CSWSource:
                 key, csw_record = record
                 value = self._xmd(csw_record)
                 # value = csw_record_to_dict(csw_record)
-                self.csw_info['records'].append(value)
+                self.csw_info['records'][key] = value
                 yield value
 
             if len(records) == 0:
@@ -127,10 +127,10 @@ class CSWSource:
                 md[attr] = self._xmd(val)
         return md
 
-    def get_record(self, identifier, esn='full'):
+    def get_record(self, identifier, esn='full', outputschema='csw'):
         #  Get Full record info
         try:
-            records = self.csw.getrecordbyid([identifier], outputschema=namespaces['csw'])
+            records = self.csw.getrecordbyid([identifier], outputschema=namespaces[outputschema])
         except ExceptionReport as e:
             self.errors.append(f'Error getting record {e}')
             # 'Invalid parameter value: locator=outputSchema' is an XML error
@@ -140,24 +140,13 @@ class CSWSource:
         # dict_csw_record = csw_record_to_dict(csw_record)
         dict_csw_record = self._xmd(csw_record)
 
-        found = False
-        for record in self.csw_info['records']:
-            if record['identifier'] == identifier:
-                record = dict_csw_record
-                record['FULL'] = True
-                found = True
-        if not found:
-            record = None
-            self.errors.append(f'Identifier not found {identifier}')
+        record = self.csw_info['records'].get(identifier, {})
+        record.update(dict_csw_record)
+        record['FULL'] = True
+        record['outputschema'] = outputschema
+        self.csw_info['records'][identifier] = record
+
         return record
-
-    def get_local_record(self, identifier):
-        # iterate internal list of records and return one
-        for record in self.csw_info['records']:
-            if record['identifier'] == identifier:
-                return record
-        return None
-
 
     def read_csw_info(self):
         # read some info about csw and put it in an internal dict
@@ -165,6 +154,11 @@ class CSWSource:
         if self.csw is None:
             self.connect_csw()
 
+        # csw_info = self._xmd(obj=self.csw)
+        # self.csw_info = csw_info
+        # return csw_info
+
+        # previous version
         service = self.csw
         # Check each service instance conforms to OWSLib interface
         service.alias = 'CSW'

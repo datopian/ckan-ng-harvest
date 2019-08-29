@@ -26,6 +26,7 @@ url_services = [
             'https://portal.opentopography.org/geoportal/csw'
         ]
 
+outputschema = 'csw'  # 'gmd'
 for url in url_services:
     csw = CSWSource(url=url)
     csw.url = csw.get_cleaned_url()
@@ -33,31 +34,36 @@ for url in url_services:
         print(f'Fail to connect {csw.errors}')
         continue
     csw_info = csw.read_csw_info()
-    try:
-        as_str = json.dumps(csw_info, indent=2)
-    except Exception as e:
-        print(f'Error serializing {csw_info}: {e}')
-        continue
 
     name = slugify(csw_info['identification']['title'])
     print(f'CSW source ok: {name}')
-    hspath = config.get_harvest_sources_data_path(source_type='csw', name=name)
 
     # get records
     print(f' - Gettings records from {name}')
     c = 0
-    for record in csw.get_records():
+    for record in csw.get_records(outputschema=outputschema):
         c += 1
         # add extra info about the first resources for test
-        if c < 3:
-            idf = record['identifier']
+        if c < 6:
+            idf = record.get('identifier', None)
+            if idf is None:
+                print(f'NO IDENTIFIER!')
+                continue
             print(f'idf full: {idf}')
-            record = csw.get_record(identifier=idf)
+            record = csw.get_record(identifier=idf, outputschema=outputschema)
             if record is None:
                 print(csw.errors)
             print(record)
 
-    as_str = json.dumps(csw.csw_info, indent=2)
+    try:
+        as_str = json.dumps(csw.csw_info, indent=2)
+    except Exception as e:
+        as_str = f'Error serializing {csw.csw_info}: {e}'
+        print(as_str)
+
+    source_type = f'csw-{outputschema}'
+    hspath = config.get_harvest_sources_data_path(source_type=source_type, name=name)
+
     f = open(hspath, 'w')
     f.write(as_str)
     f.close()
