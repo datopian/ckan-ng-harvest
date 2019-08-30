@@ -49,18 +49,18 @@ class CSWSource:
             return False
 
         self.read_csw_info()
-        self.csw_info['records'] = {}
-        self.csw_info['pages'] = 0
+
 
         return True
 
     def as_json(self):
         self.read_csw_info()
-        self.csw_info['total_records'] = len(self.csw_info['records'].keys())
-
         return self.csw_info
 
-    def get_records(self, page=10, outputschema='csw'):
+    def get_records(self, page=10, outputschema='gmd'):
+        # iterate pages to get all records
+        self.csw_info['records'] = {}
+        self.csw_info['pages'] = 0
 
         # TODO get filters fom harvest source
         # https://github.com/GSA/ckanext-spatial/blob/datagov/ckanext/spatial/harvesters/csw.py#L90
@@ -129,7 +129,9 @@ class CSWSource:
 
             kwa["startposition"] = startposition
 
-    def get_record(self, identifier, esn='full', outputschema='csw'):
+        self.csw_info['total_records'] = len(self.csw_info['records'].keys())
+
+    def get_record(self, identifier, esn='full', outputschema='gmd'):
         #  Get Full record info
         try:
             records = self.csw.getrecordbyid([identifier], outputschema=namespaces[outputschema])
