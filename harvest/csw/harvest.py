@@ -33,7 +33,7 @@ def write_final_report(name):
 
 logger.info('Starting full harvest process')
 
-commands = [f'python3 {HERE}/flow.py --name {args.name} --url {args.url} --limit_dataset {args.limit_dataset}',
+commands = [f'python3 {HERE}/flow.py --name {args.name} --url "{args.url}" --limit_dataset {args.limit_dataset}',
             f'python3 {HERE}/flow2.py --name {args.name} --harvest_source_id {args.harvest_source_id} --catalog_url {args.catalog_url}',
             f'python3 {HERE}/flow3.py --name {args.name} --ckan_owner_org_id {args.ckan_owner_org_id} --catalog_url {args.catalog_url} --ckan_api_key {args.ckan_api_key}']
 

@@ -117,6 +117,7 @@ class CSWSource:
                     # it's a CSWRecord
                     raise Exception('Not using CSWRecords')
 
+                value['esn'] = esn
                 self.csw_info['records'][key] = value
                 yield value
 
@@ -145,7 +146,7 @@ class CSWSource:
 
         record = self.csw_info['records'].get(identifier, {})
         record.update(dict_csw_record)
-        record['FULL'] = True
+        record['esn'] = esn
         record['outputschema'] = outputschema
 
         self.csw_info['records'][identifier] = record
