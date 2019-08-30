@@ -26,10 +26,10 @@ url_services = [
             'https://portal.opentopography.org/geoportal/csw'
         ]
 
-outputschema = 'csw'  # 'gmd'
+outputschema = 'gmd'
+# outputschema = 'csw'
 for url in url_services:
     csw = CSWSource(url=url)
-    csw.url = csw.get_cleaned_url()
     if not csw.connect_csw():
         print(f'Fail to connect {csw.errors}')
         continue
@@ -53,7 +53,7 @@ for url in url_services:
             record = csw.get_record(identifier=idf, outputschema=outputschema)
             if record is None:
                 print(csw.errors)
-            print(record)
+            # print(record)
 
     try:
         as_str = json.dumps(csw.csw_info, indent=2)

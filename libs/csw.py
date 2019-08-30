@@ -16,6 +16,8 @@ from urllib.parse import urlparse, urlencode, urlunparse
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.ows import ExceptionReport
 from owslib.etree import etree
+from collections import defaultdict
+from owslib import util
 
 
 class CSWSource:
@@ -37,14 +39,17 @@ class CSWSource:
         parts = urlparse(self.url)
         return urlunparse((parts.scheme, parts.netloc, parts.path, None, None, None))
 
-    def connect_csw(self, timeout=120):
+    def connect_csw(self, clean_url=True, timeout=120):
         # connect to csw source
+        url = self.get_cleaned_url() if clean_url else self.url
         try:
-            self.csw = CatalogueServiceWeb(self.url, timeout=timeout)
+            self.csw = CatalogueServiceWeb(url, timeout=timeout)
         except Exception as e:
             error = f'Error connection CSW: {e}'
             self.errors.append(error)
             return False
+
+        self.read_csw_info()
         return True
 
     def get_records(self, page=10, outputschema='csw'):
@@ -63,7 +68,8 @@ class CSWSource:
         kwa = {
             "constraints": [],
             "typenames": 'csw:Record',
-            "esn": 'brief',  # esn: the ElementSetName 'full', 'brief' or 'summary' (default is 'full')
+            "esn": 'brief',
+            # esn: the ElementSetName 'full', 'brief' or 'summary' (default is 'full')
             "startposition": startposition,
             "maxrecords": page,
             "outputschema": namespaces[outputschema],
@@ -94,7 +100,15 @@ class CSWSource:
 
             for record in records:
                 key, csw_record = record
-                value = self._xmd(csw_record)
+                if outputschema == 'gmd':
+                    # it's a MD_Metadata object
+                    # https://github.com/geopython/OWSLib/blob/3338340e6a9c19dd3388240815d35d60a0d0cf4c/owslib/iso.py#L31
+                    # value = self._xmd(csw_record)
+                    value = self.md_metadata_to_dict(csw_record)
+                elif outputschema == 'csw':
+                    # it's a CSWRecord
+                    raise Exception('Not using CSWRecords')
+
                 # value = csw_record_to_dict(csw_record)
                 self.csw_info['records'][key] = value
                 yield value
@@ -141,45 +155,74 @@ class CSWSource:
 
         csw_record = self.csw.records[identifier]
         # dict_csw_record = csw_record_to_dict(csw_record)
-        dict_csw_record = self._xmd(csw_record)
+        # dict_csw_record = self._xmd(csw_record)
+        dict_csw_record = self.md_metadata_to_dict(csw_record)
 
         record = self.csw_info['records'].get(identifier, {})
         record.update(dict_csw_record)
         record['FULL'] = True
         record['outputschema'] = outputschema
 
-        # self.csw._exml is a <xml.etree.ElementTree.ElementTree object>
-        exml = self.csw._exml
-        # eexml = etree.ElementTree(exml)
-        # record['xml'] = etree.tostring(eexml, encoding='utf8', method='xml')
-
-        md_metadata = exml.find("/{http://www.isotc211.org/2005/gmd}MD_Metadata")
-        mi_metadata = exml.find("/{http://www.isotc211.org/2005/gmi}MI_Metadata")
-        md = md_metadata or mi_metadata
-        mdtree = etree.ElementTree(md)
-        try:
-            record['xml'] = etree.tostring(mdtree)
-        except Exception as e:
-            try:
-                record['xml'] = etree.tostring(md)
-            except Exception as e:
-                record['xml'] = 'Error parsing XML'
-
         self.csw_info['records'][identifier] = record
 
         return record
 
+    def md_metadata_to_dict(self, mdm):
+        # analize an md_metadata object
+        ret = {}
+        # ret['xml'] = mdm.xml it's a bytes type
+        ret['identifier'] = mdm.identifier
+        ret['parentidentifier'] = mdm.parentidentifier
+        ret['language'] = mdm.language
+        ret['dataseturi'] = mdm.dataseturi
+        ret['languagecode'] = mdm.languagecode
+        ret['datestamp'] = mdm.datestamp
+        ret['charset'] = mdm.charset
+        ret['hierarchy'] = mdm.hierarchy
+        ret['contact'] = []
+        for ctc in mdm.contact:
+            contact = {'name': ctc.name,
+                       'organization': ctc.organization,
+                       'city': ctc.city,
+                       'email': ctc.email,
+                       'country': ctc.country}
+            ret['contact'].append(contact)
+
+        ret['datetimestamp'] = mdm.datetimestamp
+        ret['stdname'] = mdm.stdname
+        ret['stdver'] = mdm.stdver
+        ret['locales'] = []
+        for lo in mdm.locales:
+            ret['locales'].append({'id': lo.id,
+                                   'languagecode': lo.languagecode,
+                                   'charset': lo.charset})
+
+        # ret['referencesystem'] = mdm.referencesystem
+        # this two will be reemplaced by "identificationinfo"
+        #   ret['identification'] = mdm.identification
+        #   ret['serviceidentification'] = mdm.serviceidentification
+        ret['identificationinfo'] = []
+        for ii in mdm.identificationinfo:
+            iid = {'title': ii.title,
+                   'abstract': ii.abstract}  # there are much more info
+            ret['identificationinfo'].append(iid)
+
+        ret['contentinfo'] = []
+        for ci in mdm.contentinfo:
+            cid = {'xml': ci.xml}  # there are much more info
+            ret['contentinfo'].append(cid)
+
+        ret['distribution'] = {}
+        if mdm.distribution is not None:
+            dd = {'format': mdm.distribution.format,
+                  'version': mdm.distribution.version}  # there are much more info
+            ret['distribution'] = dd
+
+        # TODO ret['dataquality'] = mdm.dataquality
+        return ret
+
     def read_csw_info(self):
-        # read some info about csw and put it in an internal dict
         csw_info = {}
-        if self.csw is None:
-            self.connect_csw()
-
-        # csw_info = self._xmd(obj=self.csw)
-        # self.csw_info = csw_info
-        # return csw_info
-
-        # previous version
         service = self.csw
         # Check each service instance conforms to OWSLib interface
         service.alias = 'CSW'
@@ -214,9 +257,12 @@ class CSWSource:
                     for k, v in method.items():
                         if k == 'constraints':
                             for c in v:
-                                mc = {'name': c.name, 'values': c.values}
-                                constraints.append(mc)
-                                method['constraints'] = constraints
+                                if type(c) == dict:
+                                    constraints.append(c)
+                                else:
+                                    mc = {'name': c.name, 'values': c.values}
+                                    constraints.append(mc)
+                            method['constraints'] = constraints
 
             operation = {'name': op.name,
                          'formatOptions': op.formatOptions,
@@ -315,6 +361,68 @@ class CSWSource:
             package_path = os.path.join(folder_path, f'pkg_data_json_{idf}.zip')
             package.save(target=package_path)
 
+
+def etree_to_dict(t):
+    d = {t.tag: {} if t.attrib else None}
+    children = list(t)
+    if children:
+        dd = defaultdict(list)
+        for dc in map(etree_to_dict, children):
+            for k, v in dc.items():
+                dd[k].append(v)
+        d = {t.tag: {k: v[0] if len(v) == 1 else v
+                     for k, v in dd.items()}}
+    if t.attrib:
+        d[t.tag].update(('@' + k, v)
+                        for k, v in t.attrib.items())
+    if t.text:
+        text = t.text.strip()
+        if children or t.attrib:
+            if text:
+              d[t.tag]['#text'] = text
+        else:
+            d[t.tag] = text
+    return d
+
+def make_dict_from_tree(element_tree):
+    """Traverse the given XML element tree to convert it into a dictionary.
+        https://ericscrivner.me/2015/07/python-tip-convert-xml-tree-to-a-dictionary/
+
+    :param element_tree: An XML element tree
+    :type element_tree: xml.etree.ElementTree
+    :rtype: dict
+    """
+    def internal_iter(tree, accum):
+        """Recursively iterate through the elements of the tree accumulating
+        a dictionary result.
+
+        :param tree: The XML element tree
+        :type tree: xml.etree.ElementTree
+        :param accum: Dictionary into which data is accumulated
+        :type accum: dict
+        :rtype: dict
+        """
+        if tree is None:
+            return accum
+
+        if tree.getchildren():
+            accum[tree.tag] = {}
+            for each in tree.getchildren():
+                result = internal_iter(each, {})
+                if each.tag in accum[tree.tag]:
+                    if not isinstance(accum[tree.tag][each.tag], list):
+                        accum[tree.tag][each.tag] = [
+                            accum[tree.tag][each.tag]
+                        ]
+                    accum[tree.tag][each.tag].append(result[each.tag])
+                else:
+                    accum[tree.tag].update(result)
+        else:
+            accum[tree.tag] = tree.text
+
+        return accum
+
+    return internal_iter(element_tree, {})
 
 def csw_record_to_dict(csw_record):
     # first test to underestand CSW Records
