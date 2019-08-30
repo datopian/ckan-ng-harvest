@@ -50,7 +50,16 @@ class CSWSource:
             return False
 
         self.read_csw_info()
+        self.csw_info['records'] = {}
+        self.csw_info['pages'] = 0
+
         return True
+
+    def as_json(self):
+        self.read_csw_info()
+        self.csw_info['total_records'] = len(self.csw_info['records'].keys())
+
+        return self.csw_info
 
     def get_records(self, page=10, outputschema='csw'):
 
@@ -93,6 +102,7 @@ class CSWSource:
                 # raise Exception(error)
                 break
 
+            self.csw_info['pages'] += 1
             if matches == 0:
                 matches = self.csw.results['matches']
 
@@ -103,7 +113,6 @@ class CSWSource:
                 if outputschema == 'gmd':
                     # it's a MD_Metadata object
                     # https://github.com/geopython/OWSLib/blob/3338340e6a9c19dd3388240815d35d60a0d0cf4c/owslib/iso.py#L31
-                    # value = self._xmd(csw_record)
                     value = self.md_metadata_to_dict(csw_record)
                 elif outputschema == 'csw':
                     # it's a CSWRecord
@@ -122,28 +131,6 @@ class CSWSource:
 
             kwa["startposition"] = startposition
 
-    def _xmd(self, obj):
-        # Dictize an object
-        # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/lib/csw_client.py#L28
-        md = {}
-        for attr in [x for x in dir(obj) if not x.startswith("_")]:
-            val = getattr(obj, attr)
-            if not val:
-                pass
-            elif callable(val):
-                # name = getattr(val, '__name__', repr(val))
-                # md[attr] = f'callable: {name}'
-                pass
-            elif isinstance(val, str):
-                md[attr] = val
-            elif isinstance(val, int):
-                md[attr] = val
-            elif isinstance(val, list):
-                md[attr] = val
-            else:
-                md[attr] = self._xmd(val)
-        return md
-
     def get_record(self, identifier, esn='full', outputschema='csw'):
         #  Get Full record info
         try:
@@ -154,8 +141,6 @@ class CSWSource:
             return None
 
         csw_record = self.csw.records[identifier]
-        # dict_csw_record = csw_record_to_dict(csw_record)
-        # dict_csw_record = self._xmd(csw_record)
         dict_csw_record = self.md_metadata_to_dict(csw_record)
 
         record = self.csw_info['records'].get(identifier, {})
@@ -269,8 +254,8 @@ class CSWSource:
                          'methods': methods}
             csw_info['operations'].append(operation)
 
-        self.csw_info = csw_info
-        return csw_info
+        self.csw_info.update(csw_info)
+        return self.csw_info
 
     def get_original_url(self, harvest_id=None):
         # take the URL and add required params

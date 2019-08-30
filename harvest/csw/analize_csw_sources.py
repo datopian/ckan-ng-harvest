@@ -56,7 +56,7 @@ for url in url_services:
             # print(record)
 
     try:
-        as_str = json.dumps(csw.csw_info, indent=2)
+        as_str = json.dumps(csw.as_json(), indent=2)
     except Exception as e:
         as_str = f'Error serializing {csw.csw_info}: {e}'
         print(as_str)
