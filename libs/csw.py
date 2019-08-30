@@ -57,7 +57,7 @@ class CSWSource:
         self.read_csw_info()
         return self.csw_info
 
-    def get_records(self, page=10, outputschema='gmd'):
+    def get_records(self, page=10, outputschema='gmd', esn='brief'):
         # iterate pages to get all records
         self.csw_info['records'] = {}
         self.csw_info['pages'] = 0
@@ -76,7 +76,7 @@ class CSWSource:
         kwa = {
             "constraints": [],
             "typenames": 'csw:Record',
-            "esn": 'brief',
+            "esn": esn,
             # esn: the ElementSetName 'full', 'brief' or 'summary' (default is 'full')
             "startposition": startposition,
             "maxrecords": page,

@@ -36,19 +36,17 @@ config.SOURCE_URL = args.url  # data.json final URL
 config.LIMIT_DATASETS = args.limit_dataset
 
 res = Flow(
-    # get data.json and yield all datasets
-    # validate headers and save the validation errors
     get_csw_from_url(url=config.SOURCE_URL),
     update_resource('res_1', name='csw_resource'),
 
     # remove duplicates
-    clean_duplicated_identifiers,
+    # clean_duplicated_identifiers,
 
     # validate each dataset
-    validate_datasets,
+    # validate_datasets,
 
     # save each dataset as data package
-    save_as_data_packages,
+    # save_as_data_packages,
 ).results()
 
 logger.info('Continue to next step with: python3 flow2.py '

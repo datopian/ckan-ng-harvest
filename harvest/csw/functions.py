@@ -1,3 +1,11 @@
+# use always base project folder as base path for imports
+# move libs to a python package to fix this
+import sys
+from pathlib import Path
+FULL_BASE_PROJECT_PATH = str(Path().parent.parent.parent.absolute())
+print(FULL_BASE_PROJECT_PATH)
+sys.path.append(FULL_BASE_PROJECT_PATH)
+
 import json
 from logs import logger
 import os
@@ -24,50 +32,21 @@ def get_csw_from_url(url):
     logger.info(f'Geting CSW from {url}')
 
     csw = CSWSource(url=url)
-
-    ret, info = datajson.download_data_json(timeout=90)
-    if not ret:
-        error = 'Error getting data: {}'.format(info)
-        logger.error(error)
+    if not csw.connect_csw():
+        error = f'Fail to connect {csw.errors}'
         raise Exception(error)
-    logger.info('Downloaded OK')
 
-    ret, info = datajson.load_data_json()
-    if not ret:
-        datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
-        logger.error(datajson.validation_errors)
-        try:
-            build_validation_error_email()
-        except Exception as e:
-            logger.error('Error sending validation email: {}'.format(e))
-        raise Exception(datajson.validation_errors)
+    c = 0
+    for record in csw.get_records(esn='full'):
+        idf = record.get('identifier', None)
+        if idf is None:
+            continue
 
-    logger.info('JSON OK')
-    ret, info = datajson.validate_json()
-    if not ret:
-        logger.error('Error validating data: {}\n----------------\n'.format(info))
-        # continue  # USE invalid too
-        logger.info('Validate FAILED: {} datasets'.format(len(datajson.datasets)))
-    else:
-        logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
-
-    # TODO move this as a DataJson function and add it to a validate function validate_data_json(data_json['dataset'])
-
-    logger.info('VALID JSON, {} datasets found'.format(len(datajson.datasets)))
-
-    # save data.json
-    datajson.save_data_json(path=config.get_datajson_cache_path())
-    # save headers errors
-    datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
-
-    # the real dataset list
-
-    if config.LIMIT_DATASETS > 0:
-        datajson.datasets = datajson.datasets[:config.LIMIT_DATASETS]
-    for dataset in datajson.datasets:
-        # add headers (previously called catalog_values)
-        dataset['headers'] = datajson.headers
-        yield(dataset)
+        if config.LIMIT_DATASETS > 0 and c > config.LIMIT_DATASETS:
+            break
+        logger.info(f'Found {idf} at {csw.get_cleaned_url()}')
+        yield(record)
+        c += 1
 
 
 def clean_duplicated_identifiers(rows):
