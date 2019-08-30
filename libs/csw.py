@@ -16,7 +16,6 @@ from urllib.parse import urlparse, urlencode, urlunparse
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.ows import ExceptionReport
 from owslib.etree import etree
-from collections import defaultdict
 from owslib import util
 
 
@@ -118,7 +117,6 @@ class CSWSource:
                     # it's a CSWRecord
                     raise Exception('Not using CSWRecords')
 
-                # value = csw_record_to_dict(csw_record)
                 self.csw_info['records'][key] = value
                 yield value
 
@@ -345,101 +343,3 @@ class CSWSource:
             package.add_resource(descriptor=resource.descriptor)
             package_path = os.path.join(folder_path, f'pkg_data_json_{idf}.zip')
             package.save(target=package_path)
-
-
-def etree_to_dict(t):
-    d = {t.tag: {} if t.attrib else None}
-    children = list(t)
-    if children:
-        dd = defaultdict(list)
-        for dc in map(etree_to_dict, children):
-            for k, v in dc.items():
-                dd[k].append(v)
-        d = {t.tag: {k: v[0] if len(v) == 1 else v
-                     for k, v in dd.items()}}
-    if t.attrib:
-        d[t.tag].update(('@' + k, v)
-                        for k, v in t.attrib.items())
-    if t.text:
-        text = t.text.strip()
-        if children or t.attrib:
-            if text:
-              d[t.tag]['#text'] = text
-        else:
-            d[t.tag] = text
-    return d
-
-def make_dict_from_tree(element_tree):
-    """Traverse the given XML element tree to convert it into a dictionary.
-        https://ericscrivner.me/2015/07/python-tip-convert-xml-tree-to-a-dictionary/
-
-    :param element_tree: An XML element tree
-    :type element_tree: xml.etree.ElementTree
-    :rtype: dict
-    """
-    def internal_iter(tree, accum):
-        """Recursively iterate through the elements of the tree accumulating
-        a dictionary result.
-
-        :param tree: The XML element tree
-        :type tree: xml.etree.ElementTree
-        :param accum: Dictionary into which data is accumulated
-        :type accum: dict
-        :rtype: dict
-        """
-        if tree is None:
-            return accum
-
-        if tree.getchildren():
-            accum[tree.tag] = {}
-            for each in tree.getchildren():
-                result = internal_iter(each, {})
-                if each.tag in accum[tree.tag]:
-                    if not isinstance(accum[tree.tag][each.tag], list):
-                        accum[tree.tag][each.tag] = [
-                            accum[tree.tag][each.tag]
-                        ]
-                    accum[tree.tag][each.tag].append(result[each.tag])
-                else:
-                    accum[tree.tag].update(result)
-        else:
-            accum[tree.tag] = tree.text
-
-        return accum
-
-    return internal_iter(element_tree, {})
-
-def csw_record_to_dict(csw_record):
-    # first test to underestand CSW Records
-    ret = {
-        'rdf': csw_record.rdf,
-        'identifier': csw_record.identifier,
-        'identifiers': csw_record.identifiers,
-        'type': csw_record.type,
-        'title': csw_record.title,
-        'alternative': csw_record.alternative,
-        'ispartof': csw_record.ispartof,
-        'abstract': csw_record.abstract,
-        'date': csw_record.date,
-        'created': csw_record.created,
-        'issued': csw_record.issued,
-        'relation': csw_record.relation,
-        'temporal': csw_record.temporal,
-        'uris': csw_record.uris,
-        'references': csw_record.references,
-        'modified': csw_record.modified,
-        'creator': csw_record.creator,
-        'publisher': csw_record.publisher,
-        'coverage': csw_record.coverage,
-        'contributor': csw_record.contributor,
-        'language': csw_record.language,
-        'source': csw_record.source,
-        'rightsholder': csw_record.rightsholder,
-        'accessrights': csw_record.accessrights,
-        'license': csw_record.license,
-        'format': csw_record.format,
-        'subjects': csw_record.subjects,
-        'rights': csw_record.rights,
-        'spatial': csw_record.spatial
-        }
-    return ret
