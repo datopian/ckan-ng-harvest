@@ -1,10 +1,10 @@
 """
 Get the actual list of resources in data.gov
 """
-from libs.data_gov_api import CKANPortalAPI
+from harvester.data_gov_api import CKANPortalAPI
 import json
 import os
-from logs import logger
+from harvester.logs import logger
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--ckan_base_url", type=str, default='https://catalog.data.gov', help="URL of the data.json")

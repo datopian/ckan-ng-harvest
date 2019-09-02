@@ -15,6 +15,7 @@ CKAN_OWNER_ORG = ''  # ID of the orginazion sharing their data to a CKAN instanc
 
 
 def get_base_path():
+
     nice_name = slugify(SOURCE_NAME)
     base_path = os.path.join(DATA_FOLDER_PATH, nice_name)
 

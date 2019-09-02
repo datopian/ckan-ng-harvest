@@ -1,5 +1,5 @@
 import pytest
-from libs.csw import CSWSource
+from harvester.csw import CSWSource
 from owslib.csw import CatalogueServiceWeb
 
 

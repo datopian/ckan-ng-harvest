@@ -1,7 +1,7 @@
 import pytest
-from libs.data_gov_api import CKANPortalAPI
-from libs.adapters.datasets.data_json import DataJSONSchema1_1
-from logs import logger
+from harvester.data_gov_api import CKANPortalAPI
+from harvester.adapters.datasets.data_json import DataJSONSchema1_1
+from harvester.logs import logger
 # put you settings in the local_settings hidden-to-github file
 from settings import (HARVEST_SOURCE_ID,
                        CKAN_API_KEY,

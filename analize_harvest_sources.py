@@ -1,9 +1,9 @@
-from libs.data_gov_api import CKANPortalAPI
-from libs.data_json import DataJSON
-from logs import logger
+from harvester.data_gov_api import CKANPortalAPI
+from harvester.data_json import DataJSON
+from harvester.logs import logger
 import csv
 import json
-import config
+from harvester import config
 
 
 # search each data.json source and analyze them

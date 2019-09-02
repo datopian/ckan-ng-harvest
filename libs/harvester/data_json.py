@@ -16,7 +16,7 @@ from datapackage import Package, Resource
 from slugify import slugify
 from validate_email import validate_email
 
-from libs.validator_constants import (ACCRUAL_PERIODICITY_VALUES, BUREAU_CODE_URL,
+from harvester.validator_constants import (ACCRUAL_PERIODICITY_VALUES, BUREAU_CODE_URL,
                                       IANA_MIME_REGEX, ISO8601_REGEX, ISSUED_REGEX,
                                       LANGUAGE_REGEX, MODIFIED_REGEX_1,
                                       MODIFIED_REGEX_2, MODIFIED_REGEX_3,

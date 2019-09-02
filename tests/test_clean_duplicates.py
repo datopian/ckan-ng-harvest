@@ -3,7 +3,7 @@ Tests all functions used in flow file
 """
 import unittest
 
-import config
+from harvester import config
 from functions import clean_duplicated_identifiers
 
 

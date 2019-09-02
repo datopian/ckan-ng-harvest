@@ -1,7 +1,8 @@
-import config
+from harvester import config
 from jinja2 import Template
 import os
-from logs import logger
+from harvester.logs import logger
+import pkg_resources
 
 
 class HarvestedSource:
@@ -83,14 +84,20 @@ class HarvestedSource:
         }
         return data
 
-    def render_template(self, template_path, save=True):
+    def render_template(self, save=True):
+        # redenr through harvest-report.html
         context = self.get_json_data()
-
-        f = open(template_path)
+        # fails (?) template_txt = pkg_resources.resource_string('harvester', 'templates/harvest-report.html')
+        # https://stackoverflow.com/questions/6028000/how-to-read-a-static-file-from-inside-a-python-package
+        template_path = pkg_resources.resource_filename('harvester', 'templates/harvest-report.html')
+        f = open(template_path, 'r')
         template = Template(f.read())
+        f.close()
         html = template.render(**context)
         if save:
-            self.save_report(html=html, report_path=config.get_html_report_path())
+            report_path = config.get_html_report_path()
+            self.save_report(html=html, report_path=report_path)
+            logger.info(f'Saved report to {report_path}')
 
         return html
 
@@ -130,7 +137,7 @@ class HarvestedSources:
                 if not ret:
                     self.summary_data['harvest_sources_failed'] += 1
                     continue
-                hs.render_template(template_path='templates/harvest-report.html', save=True)
+                hs.render_template(save=True)
 
                 data = hs.get_json_data()
                 self.all_data.append(data)
@@ -144,7 +151,6 @@ class HarvestedSources:
                     logger.error(f'Source with 0 datasets {name}')
                 self.summary_data['total_data_json_datasets'] += len(datasets)
                 logger.info(' - Total datasets: {}'.format(self.summary_data['total_data_json_datasets']))
-                # hs.render_template(template_path='templates/harvest-report.html', save=True)
 
         harvest_sources_readed = self.summary_data['harvest_sources_readed']
         harvest_sources_failed = self.summary_data['harvest_sources_failed']

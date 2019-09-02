@@ -1,5 +1,5 @@
-from libs.adapters.ckan_resource_adapters import CKANResourceAdapter
-from logs import logger
+from harvester.adapters.ckan_resource_adapters import CKANResourceAdapter
+from harvester.logs import logger
 from slugify import slugify
 import json
 

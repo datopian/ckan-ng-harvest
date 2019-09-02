@@ -1,9 +1,9 @@
 import unittest
-from libs.data_gov_api import CKANPortalAPI
+from harvester.data_gov_api import CKANPortalAPI
 import random
 from slugify import slugify
 import json
-from logs import logger
+from harvester.logs import logger
 # put you settings in the local_settings hidden-to-github file
 from settings import (HARVEST_SOURCE_ID,
                        CKAN_API_KEY,

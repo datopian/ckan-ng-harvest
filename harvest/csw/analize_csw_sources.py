@@ -2,20 +2,12 @@
 Analize some CSW sources for test CSW library
 """
 
-# use always base project folder as base path for imports
-# move libs to a python package to fix this
-import sys
-from pathlib import Path
-FULL_BASE_PROJECT_PATH = str(Path().parent.parent.parent.absolute())
-print(FULL_BASE_PROJECT_PATH)
-sys.path.append(FULL_BASE_PROJECT_PATH)
-
 from slugify import slugify
-from libs.csw import CSWSource
-from logs import logger
+from harvester import config
+from harvester.csw import CSWSource
 import csv
 import json
-import config
+
 
 url_services = [
             'http://metadata.arcticlcc.org/csw',
@@ -30,7 +22,8 @@ outputschema = 'gmd'
 # outputschema = 'csw'
 for url in url_services:
     csw = CSWSource(url=url)
-    if not csw.connect_csw():
+    connected = csw.connect_csw()
+    if not connected:
         print(f'Fail to connect {csw.errors}')
         continue
     csw_info = csw.read_csw_info()

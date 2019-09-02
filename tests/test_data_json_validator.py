@@ -1,6 +1,6 @@
 import unittest
 import json
-import config
+from harvester import config
 import requests
 from functions import validate_data_json
 

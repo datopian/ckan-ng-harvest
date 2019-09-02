@@ -48,7 +48,7 @@ class FunctionsTestClass(TestCase):
     def test_limit(self):
         url = f'{base_url}/healthdata.gov.data.json'
         total = 0
-        import config
+        from harvester import config
         config.LIMIT_DATASETS = 15
         for dataset in get_data_json_from_url(url=url):
             self.assertIsInstance(dataset, dict)

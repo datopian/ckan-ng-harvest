@@ -2,10 +2,10 @@
 Tests all functions used in flow file
 """
 import unittest
-import config
+from harvester import config
 from functions import get_data_json_from_url, save_as_data_packages
 from functions2 import compare_resources
-import config
+from harvester import config
 base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
 
 

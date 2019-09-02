@@ -7,25 +7,14 @@ print(FULL_BASE_PROJECT_PATH)
 sys.path.append(FULL_BASE_PROJECT_PATH)
 
 import json
-from logs import logger
+from harvester.logs import logger
 import os
 import requests
-from libs.csw import CSWSource
+from harvester.csw import CSWSource
 from datapackage import Package, Resource
 from slugify import slugify
-import config
+from harvester import config
 import base64
-
-
-def validate_data_json(row):
-    # Taken from https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
-    errors = []
-    try:
-        data_validator = DataJSONDataset()
-        errors = data_validator.validate_dataset(row)
-    except Exception as e:
-        errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
-    return errors
 
 
 def get_csw_from_url(url):
@@ -75,11 +64,6 @@ def clean_duplicated_identifiers(rows):
                 logger.error('... more duplicates not shown')
     logger.info('{} duplicates deleted. {} OK'.format(len(duplicates), processed))
 
-
-def validate_datasets(row):
-    """ validate dataset row by row """
-    errors = validate_data_json(row)
-    row['validation_errors'] = errors
 
 # we need a way to save as file using an unique identifier
 # TODO check if base64 is the best idea

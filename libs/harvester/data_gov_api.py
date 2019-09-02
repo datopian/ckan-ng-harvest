@@ -4,7 +4,7 @@ import os
 from datapackage import Package, Resource
 from slugify import slugify
 import base64
-from logs import logger
+from harvester.logs import logger
 
 
 class CKANPortalAPI:

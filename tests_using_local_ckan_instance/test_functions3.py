@@ -2,10 +2,10 @@
 Tests all functions used in flow file
 """
 import unittest
-import config
-from libs.data_gov_api import CKANPortalAPI
+from harvester import config
+from harvester.data_gov_api import CKANPortalAPI
 from functions3 import assing_collection_pkg_id, write_results_to_ckan
-from logs import logger
+from harvester.logs import logger
 from settings import (HARVEST_SOURCE_ID,
                        CKAN_API_KEY,
                        CKAN_BASE_URL,
