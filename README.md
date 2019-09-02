@@ -95,6 +95,7 @@ In general you will need:
 Example using data from _read_harvest_sources_ and a local CKAN instance
 
 ```
+cd harvest/datajson
 python3 harvest.py \
   --name rrb \
   --url https://secure.rrb.gov/data.json \
