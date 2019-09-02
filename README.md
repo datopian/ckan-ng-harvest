@@ -1,15 +1,12 @@
-# Harvesting data.json files
+# Harvesting 
 
-The harvest process includes:
- - Read a [data.json](data.json.md) resource file from an external resource I want to harvest.
- - Validate and save these results.
- - Search the previous datasets harvested for that particular source
- - Compare both resources and list the differences.
- - Update the CKAN instance with these updates 
+## data.json files
 
-Current process: [using ckan extensions](harvest-in-ckanext.md).  
+[More info](harvest/datajson/README.md)
 
-Process using [dataflows](https://github.com/datahq/dataflows) and [datapackages](https://github.com/frictionlessdata/datapackage-py).  
+## CSW
+
+[More info](harvest/csw/README.md)
 
 ## Settings
 
@@ -17,7 +14,7 @@ The files _settings.py_ (empty) and _local_settings.py_ (ignored from repo) are 
 
 ## Harvest sources
 
-The _data.json_ harvest sources are CKAN packages with an URL to this file.  
+The _data.json_, _csw_ or other harvest sources are CKAN packages with an URL to this file.  
 We can import all the harvest sources from a productive CKAN instance with the command
 
 ### Some tools
@@ -25,23 +22,36 @@ We can import all the harvest sources from a productive CKAN instance with the c
 #### Read harvest sources
 You can search via CKAN API the list of packages/harvest sources. 
 
+Get CSW harvest sources at _data.gov_
 ```
-# Get CSW harvest sources at _data.gov_
 python3 read_harvest_sources.py --base_url https://catalog.data.gov --source_type csw --method GET  
 # CKAN 2.3 fail with POST, current versions works fine with POST
 
-# Get your local data.json harvest sources
+Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest source_type:csw)'}
+6 results
+Harvest source: Alaska LCC CSW Server 54778007-bac5-4f2e-8015-622176f23e02 
+	alaska-lcc-csw-server csw http://metadata.arcticlcc.org/csw
+	{'description': 'The Arctic Landscape Conservation Cooperative (ALCC) supports conservation in the arctic by providing [applied science](http://arcticlcc.org/projects/) and [tools](http://arcticlcc.org/products/) to land managers and policy makers. It is a self-directed partnership that functions through a structure of at-large partners, a core staff, and a steering committee of cooperating agencies and organizations. Its [geographic scope](http://arcticlcc.org/projects/geospatial-data/arctic-lcc-boundaries/) ranges across North America from Alaska to Labrador. The Alaska portion encompasses three eco-regions: the Brooks Range, the Arctic Foothills, and the Arctic Coastal Plain.', 'created': '2013-08-30T12:57:14.187258', 'title': 'Arctic Landscape Conservation Cooperative', 'name': 'alcc-fws-gov', 'is_organization': True, 'state': 'active', 'image_url': 'http://arcticlcc.org/assets/images/logos/logo_small.png', 'revision_id': 'ecafc1e0-403b-488e-bca1-62b78e4abc81', 'type': 'organization', 'id': 'fe75ed93-9c93-4c56-bc02-11ab228d1abd', 'approval_status': 'approved'}
+Harvest source: NC OneMap CSW f6462f24-5acc-4eaf-937e-f8341585087c 
+	nc-onemap-csw csw http://data.nconemap.com/geoportal/csw?Request=GetCapabilities&Service=CSW&Version=2.0.2
+	{'description': '', 'created': '2013-03-14T03:44:38.764842', 'title': 'State of North Carolina', 'name': 'nc-gov', 'is_organization': True, 'state': 'active', 'image_url': 'http://www.nconemap.com/portals/7/images/gpt_logo_small.png', 'revision_id': '4fb5830b-68c1-4e8b-a04e-3750c3e885c8', 'type': 'organization', 'id': '1abdfb5f-4371-4fa3-8ef3-497cebe1b3fe', 'approval_status': 'approved'}
+
+  ...
+```
+
+Get your local data.json harvest sources
+```
 python3 read_harvest_sources.py --base_url http://ckan:5000 --source_type datajson --method POST
 ```
 
 #### Import harvest sources
 
 You can import harvest sources from another CKAN instance.
-
+For example import all CSW harvest sources from data.gov
 ```
-# import all CSW harvest sources from data.gov
 python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
 ```
+This also import and create _organizations_.  
 
 #### Analyze 
 
@@ -49,11 +59,32 @@ Creates a CSV file with all the harvest sources. Analyze each one to validate it
 
 ```
 python3 analize_harvest_sources.py 
+
+Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest)'}
+977 results
+data/harvest_sources/datasets/harvest-source-census-5-digit-zip-code-tabulation-area-zcta5-national.json saved
+ +++ [[waf-collection]] Reading source Census 5-Digit ZIP Code Tabulation Area (ZCTA5) National (1) from http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/zcta510/
+data/harvest_sources/datasets/harvest-source-current-american-indian-alaska-native-native-hawaiian-areas-national-aiannh.json saved
+ +++ [[waf-collection]] Reading source Current American Indian/Alaska Native/Native  Hawaiian Areas National (AIANNH) (2) from http://meta.geo.census.gov/data/existing/decennial/GEO/GPMB/TIGERline/TIGER2013/aiannh/
++++ [[datajson]] Reading source WPRDC data.json (255) from https://data.wprdc.org/data.json
+ +++++++++++ ERROR
+Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a required property
+
+ ... 
+
 ```
+
+CSV results
+
+![source_analysis](imgs/source_analysis.png)
 
 ### Harvest one source
 
-You need:
+We have one folder for each harvester.  
+For data.json we have _harvest/datajson_, for csw: _harvest/csw_.  
+En each folder you can read specs about each process.  
+
+In general you will need:
  - a _name_ for the harvest source
  - url of the data.json
  - harvest_source_id: the ID of the harvest source
