@@ -1,4 +1,4 @@
-ckan-harvester>=0.105
+ckan-harvester>=0.106
 
 jsonschema==3.0.1  # for validating data.json files
 dataflows==0.0.56
