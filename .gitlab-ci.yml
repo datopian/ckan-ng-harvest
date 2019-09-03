@@ -6,14 +6,19 @@ test:
     # - apt-get update -qy
     # - apt-get install -y python3-pip
     - pip3 install -r requirements.txt
-    - python -m pytest --cov=. tests/
+    - cd ~/harvest/datajson/
+    - python -m pytest tests/
+    - cd ~/harvest/csw/
+    - python -m pytest tests/
+    - cd ~/libs/
+    - python -m pytest tests/
   only:
   - merge_requests
 
 pages:
   stage: deploy
   script:
-  - echo 'Hello CI'
+  - echo 'Hello GitLab CI'
   artifacts:
     paths:
     - public
