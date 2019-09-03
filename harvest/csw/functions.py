@@ -61,6 +61,7 @@ def validate_datasets(row):
     # TODO check what to validate in this resources
     row['validation_errors'] = []
 
+
 # we need a way to save as file using an unique identifier
 # TODO check if base64 is the best idea
 def encode_identifier(identifier):
