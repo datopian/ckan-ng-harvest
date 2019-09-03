@@ -34,7 +34,7 @@ res = Flow(
     update_resource('res_1', name='csw_resource'),
 
     # remove duplicates
-    # clean_duplicated_identifiers,
+    clean_duplicated_identifiers,
 
     # validate each dataset
     # validate_datasets,
