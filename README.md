@@ -14,8 +14,14 @@ The files _settings.py_ (empty) and _local_settings.py_ (ignored from repo) are 
 
 ## Harvest sources
 
-The _data.json_, _csw_ or other harvest sources are CKAN packages with an URL to this file.  
-We can import all the harvest sources from a productive CKAN instance with the command
+The _data.json_, _csw_ or other harvest sources are CKAN packages with an URL to the some resource.  
+We can import all the harvest sources from a productive CKAN instance with the command `import_harvest_sources`.  
+
+For example import all CSW harvest sources from _data.gov_.  
+```
+python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
+```
+This also import and create _organizations_.  
 
 ### Some tools
 
@@ -43,15 +49,6 @@ Get your local data.json harvest sources
 ```
 python3 read_harvest_sources.py --base_url http://ckan:5000 --source_type datajson --method POST
 ```
-
-#### Import harvest sources
-
-You can import harvest sources from another CKAN instance.
-For example import all CSW harvest sources from data.gov
-```
-python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
-```
-This also import and create _organizations_.  
 
 #### Analyze 
 
