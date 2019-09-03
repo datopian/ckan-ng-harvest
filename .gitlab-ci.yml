@@ -5,13 +5,27 @@ test:
   script:
     # - apt-get update -qy
     # - apt-get install -y python3-pip
+    - echo '***************************'
+    - echo 'Instaling reqs'
     - pip3 install -r requirements.txt
-    - cd ~/harvest/datajson/
+    - echo '***************************'
+    - echo 'path'
+    - pwd
+
+    - echo '***************************'
+    - echo 'Test data.json'
+    - cd harvest/datajson/
     - python -m pytest tests/
-    - cd ~/harvest/csw/
+
+    - echo '***************************'
+    - echo 'Test csw'
+    - cd ../../harvest/csw/
     - python -m pytest tests/
+    - echo '***************************'
+    - echo 'Test package'
     - cd ~/libs/
     - python -m pytest tests/
+
   only:
   - merge_requests
 
