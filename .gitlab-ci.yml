@@ -12,18 +12,22 @@ test:
     - echo 'path'
     - pwd
 
+    - DEVHOME=$(pwd)
     - echo '***************************'
     - echo 'Test data.json'
-    - cd harvest/datajson/
+    - cd "$DEVHOME/harvest/datajson/"
+    - pwd
     - python -m pytest tests/
 
     - echo '***************************'
     - echo 'Test csw'
-    - cd ../../harvest/csw/
+    - cd "$DEVHOME/harvest/csw/"
+    - pwd
     - python -m pytest tests/
     - echo '***************************'
     - echo 'Test package'
-    - cd ~/libs/
+    - cd "$DEVHOME/libs/"
+    - pwd
     - python -m pytest tests/
 
   only:
