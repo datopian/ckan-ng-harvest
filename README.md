@@ -170,14 +170,13 @@ You can see the harvested datasets at you CKAN instance
 We create [a script](https://gitlab.com/datopian/ckan-ng-harvest/blob/develop/automate-tasks/airflow/harvest_with_airflow.py) to put ALL the harvest sources in a queue using [Airflow](https://gitlab.com/datopian/ckan-ng-harvest/blob/develop/automate-tasks/airflow/README.md).  
 
 
+## Generate harvest commands list
+
+If you want to check the com
+
 ### Tests
 
-We have two tests. [One](tests_using_local_ckan_instance/README.md) requires that a local instance of CKAN running and [the others](tests/README.md) not.
-```
-python -m pytest -v tests/
-python -m pytest -v tests_using_local_ckan_instance/
-```
-
+Check the [tests.md](tests.md) file.  
 
 
 

@@ -6,15 +6,6 @@ import os
 from harvester.logs import logger
 import argparse
 
-# use always base project folder as base path for imports
-# move libs to a python package to fix this
-import sys
-from pathlib import Path
-HERE = str(Path().absolute())
-FULL_BASE_PROJECT_PATH = str(Path().parent.parent.parent.absolute())
-print(FULL_BASE_PROJECT_PATH)
-sys.path.append(FULL_BASE_PROJECT_PATH)
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", type=str, help="URL of the CSW source")
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")

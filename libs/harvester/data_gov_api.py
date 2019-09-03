@@ -306,7 +306,9 @@ class CKANPortalAPI:
                 if on_duplicated == 'SKIP':
                     return {'success': True}
                 elif on_duplicated == 'DELETE':
-                    self.delete_package(ckan_package_id_or_name=ckan_package['name'])
+                    delr = self.delete_package(ckan_package_id_or_name=ckan_package['name'])
+                    if not delr['success']:
+                        raise Exception('Failed to delete {}'.format(ckan_package['name']))
                     return self.create_package(ckan_package=ckan_package, on_duplicated='RAISE')
                 elif on_duplicated == 'RAISE':
                     error = ('DUPLICATED CKAN package: {}'

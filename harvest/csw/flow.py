@@ -3,12 +3,6 @@ Get updated list of resources from a CSW source
 """
 # use always base project folder as base path for imports
 # move libs to a python package to fix this
-import sys
-from pathlib import Path
-FULL_BASE_PROJECT_PATH = str(Path().parent.parent.parent.absolute())
-print(FULL_BASE_PROJECT_PATH)
-sys.path.append(FULL_BASE_PROJECT_PATH)
-
 import json
 import os
 

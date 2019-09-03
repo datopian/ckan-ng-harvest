@@ -4,6 +4,12 @@ import random
 from slugify import slugify
 import json
 from harvester.logs import logger
+
+import sys
+from pathlib import Path
+FULL_BASE_PROJECT_PATH = str(Path().cwd().parent.absolute())
+sys.path.append(FULL_BASE_PROJECT_PATH)
+
 # put you settings in the local_settings hidden-to-github file
 from settings import (HARVEST_SOURCE_ID,
                        CKAN_API_KEY,
