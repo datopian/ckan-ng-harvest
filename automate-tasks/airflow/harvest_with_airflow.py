@@ -11,8 +11,8 @@ sys.path.append(app_path)
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta
-from libs.data_gov_api import CKANPortalAPI
-from logs import logger
+from harvester.data_gov_api import CKANPortalAPI
+from harvester.logs import logger
 
 
 default_args = {

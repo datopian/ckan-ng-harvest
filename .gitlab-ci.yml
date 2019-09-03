@@ -5,15 +5,38 @@ test:
   script:
     # - apt-get update -qy
     # - apt-get install -y python3-pip
+    - echo '***************************'
+    - echo 'Instaling reqs'
     - pip3 install -r requirements.txt
-    - python -m pytest --cov=. tests/
+    - echo '***************************'
+    - echo 'path'
+    - pwd
+
+    - DEVHOME=$(pwd)
+    - echo '***************************'
+    - echo 'Test data.json'
+    - cd "$DEVHOME/harvest/datajson/"
+    - pwd
+    - python -m pytest tests/
+
+    - echo '***************************'
+    - echo 'Test csw'
+    - cd "$DEVHOME/harvest/csw/"
+    - pwd
+    - python -m pytest tests/
+    - echo '***************************'
+    - echo 'Test package'
+    - cd "$DEVHOME/libs/"
+    - pwd
+    - python -m pytest tests/
+
   only:
   - merge_requests
 
 pages:
   stage: deploy
   script:
-  - echo 'Hello CI'
+  - echo 'Hello GitLab CI'
   artifacts:
     paths:
     - public
