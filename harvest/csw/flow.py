@@ -11,7 +11,7 @@ from dataflows import Flow, update_resource
 from harvester.logs import logger
 from functions import (get_csw_from_url,
                        clean_duplicated_identifiers,
-                       # validate_datasets,
+                       validate_datasets,
                        save_as_data_packages,
                        )
 from harvester.logs import logger
@@ -37,7 +37,7 @@ res = Flow(
     clean_duplicated_identifiers,
 
     # validate each dataset
-    # validate_datasets,
+    validate_datasets,
 
     # save each dataset as data package
     # save_as_data_packages,
