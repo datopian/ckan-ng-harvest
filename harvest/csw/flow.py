@@ -40,7 +40,7 @@ res = Flow(
     validate_datasets,
 
     # save each dataset as data package
-    # save_as_data_packages,
+    save_as_data_packages,
 ).results()
 
 logger.info('Continue to next step with: python3 flow2.py '
