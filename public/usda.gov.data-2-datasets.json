@@ -1,0 +1,76 @@
+{
+  "@type": "dcat:Catalog",
+  "describedBy": "https://project-open-data.cio.gov/v1.1/schema/catalog.json",
+  "conformsTo": "https://project-open-data.cio.gov/v1.1/schema",
+  "@context": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld",
+  "dataset": [
+    {
+      "identifier": "USDA-DM-002",
+      "accessLevel": "public",
+      "contactPoint": {
+        "hasEmail": "mailto:Alexis.Graves@ocio.usda.gov",
+        "@type": "vcard:Contact",
+        "fn": "Alexi Graves"
+      },
+      "programCode": [
+        "005:059"
+      ],
+      "description": "This dataset is Congressional Correspondence from the Office of the Executive Secretariat for the Department of Agriculture.",
+      "title": "Department of Agriculture Congressional Logs for Fiscal Year 2014",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "downloadURL": "http://www.dm.usda.gov/foia/docs/Copy%20of%20ECM%20Congressional%20Logs%20FY14.xls",
+          "mediaType": "application/vnd.ms-excel",
+          "title": "Congressional Logs for Fiscal Year 2014"
+        }
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bureauCode": [
+        "005:12"
+      ],
+      "modified": "2014-10-03",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "Department of Agriculture"
+      },
+      "keyword": [
+        "Congressional Logs"
+      ]
+    },
+    {
+      "identifier": "usda-ocio-15-01",
+      "accessLevel": "public",
+      "contactPoint": {
+        "hasEmail": "mailto:brian.brotsos@usda.gov",
+        "@type": "vcard:Contact",
+        "fn": "Brian Brotsos"
+      },
+      "programCode": [
+        "005:059"
+      ],
+      "description": "The USDA EDI with  non-public assets.",
+      "title": "Department of Agriculture Enterprise Data Inventory",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "downloadURL": "http://www.usda.gov/data-edi.json",
+          "mediaType": "application/json"
+        }
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "bureauCode": [
+        "005:12"
+      ],
+      "modified": "2015-02-28",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "Department of Agriculture"
+      },
+      "accrualPeriodicity": "R/P3M",
+      "keyword": [
+        "Data Assets"
+      ]
+    }
+  ]
+}

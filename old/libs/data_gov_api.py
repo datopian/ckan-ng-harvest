@@ -9,17 +9,14 @@ import base64
 
 
 class CKANPortalAPI:
-    """ API and data from data.gov 
+    """ API and data from data.gov
         API SPECS: https://docs.ckan.org/en/latest/api/index.html """
-    
+
     version = '0.01-alpha'
     user_agent = 'ckan-portal-filter'
     package_list_url = '/api/3/action/package_list'  # redirect to package_search (?)
     package_search_url = '/api/3/action/package_search'  # iterate with start and rows GET params
 
-    # search for harvest sources
-    package_search_harvested_sources_url = '/api/3/action/package_search?q=%28type:harvest%29&rows=1000'  # all the sources in a CKAN instance (959 results in data.gov)
-    package_search_harvested_datajson_sources_url = '/api/3/action/package_search?q=%28type:harvest%20source_type:datajson%29&rows=1000'  # just the data.json harvest sources in a CKAN instance (144 results in data.gov)
     package_list = []
     total_packages = 0
 
@@ -32,11 +29,11 @@ class CKANPortalAPI:
 
     def search_harvest_packages(self, rows=1000, harvest_source_id=None,  # just one harvest source
                                                     harvest_type=None,  # harvest for harvest sources
-                                                    source_type=None):  # datajson for 
+                                                    source_type=None):  # datajson for
         """ search packages
             "rows" is the page size.
             You could search for an specific harvest_source_id """
-        
+
         start = 0
         sort = "metadata_modified desc"
 
@@ -54,29 +51,29 @@ class CKANPortalAPI:
                     params['q'] = f'(type:{harvest_type} source_type:{source_type})'
                 else:
                     params['q'] = f'(type:{harvest_type})'
-            
-            
-                
+
+
+
             logger.debug(f'Searching {url} PAGE:{page} start:{start}, rows:{rows} with params: {params}')
-            
+
             headers = self.get_request_headers()
             try:
                 req = requests.get(url, params=params, headers=headers)
             except Exception as e:
                 error = 'ERROR Donwloading package list: {} [{}]'.format(url, e)
                 raise ValueError('Failed to get package list at {}'.format(url))
-            
+
             content = req.content
             try:
                 json_content = json.loads(content)  # check for encoding errors
             except Exception as e:
                 error = 'ERROR parsing JSON data: {} [{}]'.format(content, e)
                 raise ValueError(error)
-            
+
             if not json_content['success']:
                 error = 'API response failed: {}'.format(json_content.get('error', None))
                 raise ValueError(error)
-            
+
             result = json_content['result']
             count_results = result['count']
             sort_results = result['sort']
@@ -92,16 +89,16 @@ class CKANPortalAPI:
                 start += rows
                 self.package_list += results
                 yield(results)
-        
+
     def get_all_packages(self, harvest_source_id=None,  # just one harvest source
                                 harvest_type=None,  # 'harvest' for harvest sources
                                 source_type=None):
         self.package_list = []
-        self.total_pages = 0  
+        self.total_pages = 0
         for packages in self.search_harvest_packages(harvest_source_id=harvest_source_id,
                                                     harvest_type=harvest_type,
                                                     source_type=source_type):
-            
+
             self.total_pages += 1
 
     def read_local_packages(self, path):
@@ -113,7 +110,7 @@ class CKANPortalAPI:
         except Exception as e:
             return False, "Error parsin json: {}".format(e)
         return True, None
-    
+
     def count_resources(self):
         """ read all datasets and count resources """
         total = 0
@@ -121,7 +118,7 @@ class CKANPortalAPI:
             resources = dataset.get('resources', [])
             total += len(resources)
         return total
-    
+
     def remove_duplicated_identifiers(self):
         unique_identifiers = []
         self.duplicates = []
@@ -133,7 +130,7 @@ class CKANPortalAPI:
             else:
                 self.duplicates.append(idf)
                 self.package_list.remove(dataset)
-                
+
         return self.duplicates
 
     def save_packages_list(self, path):
@@ -141,12 +138,12 @@ class CKANPortalAPI:
         f = open(path, 'w')
         f.write(dmp)
         f.close()
-    
+
     def save_datasets_as_data_packages(self, folder_path):
         """ save each dataset from a data.json source as _datapackage_ """
         for dataset in self.package_list:
             package = Package()
-            
+
             #TODO check this, I'm learning datapackages
             resource = Resource({'data': dataset})
             resource.infer()  #adds "name": "inline"
@@ -154,13 +151,13 @@ class CKANPortalAPI:
             identifier = dataset['id']
             bytes_identifier = identifier.encode('utf-8')
             encoded = base64.b64encode(bytes_identifier)
-            encoded_identifier = str(encoded, "utf-8")  
-            
+            encoded_identifier = str(encoded, "utf-8")
+
             resource_path = os.path.join(folder_path, f'resource_ckan_api_{encoded_identifier}.json')
             if not resource.valid:
                 raise Exception('Invalid resource')
-            
-            resource.save(resource_path) 
+
+            resource.save(resource_path)
 
             package.add_resource(descriptor=resource.descriptor)
             package_path = os.path.join(folder_path, f'pkg_ckan_api_{encoded_identifier}.zip')
@@ -183,7 +180,7 @@ if __name__ == '__main__':
                             '50104281-92a3-4534-9d38-141bc82276c5',  # NYC JSON
                             'afb32af7-87ba-4f27-ae5c-f0d4d0e039dc'  # CFPB JSON
                             ]
-    
+
     for harvest_source_id in harvest_source_ids:
         page = 0
         for packages in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
@@ -198,4 +195,4 @@ if __name__ == '__main__':
                 f.close()
 
             print('{} total resources'.format(resources))
-    
+

@@ -3,7 +3,8 @@ __pycache__
 *.pyc
 .vscode
 *.log
-
+.coverage
 data/
 datapackages/
+local_settings.py
 

@@ -1,8 +1,18 @@
+ckan-harvester>=0.106
+
 jsonschema==3.0.1  # for validating data.json files
-dataflows==0.0.56  
+dataflows==0.0.56
 ckanapi==4.3  # for read and write a CKAN instance
 python-slugify==3.0.2
 requests==2.22.0
 datapackage==1.6.2
 rfc3987
 validate_email
+pytz==2019.1
+coverage==4.5.3
+pytest==5.0.1
+pytest-cov==2.7.1
+apache-airflow==1.10.4
+mock
+Jinja2==2.10.1
+OWSLib>=0.18.0

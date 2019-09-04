@@ -1,11 +1,10 @@
 """
 Get the actual list of harvest sources (data.json or another)
 """
-from libs.data_gov_api import CKANPortalAPI
-from functions import get_current_ckan_resources_from_api
+from harvester.data_gov_api import CKANPortalAPI
 import json
 import os
-from logs import logger
+from harvester.logs import logger
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--ckan_base_url", type=str, default='https://catalog.data.gov', help="URL of the data.json")
