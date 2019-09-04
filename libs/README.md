@@ -5,6 +5,8 @@
 ```
 pip install ckan-harvester
 ```
+
+
 ### Use data.json sources
 
 ```python
@@ -90,4 +92,35 @@ csw.connect_csw()
 csw_info = csw.read_csw_info()
 print('CSW title: {}'.format(csw_info['identification']['title']))
  # CSW title: ArcGIS Server Geoportal Extension 10 - OGC CSW 2.0.2 ISO AP
+```
+
+## Development
+
+To setup a develop environment, clone the repository and in a virtualenv install the dependencies
+
+```
+pip install -r requirements.txt
+```
+
+This will install the library in development mode, and other libraries for tests. 
+
+
+Then to run the test suite with pytest:
+
+```
+pytest
+```
+
+We use [pytest-vcr](https://pytest-vcr.readthedocs.io/en/latest/) based on the wonderful [VCRpy](https://vcrpy.readthedocs.io/en/latest/), to mock http requests. In this way, we don't need to hit the real internet to run our test (which is very fragile and slow), because there is a mocked version of a each response needed by tests, in vcr's *cassettes* format. 
+
+In order to update these *cassettes* just run as following: 
+
+```
+pytest --vcr-record=all
+```
+
+To actually hit the internet without use mocks, disable the plugin 
+
+```
+pytest --disable-vcr
 ```
