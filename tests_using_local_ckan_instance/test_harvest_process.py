@@ -60,3 +60,32 @@ class HarvestTestClass(unittest.TestCase):
           logger.info('Other harvest source: {}'.format(dataset['name']))
 
     self.assertEqual(created, True)
+
+  def test_harvest_local_data(self):
+    NAME = 'usda-data'
+    URL = 'https://datopian.gitlab.io/ckan-ng-harvest/usda.gov.data.json'
+    cpa = CKANPortalAPI(base_url=CKAN_BASE_URL, api_key=CKAN_API_KEY)
+    cpa.delete_all_harvest_sources()
+
+    harvest_source = cpa.create_harvest_source(title=NAME,
+                                                url=URL,
+                                                owner_org_id='california',
+                                                source_type='datajson',
+                                                notes='Some tests about local harvesting sources creation',
+                                                frequency='WEEKLY')
+
+    HARVEST_SOURCE_ID = harvest_source['result']['id']
+
+    result = Popen(['python3 harvest.py --name {} --url {} --harvest_source_id {} --ckan_owner_org_id {} --catalog_url {} --ckan_api_key {}'.format(
+      NAME,
+      URL,
+      HARVEST_SOURCE_ID,
+      CKAN_ORG_ID,
+      CKAN_BASE_URL,
+      CKAN_API_KEY)],
+      shell=True,
+      stdout=PIPE)
+
+    result.communicate()
+
+    self.assertEqual(result.returncode, 0)
