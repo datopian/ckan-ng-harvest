@@ -96,12 +96,9 @@ def save_as_data_packages(row):
 
     encoded_identifier = encode_identifier(identifier=row['identifier'])
 
-    # resource_path = os.path.join(path, f'{prefix}_{encoded_identifier}.json')
-    # resource.save(resource_path)
-
     package.add_resource(descriptor=resource.descriptor)
     folder = config.get_data_packages_folder_path()
-    filename = f'data-json-{encoded_identifier}.json'
+    filename = f'csw-{encoded_identifier}.json'
     package_path = os.path.join(folder, filename)
 
     # no not rewrite if exists

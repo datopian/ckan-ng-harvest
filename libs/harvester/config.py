@@ -6,7 +6,7 @@ import json
 DATA_FOLDER_PATH = 'data'
 SOURCE_NAME = ''  # the source nage, e.g. Dep of Agriculture
 SOURCE_ID = ''  # the harvest source id
-SOURCE_URL = ''  # url of the data.json file
+SOURCE_URL = ''  # url of the source file
 LIMIT_DATASETS = 0  # Limit datasets to harvest on each source. Defualt=0 => no limit"
 
 CKAN_CATALOG_URL = ''  # 'https://catalog.data.gov'
