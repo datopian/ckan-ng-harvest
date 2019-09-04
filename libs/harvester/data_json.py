@@ -268,12 +268,14 @@ class DataJSON:
 
 
 class DataJSONDataset:
-    validation_errors = []
-    omb_burueau_codes = set()
-    ftpstream = urllib.request.urlopen(BUREAU_CODE_URL)
-    csvfile = csv.DictReader(codecs.iterdecode(ftpstream, 'utf-8'))
-    for row in csvfile:
-        omb_burueau_codes.add(row["Agency Code"] + ":" + row["Bureau Code"])
+
+    def __init__(self):
+        self.validation_errors = []
+        self.omb_burueau_codes = set()
+        self.ftpstream = urllib.request.urlopen(BUREAU_CODE_URL)
+        self.csvfile = csv.DictReader(codecs.iterdecode(ftpstream, 'utf-8'))
+        for row in self.csvfile:
+            self.omb_burueau_codes.add(row["Agency Code"] + ":" + row["Bureau Code"])
 
     def validate_dataset(self, item):
         errors_array = []
