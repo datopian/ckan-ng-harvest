@@ -1,8 +1,8 @@
 from urllib.request import urlopen
 import json
-from libs.data_json import JSONSchema, DataJSON
-from libs.data_gov_api import CKANPortalAPI
-from logs import logger
+from harvester.data_json import JSONSchema, DataJSON
+from harvester.data_gov_api import CKANPortalAPI
+from harvester.logs import logger
 import os
 
 
@@ -22,7 +22,7 @@ def get_data_json_from_url(url):
         error = 'Error loading JSON data: {}'.format(info)
         logger.error(error)
         raise Exception(error)
-        
+
     logger.info('JSON OK')
     ret, info = datajson.validate_json()
     if not ret:
@@ -31,7 +31,7 @@ def get_data_json_from_url(url):
         logger.info('Validate FAILED: {} datasets'.format(len(datajson.datasets)))
     else:
         logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
-    
+
     # logger.debug('JSONSchema: {}'.format(json.dumps(datajson.schema.json_content, indent=4)))
     return datajson
 
@@ -39,13 +39,13 @@ def get_data_json_from_file(data_json_path):
     datajson = DataJSON()
 
     ret, info = datajson.read_local_data_json(data_json_path=data_json_path)
-    
+
     ret, info = datajson.load_data_json()
     if not ret:
         error = 'Error loading JSON data: {}'.format(info)
         logger.error(error)
         raise Exception(error)
-        
+
     logger.info('JSON OK')
     ret, errors = datajson.validate_json()
     if not ret:
@@ -59,9 +59,9 @@ def get_data_json_from_file(data_json_path):
         logger.info('Validate FAILED: {} datasets'.format(len(datajson.datasets)))
     else:
         logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
-    
+
     # logger.debug('JSONSchema: {}'.format(json.dumps(datajson.schema.json_content, indent=4)))
-    
+
     return datajson
 
 def validate_headers():
@@ -108,7 +108,7 @@ def get_current_ckan_resources_from_api(harvest_source_id=None):
     logger.info('Extracting from harvest source id: {}'.format(harvest_source_id))
     cpa = CKANPortalAPI()
     resources = 0
-    
+
     page = 0
     for packages in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
         # getting resources in pages of packages
@@ -120,4 +120,3 @@ def get_current_ckan_resources_from_api(harvest_source_id=None):
             yield(package)
 
         logger.info('{} total resources'.format(resources))
-        

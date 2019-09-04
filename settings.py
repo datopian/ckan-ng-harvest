@@ -1,3 +1,6 @@
+# from pathlib import Path
+# BASE_FOLDER = str(Path().absolute())
+
 CKAN_API_KEY = ''
 CKAN_BASE_URL = ''  # http://localhost:5000
 #e.g. '8d4de31c-979c-4b50-be6b-ea3c72453ff6' is the Dep Energy US Gov ar catalog.data.gov
