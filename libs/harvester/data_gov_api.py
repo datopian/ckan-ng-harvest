@@ -46,7 +46,7 @@ class CKANPortalAPI:
                                 method='POST',  # POST work in CKAN 2.8, fails in 2.3
                                 harvest_source_id=None,  # just one harvest source
                                 harvest_type=None,  # harvest for harvest sources
-                                source_type=None):  # datajson for
+                                source_type=None):
         """ search harvested packages or harvest sources
             "rows" is the page size.
             You could search for an specific harvest_source_id """
@@ -344,6 +344,16 @@ class CKANPortalAPI:
         if name is None:
             name = self.generate_name(title=title)
 
+        # ----------------------------------------------------
+        # since the CKAN rejects the unregistered harvest types
+        # https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/logic/validators.py#L125
+        # we use 'datajson' for all until we fix
+        # we define an extra for identifying the real type
+        real_source_type = source_type
+        if source_type != 'datajson':
+            source_type = 'datajson'
+        # ----------------------------------------------------
+
         ckan_package = {
                 "frequency": frequency,
                 "title": title,
@@ -358,6 +368,10 @@ class CKANPortalAPI:
                 "active": True,
                 "tags": [{'name': 'harvest source'}],
                 "config": None,
+                "extras": [
+                    {'key': 'harvest_source_type',
+                     'value': real_source_type}
+                    ]
                 }
 
         if type(ckan_package['config']) == dict:
