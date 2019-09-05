@@ -43,8 +43,7 @@ res = Flow(
     save_as_data_packages,
 ).results()
 
-logger.info('Continue to next step with: python3 flow2.py '
-            f'--name {config.SOURCE_NAME} --harvest_source_id {args.harvest_source_id} --catalog_url {args.catalog_url}')
+logger.info('Continue to next step with: python3 flow2.py')
 
 # save results (data package and final datasets results)
 dmp = json.dumps(res[0][0], indent=2)
