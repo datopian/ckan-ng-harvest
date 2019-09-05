@@ -6,13 +6,10 @@ import argparse
 # from dataflows.join import join_with_self
 import json
 import os
-from dataflows import (Flow, dump_to_path, load, printer,
-                       update_resource,
-                       duplicate, add_field
-                       )
+from dataflows import Flow, load
 
 from harvester import config
-from functions3 import (write_results_to_ckan, write_final_report,
+from functions3 import (write_results_to_ckan,
                         build_validation_error_email,
                         assing_collection_pkg_id
                         )
