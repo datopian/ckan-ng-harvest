@@ -2,15 +2,14 @@
 generate a list of the commands to harvest
 """
 
-app_path = '/home/hudson/dev/datopian/harvesting-data-json-v2'
-env_path = '/home/hudson/envs/data_json_etl'
+from settings import APP_PATH
 import sys
-sys.path.append(app_path)
+sys.path.append(APP_PATH)
 
 from harvester.data_gov_api import CKANPortalAPI
 from harvester.logs import logger
 from jinja2 import Template
-from settings import CKAN_BASE_URL, CKAN_API_KEY
+from settings import CKAN_BASE_URL, CKAN_API_KEY, PYTHON_ENV_PATH
 
 catalog_url = CKAN_BASE_URL
 catalog_api_key = CKAN_API_KEY
@@ -45,8 +44,8 @@ for datasets in results:
         # we need to get our local organizaion ID
         ckan_org_id = harvest_source['owner_org']
         context = {
-            'env_path': env_path,
-            'app_path': app_path,
+            'env_path': PYTHON_ENV_PATH,
+            'app_path': APP_PATH,
             'name': name,
             'data_json_url': url,
             'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID
