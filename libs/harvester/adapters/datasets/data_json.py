@@ -104,7 +104,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         return ret
 
     def __set_destination_element(self, raw_field, to_dict, new_value):
-        # in 'extras__issued' gets or creates to_dict[extras][key][issued] and assing new_value to in_dict[extras][value]
+        # in 'extras__issued' gets or creates to_dict[extras][key][issued] and assing new_value to to_dict[extras][value]
         # in 'title' assing new_value to to_dict[title]
         # return to_dict modified
 

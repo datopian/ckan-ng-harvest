@@ -9,17 +9,33 @@ from harvester.settings import ckan_settings
 class CSWDataset(CKANDatasetAdapter):
     ''' CSW dataset '''
 
-    # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L478
-    # value at data.json -> value at CKAN dataset
+    # check the get_package_dict function
+    # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/base.py#L169
 
     ckan_owner_org_id = None  # required, the client must inform which existing org
 
     MAPPING = {
-        # FILL THIS
+        'tags': 'tags',
+        'harvest_ng_source_title': 'extras__harvest_source_title',
+        'harvest_ng_source_id': 'extras__harvest_source_id',
+        'harvest_source_title': 'extras__harvest_source_title',
+        'harvest_source_id': 'extras__harvest_source_id',
+        'source_hash': 'extras__source_hash',
     }
 
+    def __build_tags(self, tags):
+        # create a CKAN tag
+        # Help https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.tag_create
+        ret = []
+        for tag in tags:
+            tag = tag.strip()
+            if tag != '':
+                tag = slugify(tag[:ckan_settings.MAX_TAG_NAME_LENGTH])
+                ret.append({"name": tag})
+        return ret
+
     def __identify_origin_element(self, raw_field, in_dict):
-        # get the value in csw dict to put in CKAN dataset.
+        # get the value in original dict to put in CKAN dataset.
         # Consider the __ separator
         # in 'contactPoint__hasEmail' gets in_dict['contactPoint']['hasEmail'] if exists
         # in 'licence' gets in_dict['licence'] if exists
@@ -38,11 +54,14 @@ class CSWDataset(CKANDatasetAdapter):
 
     def __fix_fields(self, field, value):
         # some fields requires extra work
-        return value
+        if field == 'tags':
+            return self.__build_tags(value)
+        else:
+            return value
 
     def validate_origin_dataset(self):
         # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
-        datajson_dataset = self.original_dataset
+        dataset = self.original_dataset
 
         if self.ckan_owner_org_id is None:
             return False, 'Owner organization ID is required'
@@ -59,16 +78,47 @@ class CSWDataset(CKANDatasetAdapter):
 
         return True, None
 
+    def __set_destination_element(self, raw_field, to_dict, new_value):
+        # in 'extras__issued' gets or creates to_dict[extras][key][issued] and assing new_value to to_dict[extras][value]
+        # in 'title' assing new_value to to_dict[title]
+        # return to_dict modified
+
+        parts = raw_field.split('__')
+        if parts[0] not in to_dict:
+            raise Exception(f'Not found field "{parts[0]}" at CKAN destination dict')
+        if len(parts) == 1:
+            to_dict[raw_field] = self.__fix_fields(field=raw_field,
+                                                   value=new_value)
+            return to_dict
+        elif len(parts) == 2:
+            if parts[0] != 'extras':
+                raise Exception(f'Unknown field estructure: "{raw_field}" at CKAN destination dict')
+
+            # check if extra already exists
+            for extra in to_dict['extras']:
+
+                if extra['key'] == parts[1]:
+                    extra['value'] = new_value
+                    return to_dict
+
+            # this extra do not exists already
+            new_extra = {'key': parts[1], 'value': None}
+            new_extra['value'] = new_value
+            to_dict['extras'].append(new_extra)
+            return to_dict
+        else:
+            raise Exception(f'Unknown fields length estructure for "{raw_field}" at CKAN destination dict')
+
     def transform_to_ckan_dataset(self, existing_resources=None):
 
         ckan_dataset = self.get_base_ckan_dataset()
-        datajson_dataset = self.original_dataset
+        dataset = self.original_dataset
 
         # previous transformations at origin
         for field_data_json, field_ckan in self.MAPPING.items():
             logger.debug(f'Connecting fields "{field_data_json}", "{field_ckan}"')
             # identify origin and set value to destination
-            origin = self.__identify_origin_element(raw_field=field_data_json, in_dict=datajson_dataset)
+            origin = self.__identify_origin_element(raw_field=field_data_json, in_dict=dataset)
             if origin is None:
                 logger.debug(f'No data in origin for "{field_data_json}"')
             else:
