@@ -19,16 +19,16 @@ class TestCKANDatasetAdapter(object):
             'contact-email': 'some@email.com',
             'frequency-of-update': 'WEEKLY',
             'spatial-data-service-type': 'other',
-
             'use-constraints': ['CC-BY', 'http://licence.com'],
-
             'browse-graphic': [
                 {
                     'file': 'some',
                     'description': 'some descr',
                     'type': 'some type'
                 }
-                ]
+                ],
+            'temporal-extent-begin': ['teb1', 'teb2'],
+            'temporal-extent-end': ['tee1', 'tee2'],
         }
 
     def test_csw_to_ckan(self):
@@ -66,6 +66,12 @@ class TestCKANDatasetAdapter(object):
         assert ['some'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-file']
         assert ['some descr'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-description']
         assert ['some type'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-type']
+
+        assert ['teb1'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'temporal-extent-begin']
+        assert ['tee1'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'temporal-extent-end']
+
+
+
 
     def test_collections(self):
         pass

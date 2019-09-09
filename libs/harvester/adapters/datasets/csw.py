@@ -94,6 +94,7 @@ class CSWDataset(CKANDatasetAdapter):
         # custom changes
         self.fix_licence_url()
         self.set_browse_graphic()
+        self.set_temporal_extent()
 
         # define name (are uniques in CKAN instance)
         if 'name' not in self.ckan_dataset or self.ckan_dataset['name'] == '':
@@ -139,3 +140,10 @@ class CSWDataset(CKANDatasetAdapter):
         pt = browse_graphic.get('type', None)
         if pt is not None:
             self.set_extra('graphic-preview-type', pt)
+
+    def set_temporal_extent(self):
+        for key in ['temporal-extent-begin', 'temporal-extent-end']:
+            te = self.original_dataset.get(key, None)
+            if te is not None:
+                if type(te) == list and len(te) > 0:
+                    self.set_extra(key, te[0])
