@@ -132,6 +132,12 @@ class CKANDatasetAdapter(ABC):
             self.ckan_dataset['extras'].append({'key': key, 'value': value})
         return self.ckan_dataset
 
+    def get_extra(self, key):
+        for extra in self.ckan_dataset['extras']:
+            if extra['key'] == key:
+                return extra['value']
+        return None
+
     def generate_name(self, title):
         # names are unique in CKAN
         # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747

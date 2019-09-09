@@ -18,7 +18,9 @@ class TestCKANDatasetAdapter(object):
             'coupled-resource': 'coup res',
             'contact-email': 'some@email.com',
             'frequency-of-update': 'WEEKLY',
-            'spatial-data-service-type': 'other'
+            'spatial-data-service-type': 'other',
+
+            'use-constraints': ['CC-BY', 'http://licence.com'],
         }
 
     def test_csw_to_ckan(self):
@@ -49,6 +51,9 @@ class TestCKANDatasetAdapter(object):
         assert ['2019-02-02'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'metadata-date']
         assert ['en'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'metadata-language']
         assert ['2019-09-09'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'dataset-reference-date']
+
+        assert [['CC-BY', 'http://licence.com']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence']
+        assert ['http://licence.com'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence_url']
 
     def test_collections(self):
         pass

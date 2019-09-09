@@ -1,6 +1,7 @@
 from harvester.adapters.ckan_dataset_adapters import CKANDatasetAdapter
 from harvester.logs import logger
 from slugify import slugify
+from urllib.parse import urlparse
 import json
 from harvester.adapters.resources.data_json import DataJSONDistribution
 from harvester.settings import ckan_settings
@@ -39,18 +40,20 @@ class CSWDataset(CKANDatasetAdapter):
         'harvest_source_title': 'extras__harvest_source_title',
         'harvest_source_id': 'extras__harvest_source_id',
         'source_hash': 'extras__source_hash',
+
+        'use-constraints': 'extras__licence',
     }
 
     def fix_fields(self, field, value):
         # some fields requires extra work
         if field == 'tags':
             return self.build_tags(value)
-        elif field == 'extras__progress':
+        elif field == 'extras__progress':  # previous harvester take just the first one
             if type(value) == list and len(value) > 0:
                 return value[0]
             else:
                 return ''
-        elif field == 'extras__resource-type':
+        elif field == 'extras__resource-type':  # previous harvester take just the first one
             if type(value) == list and len(value) > 0:
                 return value[0]
             else:
@@ -88,6 +91,9 @@ class CSWDataset(CKANDatasetAdapter):
         # TODO find and adapt resources
         # self.ckan_dataset['resources'] = self.transform_resources ?
 
+        # check if licence is an URL
+        self.fix_licence_url()
+
         # define name (are uniques in CKAN instance)
         if 'name' not in self.ckan_dataset or self.ckan_dataset['name'] == '':
             self.ckan_dataset['name'] = self.generate_name(title=self.ckan_dataset['title'])
@@ -101,3 +107,13 @@ class CSWDataset(CKANDatasetAdapter):
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return self.ckan_dataset
+
+    def fix_licence_url(self):
+        # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/base.py#L278
+        licences = self.get_extra('licence')
+        if licences != '' and licences is not None:
+            if type(licences) == list:
+                for licence in licences:
+                    u = urlparse(licence)
+                    if u.scheme and u.netloc:
+                        self.set_extra(key='licence_url', value=licence)
