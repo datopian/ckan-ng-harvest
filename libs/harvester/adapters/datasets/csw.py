@@ -96,6 +96,7 @@ class CSWDataset(CKANDatasetAdapter):
         self.set_browse_graphic()
         self.set_temporal_extent()
         self.set_responsible_party()
+        self.set_bbox()
 
         # define name (are uniques in CKAN instance)
         if 'name' not in self.ckan_dataset or self.ckan_dataset['name'] == '':
@@ -110,6 +111,41 @@ class CSWDataset(CKANDatasetAdapter):
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return self.ckan_dataset
+
+    def set_bbox(self):
+        bbx = self.original_dataset('bbox', None)
+        if bbx is None:
+            self.set_extra('spatial', None)
+            return
+
+        if type(bbx) != list or len(bbx) == 0:
+            self.set_extra('spatial', None)
+            return
+
+        bbox = bbx[0]
+        self.set_extra('bbox-east-long', bbox['east'])
+        self.set_extra('bbox-north-lat', bbox['north'])
+        self.set_extra('bbox-south-lat', bbox['south'])
+        self.set_extra('bbox-west-long', bbox['west'])
+
+        try:
+            xmin = float(bbox['west'])
+            xmax = float(bbox['east'])
+            ymin = float(bbox['south'])
+            ymax = float(bbox['north'])
+        except ValueError as e:
+            self.set_extra('spatial', None)
+        else:
+            # Construct a GeoJSON extent so ckanext-spatial can register the extent geometry
+
+            # Some publishers define the same two corners for the bbox (ie a point),
+            # that causes problems in the search if stored as polygon
+            if xmin == xmax or ymin == ymax:
+                extent_string = '{"type": "Point", "coordinates": [{}, {}]}'.format(xmin, ymin)
+            else:
+                extent_string = '{"type": "Polygon", "coordinates": [[[{xmin}, {ymin}], [{xmax}, {ymin}], [{xmax}, {ymax}], [{xmin}, {ymax}], [{xmin}, {ymin}]]]}'.format(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax)
+
+            self.set_extra('spatial', extent_string.strip())
 
     def set_responsible_party(self):
         ro = self.original_dataset.get('responsible-organisation', None)

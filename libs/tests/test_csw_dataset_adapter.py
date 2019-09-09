@@ -34,6 +34,9 @@ class TestCKANDatasetAdapter(object):
                 {'organisation-name': 'GSA','role': 'admin2'},
                 {'organisation-name': 'NASA','role': 'moon'}
             ],
+            'bbox': [
+                {'east': -61.9, 'north': -33.1, 'west': 34.3, 'south': 51.8}
+            ]
 
         }
 
