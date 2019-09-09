@@ -60,28 +60,10 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'collection_pkg_id': 'extras__collection_package_id',  # don't like pkg vs package
     }
 
-    def __identify_origin_element(self, raw_field, in_dict):
-        # get the value in data.json to put in CKAN dataset.
-        # Consider the __ separator
-        # in 'contactPoint__hasEmail' gets in_dict['contactPoint']['hasEmail'] if exists
-        # in 'licence' gets in_dict['licence'] if exists
-
-        parts = raw_field.split('__')
-        if parts[0] not in in_dict:
-            return None
-        origin = in_dict[parts[0]]
-        if len(parts) > 1:
-            for part in parts[1:]:
-                if part in origin:
-                    origin = origin[part]
-                else:  # drop
-                    return None
-        return origin
-
-    def __fix_fields(self, field, value):
+    def fix_fields(self, field, value):
         # some fields requires extra work
         if field == 'tags':
-            return self.__build_tags(value)
+            return self.build_tags(value)
         elif field == 'maintainer_email':
             if value.startswith('mailto:'):
                 value = value.replace('mailto:', '')
@@ -89,50 +71,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         else:
             return value
-
-    def __build_tags(self, tags):
-        # create a CKAN tag
-        # Help https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.tag_create
-        ret = []
-        for tag in tags:
-            # CKAN exts uses a more ugly an complex function
-            # https://github.com/ckan/ckan/blob/30ca7aae2f2aca6a19a2e6ed29148f8428e25c86/ckan/lib/munge.py#L26
-            tag = tag.strip()
-            if tag != '':
-                tag = slugify(tag[:ckan_settings.MAX_TAG_NAME_LENGTH])
-                ret.append({"name": tag})
-        return ret
-
-    def __set_destination_element(self, raw_field, new_value):
-        # in 'extras__issued' gets or creates self.ckan_dataset[extras][key][issued] and assing new_value to self.ckan_dataset[extras][value]
-        # in 'title' assing new_value to self.ckan_dataset[title]
-        # returns dict modified
-
-        parts = raw_field.split('__')
-        if parts[0] not in self.ckan_dataset:
-            raise Exception(f'Not found field "{parts[0]}" at CKAN destination dict')
-        if len(parts) == 1:
-            self.ckan_dataset[raw_field] = self.__fix_fields(field=raw_field,
-                                                             value=new_value)
-            return self.ckan_dataset
-        elif len(parts) == 2:
-            if parts[0] != 'extras':
-                raise Exception(f'Unknown field estructure: "{raw_field}" at CKAN destination dict')
-
-            # check if extra already exists
-            for extra in self.ckan_dataset['extras']:
-
-                if extra['key'] == parts[1]:
-                    extra['value'] = new_value
-                    return self.ckan_dataset
-
-            # this extra do not exists already
-            new_extra = {'key': parts[1], 'value': None}
-            new_extra['value'] = new_value
-            self.ckan_dataset['extras'].append(new_extra)
-            return self.ckan_dataset
-        else:
-            raise Exception(f'Unknown fields length estructure for "{raw_field}" at CKAN destination dict')
 
     def validate_origin_dataset(self):
         # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
@@ -142,17 +80,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         return True, None
 
-    def validate_final_dataset(self):
-        # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
-
-        if 'private' not in self.ckan_dataset:
-            return False, 'private is a required field'
-        if 'name' not in self.ckan_dataset:
-            return False, 'name is a required field'
-
-        return True, None
-
-    def __infer_distribution(self):
+    def infer_distribution(self):
         # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
         datajson_dataset = self.original_dataset
         distribution = []
@@ -165,7 +93,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         return distribution
 
-    def __transform_resources(self, distribution):
+    def transform_resources(self, distribution):
         ''' Transform the distribution list in list of resources '''
         if type(distribution) == dict:
             distribution = [distribution]
@@ -191,29 +119,29 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         datajson_dataset = self.original_dataset
 
         # previous transformations at origin
-        for field_data_json, field_ckan in self.MAPPING.items():
-            logger.debug(f'Connecting fields "{field_data_json}", "{field_ckan}"')
+        for old_field, field_ckan in self.MAPPING.items():
+            logger.debug(f'Connecting fields "{old_field}", "{field_ckan}"')
             # identify origin and set value to destination
-            origin = self.__identify_origin_element(raw_field=field_data_json, in_dict=datajson_dataset)
+            origin = self.identify_origin_element(raw_field=old_field)
             if origin is None:
-                logger.debug(f'No data in origin for "{field_data_json}"')
+                logger.debug(f'No data in origin for "{old_field}"')
             else:
-                self.__set_destination_element(raw_field=field_ckan, new_value=origin)
-                logger.debug(f'Connected OK fields "{field_data_json}"="{origin}"')
+                self.set_destination_element(raw_field=field_ckan, new_value=origin)
+                logger.debug(f'Connected OK fields "{old_field}"="{origin}"')
 
         # transform distribution into resources
         distribution = datajson_dataset['distribution'] if 'distribution' in datajson_dataset else []
         # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
         if distribution is None or distribution == []:
-            distribution = self.__infer_distribution()
-        self.ckan_dataset['resources'] = self.__transform_resources(distribution)
+            distribution = self.infer_distribution()
+        self.ckan_dataset['resources'] = self.transform_resources(distribution)
         if existing_resources is not None:
-            res = self.__merge_resources(existing_resources=existing_resources, new_resources=self.ckan_dataset['resources'])
+            res = self.merge_resources(existing_resources=existing_resources, new_resources=self.ckan_dataset['resources'])
             self.ckan_dataset['resources'] = res
 
         # add custom extras
         # add source_datajson_identifier = {"key": "source_datajson_identifier", "value": True}
-        self.__set_destination_element(raw_field='extras__source_datajson_identifier', new_value=True)
+        self.set_destination_element(raw_field='extras__source_datajson_identifier', new_value=True)
 
         # define name (are uniques in CKAN instance)
         if 'name' not in self.ckan_dataset or self.ckan_dataset['name'] == '':
@@ -236,7 +164,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         publisher = datajson_dataset.get('publisher', None)
         if publisher is not None:
             publisher_name = publisher.get('name', '')
-            self.__set_extra('publisher', publisher_name)
+            self.set_extra('publisher', publisher_name)
             parent_publisher = publisher.get('subOrganizationOf', None)
             if parent_publisher is not None:
                 publisher_hierarchy = [publisher_name]
@@ -247,7 +175,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
                 publisher_hierarchy.reverse()
                 publisher_hierarchy = " > ".join(publisher_hierarchy)
-                self.__set_extra('publisher_hierarchy', publisher_hierarchy)
+                self.set_extra('publisher_hierarchy', publisher_hierarchy)
 
         # clean all empty unused values (can't pop keys while iterating)
         ckan_dataset_copy = self.ckan_dataset.copy()
@@ -262,17 +190,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return ckan_dataset_copy
 
-    def __set_extra(self, key, value):
-        found = False
-        for extra in self.ckan_dataset['extras']:
-            if extra['key'] == key:
-                extra['value'] = value
-                found = True
-        if not found:
-            self.ckan_dataset['extras'].append({'key': key, 'value': value})
-        return self.ckan_dataset
-
-    def __merge_resources(self, existing_resources, new_resources):
+    def merge_resources(self, existing_resources, new_resources):
         # if we are updating datasets we need to check if the resources exists and merge them
         # https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L681
 

@@ -39,125 +39,53 @@ class CSWDataset(CKANDatasetAdapter):
         'source_hash': 'extras__source_hash',
     }
 
-    def __build_tags(self, tags):
-        # create a CKAN tag
-        # Help https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.tag_create
-        ret = []
-        for tag in tags:
-            tag = tag.strip()
-            if tag != '':
-                tag = slugify(tag[:ckan_settings.MAX_TAG_NAME_LENGTH])
-                ret.append({"name": tag})
-        return ret
-
-    def __identify_origin_element(self, raw_field, in_dict):
-        # get the value in original dict to put in CKAN dataset.
-        # Consider the __ separator
-        # in 'contactPoint__hasEmail' gets in_dict['contactPoint']['hasEmail'] if exists
-        # in 'licence' gets in_dict['licence'] if exists
-
-        parts = raw_field.split('__')
-        if parts[0] not in in_dict:
-            return None
-        origin = in_dict[parts[0]]
-        if len(parts) > 1:
-            for part in parts[1:]:
-                if part in origin:
-                    origin = origin[part]
-                else:  # drop
-                    return None
-        return origin
-
-    def __fix_fields(self, field, value):
+    def fix_fields(self, field, value):
         # some fields requires extra work
         if field == 'tags':
-            return self.__build_tags(value)
+            return self.build_tags(value)
         else:
             return value
 
     def validate_origin_dataset(self):
         # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
-        dataset = self.original_dataset
 
         if self.ckan_owner_org_id is None:
             return False, 'Owner organization ID is required'
 
         return True, None
 
-    def validate_final_dataset(self, ckan_dataset):
-        # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
-
-        if 'private' not in ckan_dataset:
-            return False, 'private is a required field'
-        if 'name' not in ckan_dataset:
-            return False, 'name is a required field'
-
-        return True, None
-
-    def __set_destination_element(self, raw_field, to_dict, new_value):
-        # in 'extras__issued' gets or creates to_dict[extras][key][issued] and assing new_value to to_dict[extras][value]
-        # in 'title' assing new_value to to_dict[title]
-        # return to_dict modified
-
-        parts = raw_field.split('__')
-        if parts[0] not in to_dict:
-            raise Exception(f'Not found field "{parts[0]}" at CKAN destination dict')
-        if len(parts) == 1:
-            to_dict[raw_field] = self.__fix_fields(field=raw_field,
-                                                   value=new_value)
-            return to_dict
-        elif len(parts) == 2:
-            if parts[0] != 'extras':
-                raise Exception(f'Unknown field estructure: "{raw_field}" at CKAN destination dict')
-
-            # check if extra already exists
-            for extra in to_dict['extras']:
-
-                if extra['key'] == parts[1]:
-                    extra['value'] = new_value
-                    return to_dict
-
-            # this extra do not exists already
-            new_extra = {'key': parts[1], 'value': None}
-            new_extra['value'] = new_value
-            to_dict['extras'].append(new_extra)
-            return to_dict
-        else:
-            raise Exception(f'Unknown fields length estructure for "{raw_field}" at CKAN destination dict')
-
     def transform_to_ckan_dataset(self, existing_resources=None):
 
-        ckan_dataset = self.get_base_ckan_dataset()
         dataset = self.original_dataset
 
         # previous transformations at origin
         for old_field, field_ckan in self.MAPPING.items():
             logger.debug(f'Connecting fields "{old_field}", "{field_ckan}"')
             # identify origin and set value to destination
-            origin = self.__identify_origin_element(raw_field=old_field, in_dict=dataset)
+            origin = self.identify_origin_element(raw_field=old_field)
             if origin is None:
                 logger.debug(f'No data in origin for "{old_field}"')
             else:
-                ckan_dataset = self.__set_destination_element(raw_field=field_ckan, to_dict=ckan_dataset, new_value=origin)
+                self.ckan_dataset = self.set_destination_element(raw_field=field_ckan, new_value=origin)
                 logger.debug(f'Connected OK fields "{old_field}"="{origin}"')
 
-        ckan_dataset['resources'] = self.__transform_resources(distribution)
+        self.ckan_dataset['resources'] = self.transform_resources(distribution)
 
         # define name (are uniques in CKAN instance)
-        if 'name' not in ckan_dataset or ckan_dataset['name'] == '':
-            ckan_dataset['name'] = self.generate_name(title=ckan_dataset['title'])
+        if 'name' not in self.ckan_dataset or self.ckan_dataset['name'] == '':
+            ckan_dataset['name'] = self.generate_name(title=self.ckan_dataset['title'])
 
         # mandatory
-        ckan_dataset['owner_org'] = self.ckan_owner_org_id
+        self.ckan_dataset['owner_org'] = self.ckan_owner_org_id
 
-        valid, error = self.validate_final_dataset(ckan_dataset=ckan_dataset)
+        valid, error = self.validate_final_dataset()
         if not valid:
             raise Exception(f'Error validating final dataset: {error}')
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
-        return ckan_dataset
+        return self.ckan_dataset
 
-    def __set_extra(self, ckan_dataset, key, value):
+    def set_extra(self, ckan_dataset, key, value):
         found = False
         for extra in ckan_dataset['extras']:
             if extra['key'] == key:
