@@ -21,7 +21,7 @@
 <div>
     <p>Actions</p>
     <ul> {% for action, values in actions.items() %}
-        <li>{{ action }}: {{ values.total }}. Succeed: {{ values.success }}, fails: {{ values.fails }}</li>
+        <li class="results">{{ action }}: {{ values.total }}. succeeded: {{ values.success }}, failed: {{ values.fails }}</li>
         {% endfor %}
     </ul>
     <p>Errors: {{ action_errors|length }}</p>
