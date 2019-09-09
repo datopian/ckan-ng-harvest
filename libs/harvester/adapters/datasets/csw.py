@@ -124,7 +124,7 @@ class CSWDataset(CKANDatasetAdapter):
             else:
                 parties[party['organisation-name']] = [party['role']]
 
-        rp = [{'name': k, 'roles': v} for k, v in parties.iteritems()]
+        rp = [{'name': k, 'roles': v} for k, v in parties.items()]
         self.set_extra('responsible-party', rp)
 
     def fix_licence_url(self):
