@@ -15,7 +15,23 @@ class CSWDataset(CKANDatasetAdapter):
     ckan_owner_org_id = None  # required, the client must inform which existing org
 
     MAPPING = {
+        'name': 'name',
+        'title': 'title',
         'tags': 'tags',
+        'abstract': 'notes',
+
+        # Essentials
+        'spatial-reference-system': 'extras__spatial-reference-system',
+        'guid': 'extras__guid',
+        # Usefuls
+        'dataset-reference-date': 'extras__dataset-reference-date',
+        'metadata-language': 'extras__metadata-language',  # Language
+        'metadata-date': 'extras__metadata-date',  # Released
+        'coupled-resource': 'extras__coupled-resource',
+        'contact-email': 'extras__contact-email',
+        'frequency-of-update': 'extras__frequency-of-update',
+        'spatial-data-service-type': 'extras__spatial-data-service-type',
+
         'harvest_ng_source_title': 'extras__harvest_source_title',
         'harvest_ng_source_id': 'extras__harvest_source_id',
         'harvest_source_title': 'extras__harvest_source_title',
@@ -115,15 +131,15 @@ class CSWDataset(CKANDatasetAdapter):
         dataset = self.original_dataset
 
         # previous transformations at origin
-        for field_data_json, field_ckan in self.MAPPING.items():
-            logger.debug(f'Connecting fields "{field_data_json}", "{field_ckan}"')
+        for old_field, field_ckan in self.MAPPING.items():
+            logger.debug(f'Connecting fields "{old_field}", "{field_ckan}"')
             # identify origin and set value to destination
-            origin = self.__identify_origin_element(raw_field=field_data_json, in_dict=dataset)
+            origin = self.__identify_origin_element(raw_field=old_field, in_dict=dataset)
             if origin is None:
-                logger.debug(f'No data in origin for "{field_data_json}"')
+                logger.debug(f'No data in origin for "{old_field}"')
             else:
                 ckan_dataset = self.__set_destination_element(raw_field=field_ckan, to_dict=ckan_dataset, new_value=origin)
-                logger.debug(f'Connected OK fields "{field_data_json}"="{origin}"')
+                logger.debug(f'Connected OK fields "{old_field}"="{origin}"')
 
         ckan_dataset['resources'] = self.__transform_resources(distribution)
 
@@ -140,12 +156,6 @@ class CSWDataset(CKANDatasetAdapter):
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return ckan_dataset
-
-    def __find_extra(self, ckan_dataset, key, default=None):
-        for extra in ckan_dataset["extras"]:
-            if extra["key"] == key:
-                return extra["value"]
-        return default
 
     def __set_extra(self, ckan_dataset, key, value):
         found = False

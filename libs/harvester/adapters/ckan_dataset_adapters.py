@@ -7,6 +7,7 @@ class CKANDatasetAdapter(ABC):
 
     def __init__(self, original_dataset):
         self.original_dataset = original_dataset
+        self.ckan_dataset = self.get_base_ckan_dataset()
 
     def get_base_ckan_dataset(self):
         # creates the Dict base for a CKAN dataset
