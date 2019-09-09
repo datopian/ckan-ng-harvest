@@ -91,8 +91,9 @@ class CSWDataset(CKANDatasetAdapter):
         # TODO find and adapt resources
         # self.ckan_dataset['resources'] = self.transform_resources ?
 
-        # check if licence is an URL
+        # custom changes
         self.fix_licence_url()
+        self.set_browse_graphic()
 
         # define name (are uniques in CKAN instance)
         if 'name' not in self.ckan_dataset or self.ckan_dataset['name'] == '':
@@ -117,3 +118,24 @@ class CSWDataset(CKANDatasetAdapter):
                     u = urlparse(licence)
                     if u.scheme and u.netloc:
                         self.set_extra(key='licence_url', value=licence)
+
+    def set_browse_graphic(self):
+        browse_graphic = self.original_dataset.get('browse-graphic', None)
+        if browse_graphic is None:
+            return
+
+        if type(browse_graphic) != list or len(browse_graphic) == 0:
+            return
+
+        browse_graphic = browse_graphic[0]
+        pf = browse_graphic.get('file', None)
+        if pf is not None:
+            self.set_extra('graphic-preview-file', pf)
+
+        descr = browse_graphic.get('description', None)
+        if descr is not None:
+            self.set_extra('graphic-preview-description', descr)
+
+        pt = browse_graphic.get('type', None)
+        if pt is not None:
+            self.set_extra('graphic-preview-type', pt)

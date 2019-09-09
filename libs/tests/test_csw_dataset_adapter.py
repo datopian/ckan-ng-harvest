@@ -21,6 +21,14 @@ class TestCKANDatasetAdapter(object):
             'spatial-data-service-type': 'other',
 
             'use-constraints': ['CC-BY', 'http://licence.com'],
+
+            'browse-graphic': [
+                {
+                    'file': 'some',
+                    'description': 'some descr',
+                    'type': 'some type'
+                }
+                ]
         }
 
     def test_csw_to_ckan(self):
@@ -54,6 +62,10 @@ class TestCKANDatasetAdapter(object):
 
         assert [['CC-BY', 'http://licence.com']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence']
         assert ['http://licence.com'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence_url']
+
+        assert ['some'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-file']
+        assert ['some descr'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-description']
+        assert ['some type'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-type']
 
     def test_collections(self):
         pass
