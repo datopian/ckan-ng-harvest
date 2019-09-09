@@ -204,17 +204,3 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             merged_resources.append(res)
 
         return merged_resources
-
-    def generate_name(self, title):
-        # names are unique in CKAN
-        # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747
-
-        name = slugify(title)
-        cut_at = ckan_settings.MAX_NAME_LENGTH - 5  # max length is 100
-        if len(name) > cut_at:
-            name = name[:cut_at]
-
-        # TODO check if the name MUST be a new unexisting one
-        # TODO check if it's an existing resource and we need to read previos name using the identifier
-
-        return name

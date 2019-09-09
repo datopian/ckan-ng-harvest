@@ -84,6 +84,7 @@ class CKANDatasetAdapter(ABC):
         if parts[0] not in self.ckan_dataset:
             raise Exception(f'Not found field "{parts[0]}" at CKAN destination dict')
         if len(parts) == 1:
+            # check if need to be fixed
             self.ckan_dataset[raw_field] = self.fix_fields(field=raw_field,
                                                              value=new_value)
             return self.ckan_dataset
@@ -94,13 +95,17 @@ class CKANDatasetAdapter(ABC):
             # check if extra already exists
             for extra in self.ckan_dataset['extras']:
 
-                if extra['key'] == parts[1]:
-                    extra['value'] = new_value
+                key = parts[1]
+                if extra['key'] == key:
+                    # check if need to be fixed
+                    extra['value'] = self.fix_fields(field=f'extras__{key}', value=new_value)
                     return self.ckan_dataset
 
+            key = parts[1]
             # this extra do not exists already
-            new_extra = {'key': parts[1], 'value': None}
-            new_extra['value'] = new_value
+            new_extra = {'key': key, 'value': None}
+            # check if need to be fixed
+            new_extra['value'] = self.fix_fields(field=f'extras__{key}', value=new_value)
             self.ckan_dataset['extras'].append(new_extra)
             return self.ckan_dataset
         else:
@@ -126,3 +131,17 @@ class CKANDatasetAdapter(ABC):
         if not found:
             self.ckan_dataset['extras'].append({'key': key, 'value': value})
         return self.ckan_dataset
+
+    def generate_name(self, title):
+        # names are unique in CKAN
+        # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747
+
+        name = slugify(title)
+        cut_at = ckan_settings.MAX_NAME_LENGTH - 5  # max length is 100
+        if len(name) > cut_at:
+            name = name[:cut_at]
+
+        # TODO check if the name MUST be a new unexisting one
+        # TODO check if it's an existing resource and we need to read previos name using the identifier
+
+        return name

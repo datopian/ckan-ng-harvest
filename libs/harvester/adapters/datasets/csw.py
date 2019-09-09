@@ -19,6 +19,8 @@ class CSWDataset(CKANDatasetAdapter):
         'title': 'title',
         'tags': 'tags',
         'abstract': 'notes',
+        'progress': 'extras__progress',
+        'resource-type': 'extras__resource-type',
 
         # Essentials
         'spatial-reference-system': 'extras__spatial-reference-system',
@@ -43,6 +45,16 @@ class CSWDataset(CKANDatasetAdapter):
         # some fields requires extra work
         if field == 'tags':
             return self.build_tags(value)
+        elif field == 'extras__progress':
+            if type(value) == list and len(value) > 0:
+                return value[0]
+            else:
+                return ''
+        elif field == 'extras__resource-type':
+            if type(value) == list and len(value) > 0:
+                return value[0]
+            else:
+                return ''
         else:
             return value
 
@@ -55,6 +67,10 @@ class CSWDataset(CKANDatasetAdapter):
         return True, None
 
     def transform_to_ckan_dataset(self, existing_resources=None):
+
+        valid, error = self.validate_origin_dataset()
+        if not valid:
+            raise Exception(f'Error validating origin dataset: {error}')
 
         dataset = self.original_dataset
 
@@ -69,11 +85,12 @@ class CSWDataset(CKANDatasetAdapter):
                 self.ckan_dataset = self.set_destination_element(raw_field=field_ckan, new_value=origin)
                 logger.debug(f'Connected OK fields "{old_field}"="{origin}"')
 
-        self.ckan_dataset['resources'] = self.transform_resources(distribution)
+        # TODO find and adapt resources
+        # self.ckan_dataset['resources'] = self.transform_resources ?
 
         # define name (are uniques in CKAN instance)
         if 'name' not in self.ckan_dataset or self.ckan_dataset['name'] == '':
-            ckan_dataset['name'] = self.generate_name(title=self.ckan_dataset['title'])
+            self.ckan_dataset['name'] = self.generate_name(title=self.ckan_dataset['title'])
 
         # mandatory
         self.ckan_dataset['owner_org'] = self.ckan_owner_org_id
@@ -84,27 +101,3 @@ class CSWDataset(CKANDatasetAdapter):
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return self.ckan_dataset
-
-    def set_extra(self, ckan_dataset, key, value):
-        found = False
-        for extra in ckan_dataset['extras']:
-            if extra['key'] == key:
-                extra['value'] = value
-                found = True
-        if not found:
-            ckan_dataset['extras'].append({'key': key, 'value': value})
-        return ckan_dataset
-
-    def generate_name(self, title):
-        # names are unique in CKAN
-        # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747
-
-        name = slugify(title)
-        cut_at = ckan_settings.MAX_NAME_LENGTH - 5  # max length is 100
-        if len(name) > cut_at:
-            name = name[:cut_at]
-
-        # TODO check if the name MUST be a new unexisting one
-        # TODO check if it's an existing resource and we need to read previos name using the identifier
-
-        return name
