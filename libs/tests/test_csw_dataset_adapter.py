@@ -29,6 +29,11 @@ class TestCKANDatasetAdapter(object):
                 ],
             'temporal-extent-begin': ['teb1', 'teb2'],
             'temporal-extent-end': ['tee1', 'tee2'],
+            'responsible-organisation': [
+                {'organisation-name': 'GSA','role': 'admin'},
+                {'organisation-name': 'NASA','role': 'moon'}
+            ],
+
         }
 
     def test_csw_to_ckan(self):
@@ -70,8 +75,8 @@ class TestCKANDatasetAdapter(object):
         assert ['teb1'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'temporal-extent-begin']
         assert ['tee1'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'temporal-extent-end']
 
-
-
+        rp = [{'name': 'GSA', 'roles': 'admin'}, {'name': 'NASA', 'roles': 'moon'}]
+        assert [rp] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'responsible-party']
 
     def test_collections(self):
         pass

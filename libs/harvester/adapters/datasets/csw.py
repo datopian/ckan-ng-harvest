@@ -95,6 +95,7 @@ class CSWDataset(CKANDatasetAdapter):
         self.fix_licence_url()
         self.set_browse_graphic()
         self.set_temporal_extent()
+        self.set_responsible_party()
 
         # define name (are uniques in CKAN instance)
         if 'name' not in self.ckan_dataset or self.ckan_dataset['name'] == '':
@@ -109,6 +110,22 @@ class CSWDataset(CKANDatasetAdapter):
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return self.ckan_dataset
+
+    def set_responsible_party(self):
+        ro = self.original_dataset.get('responsible-organisation', None)
+        if ro is None:
+            return
+
+        parties = {}
+        for party in ro:
+            if party['organisation-name'] in parties:
+                if not party['role'] in parties[party['organisation-name']]:
+                    parties[party['organisation-name']].append(party['role'])
+            else:
+                parties[party['organisation-name']] = [party['role']]
+
+        rp = [{'name': k, 'roles': v} for k, v in parties.iteritems()]
+        self.set_extra('responsible-party', rp)
 
     def fix_licence_url(self):
         # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/base.py#L278
