@@ -114,8 +114,8 @@ class CSWSource:
                     # https://github.com/geopython/OWSLib/blob/3338340e6a9c19dd3388240815d35d60a0d0cf4c/owslib/iso.py#L31
                     value = self.md_metadata_to_dict(csw_record)
                 elif outputschema == 'csw':
-                    # it's a CSWRecord
-                    raise Exception('Not using CSWRecords')
+                    # it's a CSWResource
+                    raise Exception('Not using CSWResources')
 
                 value['esn'] = esn
                 self.csw_info['records'][key] = value

@@ -80,7 +80,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         return True, None
 
-    def infer_distribution(self):
+    def infer_resources(self):
         # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
         datajson_dataset = self.original_dataset
         distribution = []
@@ -100,7 +100,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         resources = []
         for original_resource in distribution:
-            cra = DataJSONDistribution(original_resource=original_resource)
+            cra = CSWResource(original_resource=original_resource)
             resource_transformed = cra.transform_to_ckan_resource()
             resources.append(resource_transformed)
 
@@ -133,7 +133,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         distribution = datajson_dataset['distribution'] if 'distribution' in datajson_dataset else []
         # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
         if distribution is None or distribution == []:
-            distribution = self.infer_distribution()
+            distribution = self.infer_resources()
         self.ckan_dataset['resources'] = self.transform_resources(distribution)
         if existing_resources is not None:
             res = self.merge_resources(existing_resources=existing_resources, new_resources=self.ckan_dataset['resources'])

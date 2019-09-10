@@ -4,7 +4,7 @@ from slugify import slugify
 import json
 
 
-class CSWRecord(CKANResourceAdapter):
+class CSWResource(CKANResourceAdapter):
     ''' CSW resource '''
 
     def validate_origin_distribution(self):
