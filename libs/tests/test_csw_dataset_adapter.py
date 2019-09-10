@@ -82,6 +82,11 @@ class TestCKANDatasetAdapter(object):
         rp = [{'name': 'GSA', 'roles': ['admin', 'admin2']}, {'name': 'NASA', 'roles': ['moon']}]
         assert [rp] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'responsible-party']
 
+        coords = '[[[{xmin}, {ymin}], [{xmax}, {ymin}], [{xmax}, {ymax}], [{xmin}, {ymax}], [{xmin}, {ymin}]]]'.format(xmax=-61.9, ymax=-33.1, xmin=34.3, ymin=51.8)
+        spatial = '{{"type": "Polygon", "coordinates": {coords}}}'.format(coords=coords)
+
+        assert [spatial] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'spatial']
+
     def test_collections(self):
         pass
 

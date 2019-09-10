@@ -113,7 +113,7 @@ class CSWDataset(CKANDatasetAdapter):
         return self.ckan_dataset
 
     def set_bbox(self):
-        bbx = self.original_dataset('bbox', None)
+        bbx = self.original_dataset.get('bbox', None)
         if bbx is None:
             self.set_extra('spatial', None)
             return
@@ -143,7 +143,8 @@ class CSWDataset(CKANDatasetAdapter):
             if xmin == xmax or ymin == ymax:
                 extent_string = '{"type": "Point", "coordinates": [{}, {}]}'.format(xmin, ymin)
             else:
-                extent_string = '{"type": "Polygon", "coordinates": [[[{xmin}, {ymin}], [{xmax}, {ymin}], [{xmax}, {ymax}], [{xmin}, {ymax}], [{xmin}, {ymin}]]]}'.format(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax)
+                coords = '[[[{xmin}, {ymin}], [{xmax}, {ymin}], [{xmax}, {ymax}], [{xmin}, {ymax}], [{xmin}, {ymin}]]]'.format(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax)
+                extent_string = '{{"type": "Polygon", "coordinates": {coords}}}'.format(coords=coords)
 
             self.set_extra('spatial', extent_string.strip())
 
