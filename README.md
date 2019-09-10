@@ -14,10 +14,10 @@ The files _settings.py_ (empty) and _local_settings.py_ (ignored from repo) are 
 
 ## Harvest sources
 
-The _data.json_, _csw_ or other harvest sources are CKAN packages with an URL to the some resource.  
+The _data.json_, _csw_ and other harvest sources are CKAN packages with an URL to the some resource.  
 We can import all the harvest sources from a productive CKAN instance with the command `import_harvest_sources`.  
 
-For example import all CSW harvest sources from _data.gov_.  
+For example, to import all CSW harvest sources from _data.gov_.  
 ```
 python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
 ```
@@ -52,7 +52,7 @@ python3 read_harvest_sources.py --base_url http://ckan:5000 --source_type datajs
 
 #### Analyze 
 
-Creates a CSV file with all the harvest sources. Analyze each one to validate it, count datastets and resources.
+Creates a CSV file with all the harvest sources. Analyzes each one to validate it, count datastets and resources.
 
 ```
 python3 analize_harvest_sources.py 
@@ -77,17 +77,17 @@ CSV results
 
 ### Harvest one source
 
-We have one folder for each harvester.  
+We have a folder for each type of harvester.  
 For data.json we have _harvest/datajson_, for csw: _harvest/csw_.  
-En each folder you can read specs about each process.  
+In each folder you can read specs about each process.  
 
 In general you will need:
  - a _name_ for the harvest source
  - url of the data.json
  - harvest_source_id: the ID of the harvest source
  - ckan_owner_org_id: name of the organization for all the harvested datasets
- - catalog_url you CKAN instance 
- - ckan_api_key you CKAN API key
+ - catalog_url your CKAN instance 
+ - ckan_api_key your CKAN API key
 
 Example using data from _read_harvest_sources_ and a local CKAN instance
 
