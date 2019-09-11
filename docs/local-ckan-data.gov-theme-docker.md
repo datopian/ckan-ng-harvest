@@ -26,3 +26,11 @@ docker-compose exec ckan ckan-paster --plugin=ckan \
 ``` 
 
 You will see CKAN working at _nginx:8080_ or _localhost:5000_.  
+
+You can see logs with:
+```
+docker-compose -f docker-compose.yaml -f .docker-compose-db.yaml -f .docker-compose.datagov-theme.yaml logs -f
+
+# or just logs from CKAN
+docker-compose -f docker-compose.yaml -f .docker-compose-db.yaml -f .docker-compose.datagov-theme.yaml logs -f ckan
+```
