@@ -17,7 +17,8 @@ For just install CKAN with harvesters use:
 docker-compose down -v
 docker-compose -f docker-compose.yaml -f .docker-compose-db.yaml -f .docker-compose.datagov-theme.yaml pull
 docker-compose -f docker-compose.yaml -f .docker-compose-db.yaml -f .docker-compose.datagov-theme.yaml build
-docker-compose -f docker-compose.yaml -f .docker-compose-db.yaml -f .docker-compose.datagov-theme.yaml up -d
+docker-compose -f docker-compose.yaml -f .docker-compose-db.yaml -f .docker-compose.datagov-theme.yaml up -d nginx
+
 ``` 
 Create a admin user
 ``` 
@@ -26,6 +27,17 @@ docker-compose exec ckan ckan-paster --plugin=ckan \
 ``` 
 
 You will see CKAN working at _nginx:8080_ or _localhost:5000_.  
+If is not working, at _docker-compose.yaml_, in _ckan_ section add:
+```
+ports:
+ - "5000:5000"
+```
+
+At _nginx_ section, add:
+```
+ports:
+ - "8080:8080"
+ ```
 
 You can see logs with:
 ```
@@ -34,3 +46,4 @@ docker-compose -f docker-compose.yaml -f .docker-compose-db.yaml -f .docker-comp
 # or just logs from CKAN
 docker-compose -f docker-compose.yaml -f .docker-compose-db.yaml -f .docker-compose.datagov-theme.yaml logs -f ckan
 ```
+
