@@ -23,12 +23,13 @@ def get_csw_from_url(url):
         if idf is None:
             continue
 
+        logger.info(f'Found {idf} at {csw.get_cleaned_url()}')
+        # get XML info
+        yield(record)
+
         if config.LIMIT_DATASETS > 0 and c > config.LIMIT_DATASETS:
             break
-        logger.info(f'Found {idf} at {csw.get_cleaned_url()}')
-        yield(record)
         c += 1
-
 
 def clean_duplicated_identifiers(rows):
     """ clean duplicated datasets identifiers on data.json source """

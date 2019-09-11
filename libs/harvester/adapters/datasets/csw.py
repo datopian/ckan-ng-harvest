@@ -75,7 +75,7 @@ class CSWDataset(CKANDatasetAdapter):
         if not valid:
             raise Exception(f'Error validating origin dataset: {error}')
 
-        dataset = self.original_dataset
+        dataset = self.original_dataset['iso_values']
 
         # previous transformations at origin
         for old_field, field_ckan in self.MAPPING.items():
@@ -146,54 +146,18 @@ class CSWDataset(CKANDatasetAdapter):
             rldf = [(rlg, universal_format) for rlg in resource_locator_groups]
             resource_locator_group_data_format = rldf
 
-        for resource_locator_group, data_format in resource_locator_group_data_format:
-            for resource_locator in resource_locator_group['resource-locator']:
-                url = resource_locator.get('url', None)
-                if url is not None:
-                    resource = {}
-                    format_from_url = self.guess_resource_format(url)
-                    resource['format'] = format_from_url if format_from_url else data_format
-                    if resource['format'] == 'wms' and config.get('ckanext.spatial.harvest.validate_wms', False):
-                        # Check if the service is a view service
-                        test_url = url.split('?')[0] if '?' in url else url
-                        if self._is_wms(test_url):
-                            resource['verified'] = True
-                            resource['verified_date'] = datetime.now().isoformat()
-
-                    resource.update(
-                        {
-                            'url': url,
-                            'name': resource_locator.get('name') or p.toolkit._('Unnamed resource'),
-                            'description': resource_locator.get('description') or  '',
-                            'resource_locator_protocol': resource_locator.get('protocol') or '',
-                            'resource_locator_function': resource_locator.get('function') or '',
-                        })
-                    package_dict['resources'].append(resource)
+        # we need to read more but we have two kind of resources
+        for resource in resource_locator_group_data_format:
+            res = {'type': 'resource_locator_group_data_format', 'data': resource}
+            self.resources.append(resource)
 
         resource_locators = self.original_dataset.get('resource-locator-identification', [])
-        if len(resource_locators):
-            for resource_locator in resource_locators:
-                url = resource_locator.get('url', '').strip()
-                if url:
-                    resource = {}
-                    format_from_url = guess_resource_format(url)
-                    resource['format'] = format_from_url
-                    if resource['format'] == 'wms' and config.get('ckanext.spatial.harvest.validate_wms', False):
-                        # Check if the service is a view service
-                        test_url = url.split('?')[0] if '?' in url else url
-                        if self._is_wms(test_url):
-                            resource['verified'] = True
-                            resource['verified_date'] = datetime.now().isoformat()
 
-                    resource.update(
-                        {
-                            'url': url,
-                            'name': resource_locator.get('name') or p.toolkit._('Unnamed resource'),
-                            'description': resource_locator.get('description') or  '',
-                            'resource_locator_protocol': resource_locator.get('protocol') or '',
-                            'resource_locator_function': resource_locator.get('function') or '',
-                        })
-                    package_dict['resources'].append(resource)
+        for resource in resource_locators:
+            res = {'type': 'resource_locator', 'data': resource}
+            self.resources.append(resource)
+
+        return self.resources
 
      def transform_resources(self):
         ''' Transform this resources in list of resources '''
