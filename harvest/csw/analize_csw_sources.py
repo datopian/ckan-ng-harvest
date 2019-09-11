@@ -46,7 +46,7 @@ for url in url_services:
             record = csw.get_record(identifier=idf, outputschema=outputschema)
             if record is None:
                 print(csw.errors)
-            # print(record)
+            print(record)
 
     try:
         as_str = json.dumps(csw.as_json(), indent=2)
