@@ -114,8 +114,15 @@ class CSWSource:
                     # https://github.com/geopython/OWSLib/blob/3338340e6a9c19dd3388240815d35d60a0d0cf4c/owslib/iso.py#L31
                     value = self.md_metadata_to_dict(csw_record)
                 elif outputschema == 'csw':
-                    # it's a CSWRecord
-                    raise Exception('Not using CSWRecords')
+                    # it's a CSWResource
+                    error = 'Not using CSW schema, we require GMD'
+                    value['error'] = error
+
+                try:
+                    value['iso_values'] = self.read_values_from_xml()
+                except Exception as e:
+                    error = 'Error reading ISO values'
+                    value['error'] = error
 
                 value['esn'] = esn
                 self.csw_info['records'][key] = value
@@ -152,6 +159,11 @@ class CSWSource:
         self.csw_info['records'][identifier] = record
 
         return record
+
+    def read_values_from_xml(self, xml):
+        # transform the XML in a dict as ISODocument class (https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/model/harvested_metadata.py#L461) did with its read_values function.
+        return {}
+
 
     def md_metadata_to_dict(self, mdm):
         # analize an md_metadata object

@@ -349,9 +349,9 @@ class CKANPortalAPI:
         # https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/logic/validators.py#L125
         # we use 'datajson' for all until we fix
         # we define an extra for identifying the real type
-        real_source_type = source_type
-        if source_type != 'datajson':
-            source_type = 'datajson'
+        # real_source_type = source_type
+        # if source_type != 'datajson':
+        #    source_type = 'datajson'
         # ----------------------------------------------------
 
         ckan_package = {
@@ -369,8 +369,7 @@ class CKANPortalAPI:
                 "tags": [{'name': 'harvest source'}],
                 "config": None,
                 "extras": [
-                    {'key': 'harvest_source_type',
-                     'value': real_source_type}
+                    # {'key': 'harvest_source_type', 'value': real_source_type}
                     ]
                 }
 

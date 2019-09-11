@@ -9,6 +9,7 @@ class DatajsonValidatorTestClass(unittest.TestCase):
 
     def test_fields_missing(self):
         errors = validate_data_json({})
+        print(errors)
         get_errors_with_key = errors[0].get(': Missing Required Fields')
         self.assertIn("The 'accessLevel' field is missing.",
                       get_errors_with_key)

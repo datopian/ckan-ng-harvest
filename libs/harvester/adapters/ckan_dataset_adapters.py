@@ -1,5 +1,7 @@
 ''' transform datasets to CKAN datasets '''
+from slugify import slugify
 from abc import ABC, abstractmethod
+from harvester.settings import ckan_settings
 
 
 class CKANDatasetAdapter(ABC):
@@ -7,6 +9,7 @@ class CKANDatasetAdapter(ABC):
 
     def __init__(self, original_dataset):
         self.original_dataset = original_dataset
+        self.ckan_dataset = self.get_base_ckan_dataset()
 
     def get_base_ckan_dataset(self):
         # creates the Dict base for a CKAN dataset
@@ -43,3 +46,108 @@ class CKANDatasetAdapter(ABC):
     @abstractmethod
     def transform_to_ckan_dataset(self):
         pass
+
+    def identify_origin_element(self, raw_field):
+        # get the original value in original dict (the one to convert) to put in CKAN dataset.
+        # Consider the __ separator
+        # in 'contactPoint__hasEmail' gets in_dict['contactPoint']['hasEmail'] if exists
+        # in 'licence' gets in_dict['licence'] if exists
+
+        parts = raw_field.split('__')
+        if parts[0] not in self.original_dataset:
+            return None
+        origin = self.original_dataset[parts[0]]
+        if len(parts) > 1:
+            for part in parts[1:]:
+                if part in origin:
+                    origin = origin[part]
+                else:  # drop
+                    return None
+        return origin
+
+    def validate_final_dataset(self):
+        # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
+
+        if 'private' not in self.ckan_dataset:
+            return False, 'private is a required field'
+        if 'name' not in self.ckan_dataset:
+            return False, 'name is a required field'
+
+        return True, None
+
+    def set_destination_element(self, raw_field, new_value):
+        # in 'extras__issued' gets or creates self.ckan_dataset[extras][key][issued] and assing new_value to self.ckan_dataset[extras][value]
+        # in 'title' assing new_value to self.ckan_dataset[title]
+        # returns dict modified
+
+        parts = raw_field.split('__')
+        if parts[0] not in self.ckan_dataset:
+            raise Exception(f'Not found field "{parts[0]}" at CKAN destination dict')
+        if len(parts) == 1:
+            # check if need to be fixed
+            self.ckan_dataset[raw_field] = self.fix_fields(field=raw_field,
+                                                             value=new_value)
+            return self.ckan_dataset
+        elif len(parts) == 2:
+            if parts[0] != 'extras':
+                raise Exception(f'Unknown field estructure: "{raw_field}" at CKAN destination dict')
+
+            # check if extra already exists
+            for extra in self.ckan_dataset['extras']:
+
+                key = parts[1]
+                if extra['key'] == key:
+                    # check if need to be fixed
+                    extra['value'] = self.fix_fields(field=f'extras__{key}', value=new_value)
+                    return self.ckan_dataset
+
+            key = parts[1]
+            # this extra do not exists already
+            new_extra = {'key': key, 'value': None}
+            # check if need to be fixed
+            new_extra['value'] = self.fix_fields(field=f'extras__{key}', value=new_value)
+            self.ckan_dataset['extras'].append(new_extra)
+            return self.ckan_dataset
+        else:
+            raise Exception(f'Unknown fields length estructure for "{raw_field}" at CKAN destination dict')
+
+    def build_tags(self, tags):
+        # create a CKAN tag
+        # Help https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.tag_create
+        ret = []
+        for tag in tags:
+            tag = tag.strip()
+            if tag != '':
+                tag = slugify(tag[:ckan_settings.MAX_TAG_NAME_LENGTH])
+                ret.append({"name": tag})
+        return ret
+
+    def set_extra(self, key, value):
+        found = False
+        for extra in self.ckan_dataset['extras']:
+            if extra['key'] == key:
+                extra['value'] = value
+                found = True
+        if not found:
+            self.ckan_dataset['extras'].append({'key': key, 'value': value})
+        return self.ckan_dataset
+
+    def get_extra(self, key):
+        for extra in self.ckan_dataset['extras']:
+            if extra['key'] == key:
+                return extra['value']
+        return None
+
+    def generate_name(self, title):
+        # names are unique in CKAN
+        # old harvester do like this: https://github.com/GSA/ckanext-datajson/blob/07ca20e0b6dc1898f4ca034c1e073e0c27de2015/ckanext/datajson/harvester_base.py#L747
+
+        name = slugify(title)
+        cut_at = ckan_settings.MAX_NAME_LENGTH - 5  # max length is 100
+        if len(name) > cut_at:
+            name = name[:cut_at]
+
+        # TODO check if the name MUST be a new unexisting one
+        # TODO check if it's an existing resource and we need to read previos name using the identifier
+
+        return name

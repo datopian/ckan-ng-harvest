@@ -273,7 +273,7 @@ class DataJSONDataset:
         self.validation_errors = []
         self.omb_burueau_codes = set()
         self.ftpstream = urllib.request.urlopen(BUREAU_CODE_URL)
-        self.csvfile = csv.DictReader(codecs.iterdecode(ftpstream, 'utf-8'))
+        self.csvfile = csv.DictReader(codecs.iterdecode(self.ftpstream, 'utf-8'))
         for row in self.csvfile:
             self.omb_burueau_codes.add(row["Agency Code"] + ":" + row["Bureau Code"])
 

@@ -18,7 +18,8 @@ def validate_data_json(row):
         data_validator = DataJSONDataset()
         errors = data_validator.validate_dataset(row)
     except Exception as e:
-        errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
+        # errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
+        errors.append({'Internal Error': [f'Something bad happened: {e}']})
     return errors
 
 

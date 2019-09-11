@@ -1,6 +1,6 @@
 from harvester.logs import logger
 from harvester import config
-from harvester.adapters.datasets.data_json import DataJSONSchema1_1
+from harvester.adapters.datasets.csw import CSWDataset
 from harvester.data_gov_api import CKANPortalAPI
 import json
 from datetime import datetime
@@ -11,88 +11,16 @@ import os.path
 
 def hash_dataset(datasetdict):
     # hash the dataset.
-    # We change the way that previous harvester do this
-    #  https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L730
     dmp_dataset = json.dumps(datasetdict, sort_keys=True)
     str_to_hash = dmp_dataset.encode('utf-8')
     return hashlib.sha1(str_to_hash).hexdigest()
 
 
-def assing_collection_pkg_id(rows):
-    """ detect new CKAN ids for collections.
-        The IDs are at different rows so we need to iterate all rows
-        """
-
-    # create a list of datajson identifiers -> CKAN indetifiers
-    # to detect collection IDs
-    related_ids = {}
-    need_update_rows = []  # need to save the collection_pkg_id
-    for row in rows:
-        comparison_results = row['comparison_results']
-        action = comparison_results['action']
-        if action not in ['update', 'create']:
-            yield row
-        else:
-            datajson_dataset = comparison_results['new_data']
-            old_identifier = datajson_dataset['identifier']  # ID at data.json
-            # If I'm creating a new resource that not exists at CKAN then I have no ID
-            new_identifier = row.get('id', None)  # ID at CKAN
-            related_ids[old_identifier] = new_identifier
-
-            # if is part of a collection, get the CKAN ID
-            is_part_of = datajson_dataset.get('isPartOf', None)
-            if is_part_of is None:
-                yield row
-            else:
-                need_update_rows.append(row)
-
-    cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
-                        api_key=config.CKAN_API_KEY)
-
-    for row in need_update_rows:
-        comparison_results = row['comparison_results']
-        datajson_dataset = comparison_results['new_data']
-        old_identifier = datajson_dataset['isPartOf']  # ID at data.json
-        new_ckan_identifier = related_ids.get(old_identifier, None)
-        if new_ckan_identifier is not None:
-
-            res3 = cpa.show_package(ckan_package_id_or_name=row['id'])
-            if res3['success'] != True:
-                error = 'Unable to read package for update collection_pkg_id'
-                comparison_results['action_results']['errors'].append(error)
-            else:
-                # update ckan package
-                ckan_dataset = res3['result']
-                ckan_dataset = set_extra(ckan_dataset=ckan_dataset,
-                                         key='collection_package_id',
-                                         value=new_ckan_identifier)
-
-                try:
-                    ckan_response = cpa.update_package(ckan_package=ckan_dataset)
-                except Exception as e:
-                    error = f'Error updating collection_package_id at {ckan_dataset}: {e}'
-                    comparison_results['action_results']['errors'].append(error)
-
-        else:
-            error = f'Unable to detect the collection_pkg_id at {row}'
-            comparison_results['action_results']['errors'].append(error)
-
-        yield row
-
-
-def set_extra(ckan_dataset, key, value):
-    found = False
-    for extra in ckan_dataset['extras']:
-        if extra['key'] == key:
-            extra['value'] = value
-            found = True
-    if not found:
-        ckan_dataset['extras'].append({'key': key, 'value': value})
-    return ckan_dataset
-
-
 def write_results_to_ckan(rows):
     """ each row it's a dataset to delete/update/create """
+
+    # TODO analize the import_stage function
+    # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/base.py#L432
 
     actions = {}
     c = 0
@@ -113,7 +41,7 @@ def write_results_to_ckan(rows):
         row['comparison_results'] {
             "action": "update" | "delete" | "create",
             "ckan_id": "1bfc8520-17b0-46b9-9940-a6646615436c",
-            "new_data": {data json dataset format},
+            "new_data": {csw dataset format},
             "reason": "Some reason for the action"
             }
         """
@@ -128,48 +56,33 @@ def write_results_to_ckan(rows):
 
         # if it's an update we need to merge internal resources
         if action == 'update':
+            # TODO ensure we detect resources at CSW
             existing_resources = row['resources']
         elif action == 'create':
             existing_resources = None
 
         if action in ['update', 'create']:
-            datajson_dataset = comparison_results['new_data']
+            csw_dataset = comparison_results['new_data']
 
-            # add required extras
-            # set catalog extras
-            for key, value in datajson_dataset['headers'].items():
-                if key in ['@context', '@id', 'conformsTo', 'describedBy']:
-                    datajson_dataset[f'catalog_{key}'] = value
-
-            schema_version = datajson_dataset['headers']['schema_version']  # 1.1 or 1.0
-            assert schema_version in ['1.0', '1.1']  # main error
-            datajson_dataset['source_schema_version'] = schema_version
-            datajson_dataset['source_hash'] = hash_dataset(datasetdict=datajson_dataset)
+            csw_dataset['source_hash'] = hash_dataset(datasetdict=csw_dataset)
 
             # harvest extras
             # check if a local harvest source is required
             # https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/logic/action/create.py#L27
-            datajson_dataset['harvest_ng_source_title'] = config.SOURCE_NAME
-            datajson_dataset['harvest_ng_source_id'] = config.SOURCE_ID
+            csw_dataset['harvest_ng_source_title'] = config.SOURCE_NAME
+            csw_dataset['harvest_ng_source_id'] = config.SOURCE_ID
 
             # CKAN hides this extras if we not define as harvest type
             # if https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/plugin.py#L125
-            datajson_dataset['harvest_source_title'] = config.SOURCE_NAME
-            datajson_dataset['harvest_source_id'] = config.SOURCE_ID
+            csw_dataset['harvest_source_title'] = config.SOURCE_NAME
+            csw_dataset['harvest_source_id'] = config.SOURCE_ID
 
-            if schema_version == '1.1':
-                djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
-            else:
-                results['errors'].append('We are not ready to harvest 1.0 schema datasets. Add it to harvester')
-                yield row
-                continue
-                # raise Exception('We are not ready to harvest 1.0 schema datasets. Check if this kind of dataset still exists')
-            # ORG is required!
+            # TODO add default tags
+            # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/base.py#L215
+
+            djss = CSWDataset(original_dataset=csw_dataset)
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
             ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
-            # check errors
-            results['errors'].append(ckan_dataset['resources_errors'])
-            ckan_dataset.pop('resources_errors', None)
 
         if action == 'create':
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
@@ -245,11 +158,6 @@ def write_results_to_ckan(rows):
         yield row
 
     logger.info(f'Actions detected {actions}')
-
-
-def write_final_report():
-    """ take all generated data and write a final report """
-    pass
 
 
 def build_validation_error_email(error_items=[]):
