@@ -100,8 +100,11 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         resources = []
         for original_resource in distribution:
-            cra = CSWResource(original_resource=original_resource)
-            resource_transformed = cra.transform_to_ckan_resource()
+            try:
+                cra = DataJSONDistribution(original_resource=original_resource)
+                resource_transformed = cra.transform_to_ckan_resource()
+            except Exception as e:
+                resource_transformed = {'error': e}
             resources.append(resource_transformed)
 
         return resources
@@ -134,7 +137,20 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
         if distribution is None or distribution == []:
             distribution = self.infer_resources()
+
+        self.ckan_dataset['resources_errors'] = []
         self.ckan_dataset['resources'] = self.transform_resources(distribution)
+
+        # move out the resources with validation errores
+        # and log the error as a dataset error
+        final_resources = []
+        for resource in self.ckan_dataset['resources']:
+            if 'error' in resource:
+                self.ckan_dataset['resources_errors'].append(resource)
+            else:
+                final_resources.append(resource)
+        self.ckan_dataset['resources'] = final_resources
+
         if existing_resources is not None:
             res = self.merge_resources(existing_resources=existing_resources, new_resources=self.ckan_dataset['resources'])
             self.ckan_dataset['resources'] = res

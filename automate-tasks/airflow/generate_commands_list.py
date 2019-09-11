@@ -2,7 +2,8 @@
 generate a list of the commands to harvest
 """
 
-from settings import APP_PATH
+# from settings import APP_PATH
+APP_PATH = '/home/hudson/dev/datopian/harvesting-data-json-v2'
 import sys
 sys.path.append(APP_PATH)
 

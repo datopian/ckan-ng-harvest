@@ -167,6 +167,9 @@ def write_results_to_ckan(rows):
             # ORG is required!
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
             ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
+            # check errors
+            results['errors'].append(ckan_dataset['resources_errors'])
+            ckan_dataset.pop('resources_errors', None)
 
         if action == 'create':
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
