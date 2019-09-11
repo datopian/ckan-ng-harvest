@@ -159,7 +159,7 @@ class CSWDataset(CKANDatasetAdapter):
 
         return self.resources
 
-     def transform_resources(self):
+    def transform_resources(self):
         ''' Transform this resources in list of resources '''
 
         for original_resource in self.resources:
@@ -168,74 +168,6 @@ class CSWDataset(CKANDatasetAdapter):
             resources.append(resource_transformed)
 
         return resources
-
-    # TODO copie from previous plugin. UPGRADE required
-    # ALSO CHECK THIS from owslib import wms
-    def _is_wms(self, url):
-        '''
-        Checks if the provided URL actually points to a Web Map Service.
-        Uses owslib WMS reader to parse the response.
-        '''
-        try:
-            capabilities_url = wms.WMSCapabilitiesReader().capabilities_url(url)
-            res = urllib2.urlopen(capabilities_url, None, 10)
-            xml = res.read()
-
-            s = wms.WebMapService(url, xml=xml)
-            return isinstance(s.contents, dict) and s.contents != {}
-        except Exception, e:
-            log.error('WMS check for %s failed with exception: %s' % (url, str(e)))
-        return False
-
-    # TODO copie from previous plugin. UPGRADE required
-    def guess_resource_format(url, use_mimetypes=True):
-        '''
-        Given a URL try to guess the best format to assign to the resource
-
-        The function looks for common patterns in popular geospatial services and
-        file extensions, so it may not be 100% accurate. It just looks at the
-        provided URL, it does not attempt to perform any remote check.
-
-        if 'use_mimetypes' is True (default value), the mimetypes module will be
-        used if no match was found before.
-
-        Returns None if no format could be guessed.
-
-        '''
-        url = url.lower().strip()
-
-        resource_types = {
-            # OGC
-            'wms': ('service=wms', 'geoserver/wms', 'mapserver/wmsserver', 'com.esri.wms.Esrimap', 'service/wms'),
-            'wfs': ('service=wfs', 'geoserver/wfs', 'mapserver/wfsserver', 'com.esri.wfs.Esrimap'),
-            'wcs': ('service=wcs', 'geoserver/wcs', 'imageserver/wcsserver', 'mapserver/wcsserver'),
-            'sos': ('service=sos',),
-            'csw': ('service=csw',),
-            # ESRI
-            'kml': ('mapserver/generatekml',),
-            'arcims': ('com.esri.esrimap.esrimap',),
-            'arcgis_rest': ('arcgis/rest/services',),
-        }
-
-        for resource_type, parts in resource_types.iteritems():
-            if any(part in url for part in parts):
-                return resource_type
-
-        file_types = {
-            'kml' : ('kml',),
-            'kmz': ('kmz',),
-            'gml': ('gml',),
-        }
-
-        for file_type, extensions in file_types.iteritems():
-            if any(url.endswith(extension) for extension in extensions):
-                return file_type
-
-        resource_format, encoding = mimetypes.guess_type(url)
-        if resource_format:
-            return resource_format
-
-        return None
 
     def set_bbox(self):
         bbx = self.original_dataset.get('bbox', None)
