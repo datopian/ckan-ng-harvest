@@ -138,11 +138,12 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         if distribution is None or distribution == []:
             distribution = self.infer_resources()
 
-        self.ckan_dataset['resources_errors'] = []
+
         self.ckan_dataset['resources'] = self.transform_resources(distribution)
 
         # move out the resources with validation errores
         # and log the error as a dataset error
+        self.ckan_dataset['resources_errors'] = []
         final_resources = []
         for resource in self.ckan_dataset['resources']:
             if 'error' in resource:
