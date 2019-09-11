@@ -75,7 +75,7 @@ class CSWDataset(CKANDatasetAdapter):
         if not valid:
             raise Exception(f'Error validating origin dataset: {error}')
 
-        dataset = self.original_dataset['iso_values']
+        dataset = self.original_dataset.get('iso_values', {})
 
         # previous transformations at origin
         for old_field, field_ckan in self.MAPPING.items():
