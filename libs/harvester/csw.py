@@ -405,9 +405,7 @@ class CSWSource:
             package.save(target=package_path)
 
 
-class MappedXmlDocument:
-    elements = []
-
+class ISOElement:
     namespaces = {
        "gts": "http://www.isotc211.org/2005/gts",
        "gml": "http://www.opengis.net/gml",
@@ -422,49 +420,101 @@ class MappedXmlDocument:
        "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     }
 
-    def __init__(self, xml_str=None, xml_tree=None):
-        assert (xml_str or xml_tree is not None), 'Must provide some XML in one format or another'
-        self.xml_str = xml_str
-        self.xml_tree = xml_tree
+    def __init__(self, name, search_paths=[], multiplicity="*", elements=[]):
+        self.name = name
+        self.search_paths = search_paths
+        self.multiplicity = multiplicity
+        self.elements = elements or self.elements
 
-    def read_values(self):
-        '''For all of the elements listed, finds the values of them in the
-        XML and returns them.'''
-        values = {}
-        tree = self.get_xml_tree()
-        for element in self.elements:
-            values[element.name] = element.read_value(tree)
-        self.infer_values(values)
+    def read_value(self, tree):
+        values = []
+        for xpath in self.get_search_paths():
+            elements = self.get_elements(tree, xpath)
+            values = self.get_values(elements)
+            if values:
+                break
+        return self.fix_multiplicity(values)
+
+    def get_search_paths(self):
+        if type(self.search_paths) != list:
+            search_paths = [self.search_paths]
+        else:
+            search_paths = self.search_paths
+        return search_paths
+
+    def get_elements(self, tree, xpath):
+        return tree.xpath(xpath, namespaces=self.namespaces)
+
+    def get_values(self, elements):
+        values = []
+        if len(elements) == 0:
+            pass
+        else:
+            for element in elements:
+                value = self.get_value(element)
+                values.append(value)
         return values
 
-    def read_value(self, name):
-        '''For the given element name, find the value in the XML and return
-        it.
+    def get_value(self, element):
+        if self.elements:
+            value = {}
+            for child in self.elements:
+                value[child.name] = child.read_value(element)
+            return value
+        elif type(element) == etree._ElementStringResult:
+            # TODO get an LXML version of etree
+            value = str(element)
+        elif type(element) == etree._ElementUnicodeResult:
+            # TODO get an LXML version of etree
+            value = unicode(element)
+        else:
+            value = self.element_tostring(element)
+        return value
+
+    def element_tostring(self, element):
+        # TODO get an LXML version of etree
+        return etree.tostring(element)
+
+    def fix_multiplicity(self, values):
         '''
-        tree = self.get_xml_tree()
-        for element in self.elements:
-            if element.name == name:
-                return element.read_value(tree)
-        raise KeyError
+        When a field contains multiple values, yet the spec says
+        it should contain only one, then return just the first value,
+        rather than a list.
 
-    def get_xml_tree(self):
-        if self.xml_tree is None:
-            parser = etree.XMLParser(remove_blank_text=True)
-            if type(self.xml_str) == unicode:
-                xml_str = self.xml_str.encode('utf8')
+        In the ISO19115 specification, multiplicity relates to:
+        * 'Association Cardinality'
+        * 'Obligation/Condition' & 'Maximum Occurence'
+        '''
+        if self.multiplicity == "0":
+            # 0 = None
+            if values:
+                warn = 'Values found for element "{}" when multiplicity should be 0: {}'.format(self.name, values)
+                logger.warning(warn)
+            return ""
+        elif self.multiplicity == "1":
+            # 1 = Mandatory, maximum 1 = Exactly one
+            if not values:
+                logger.warning('Value not found for element "{}"'.format(self.name))
+                return ''
+            return values[0]
+        elif self.multiplicity == "*":
+            # * = 0..* = zero or more
+            return values
+        elif self.multiplicity == "0..1":
+            # 0..1 = Mandatory, maximum 1 = optional (zero or one)
+            if values:
+                return values[0]
             else:
-                xml_str = self.xml_str
-            self.xml_tree = etree.fromstring(xml_str, parser=parser)
-        return self.xml_tree
+                return ""
+        elif self.multiplicity == "1..*":
+            # 1..* = one or more
+            return values
+        else:
+            logger.warning('Multiplicity not specified for element: {}'.format(self.name))
+            return values
 
-    def infer_values(self, values):
-        pass
 
-
-class ISODocument(MappedXmlDocument):
-
-    # Attribute specifications from "XPaths for GEMINI" by Peter Parslow.
-
+class ISODocument:
     elements = [
         ISOElement(
             name="guid",
@@ -877,6 +927,56 @@ class ISODocument(MappedXmlDocument):
         ),
 
     ]
+
+    namespaces = {
+       "gts": "http://www.isotc211.org/2005/gts",
+       "gml": "http://www.opengis.net/gml",
+       "gml32": "http://www.opengis.net/gml/3.2",
+       "gmx": "http://www.isotc211.org/2005/gmx",
+       "gsr": "http://www.isotc211.org/2005/gsr",
+       "gss": "http://www.isotc211.org/2005/gss",
+       "gco": "http://www.isotc211.org/2005/gco",
+       "gmd": "http://www.isotc211.org/2005/gmd",
+       "srv": "http://www.isotc211.org/2005/srv",
+       "xlink": "http://www.w3.org/1999/xlink",
+       "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    }
+
+    def __init__(self, xml_str=None, xml_tree=None):
+        assert (xml_str or xml_tree is not None), 'Must provide some XML in one format or another'
+        self.xml_str = xml_str
+        self.xml_tree = xml_tree
+
+    def read_values(self):
+        '''For all of the elements listed, finds the values of them in the
+        XML and returns them.'''
+        values = {}
+        tree = self.get_xml_tree()
+        for element in self.elements:
+            values[element.name] = element.read_value(tree)
+        self.infer_values(values)
+        return values
+
+    def read_value(self, name):
+        '''For the given element name, find the value in the XML and return
+        it.
+        '''
+        tree = self.get_xml_tree()
+        for element in self.elements:
+            if element.name == name:
+                return element.read_value(tree)
+        raise KeyError
+
+    def get_xml_tree(self):
+        if self.xml_tree is None:
+            # TODO check for lxml version
+            parser = etree.XMLParser(remove_blank_text=True)
+            if type(self.xml_str) == unicode:
+                xml_str = self.xml_str.encode('utf8')
+            else:
+                xml_str = self.xml_str
+            self.xml_tree = etree.fromstring(xml_str, parser=parser)
+        return self.xml_tree
 
     def infer_values(self, values):
         # Todo: Infer name.
