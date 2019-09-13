@@ -1,0 +1,163 @@
+{
+    "iso_values": {
+        "guid": "NAIP-Derived Tree Cover for North Carolina",
+        "metadata-language": "",
+        "metadata-standard-name": "",
+        "metadata-standard-version": "",
+        "resource-type": [
+        "dataset"
+        ],
+        "metadata-point-of-contact": [],
+        "metadata-date": "",
+        "spatial-reference-system": "",
+        "title": "NAIP-Derived Tree Cover for North Carolina",
+        "format": "",
+        "alternative-title": [],
+        "dataset-reference-date": [],
+        "unique-resource-identifier": "",
+        "presentation-form": [],
+        "abstract": "",
+        "purpose": "",
+        "responsible-organisation": [],
+        "frequency-of-update": "",
+        "maintenance-note": "",
+        "progress": [],
+        "keywords": [],
+        "keyword-inspire-theme": [],
+        "keyword-controlled-other": [],
+        "usage": [],
+        "limitations-on-public-access": [],
+        "access-constraints": [],
+        "use-constraints": [],
+        "aggregation-info": [],
+        "spatial-data-service-type": "",
+        "spatial-resolution": "",
+        "spatial-resolution-units": "",
+        "equivalent-scale": [],
+        "dataset-language": [],
+        "topic-category": [],
+        "extent-controlled": [],
+        "extent-free-text": [],
+        "bbox": [
+        {
+            "west": "-79.8678",
+            "east": "-79.8546",
+            "north": "36.1441",
+            "south": "36.1331"
+        },
+        {
+            "west": "-84.044934",
+            "east": "-76.217463",
+            "north": "36.436171",
+            "south": "33.941649"
+        },
+        {
+            "west": "-84.260277",
+            "east": "-75.824518",
+            "north": "36.571709",
+            "south": "33.922077"
+        },
+        {
+            "west": "-80.816814",
+            "east": "-80.245492",
+            "north": "35.567399",
+            "south": "35.120754"
+        },
+        {
+            "west": "-79.8678",
+            "east": "-79.8546",
+            "north": "36.1441",
+            "south": "36.1331"
+        },
+        {
+            "west": "-84.044934",
+            "east": "-76.217463",
+            "north": "36.436171",
+            "south": "33.941649"
+        },
+        {
+            "west": "-84.260277",
+            "east": "-75.824518",
+            "north": "36.571709",
+            "south": "33.922077"
+        },
+        {
+            "west": "-80.816814",
+            "east": "-80.245492",
+            "north": "35.567399",
+            "south": "35.120754"
+        },
+        {
+            "west": "-79.8678",
+            "east": "-79.8546",
+            "north": "36.1441",
+            "south": "36.1331"
+        },
+        {
+            "west": "-84.044934",
+            "east": "-76.217463",
+            "north": "36.436171",
+            "south": "33.941649"
+        },
+        {
+            "west": "-84.260277",
+            "east": "-75.824518",
+            "north": "36.571709",
+            "south": "33.922077"
+        },
+        {
+            "west": "-80.816814",
+            "east": "-80.245492",
+            "north": "35.567399",
+            "south": "35.120754"
+        },
+        {
+            "west": "-79.8678",
+            "east": "-79.8546",
+            "north": "36.1441",
+            "south": "36.1331"
+        },
+        {
+            "west": "-84.044934",
+            "east": "-76.217463",
+            "north": "36.436171",
+            "south": "33.941649"
+        },
+        {
+            "west": "-84.260277",
+            "east": "-75.824518",
+            "north": "36.571709",
+            "south": "33.922077"
+        },
+        {
+            "west": "-80.816814",
+            "east": "-80.245492",
+            "north": "35.567399",
+            "south": "35.120754"
+        }
+        ],
+        "temporal-extent-begin": [],
+        "temporal-extent-end": [],
+        "vertical-extent": [],
+        "coupled-resource": [],
+        "additional-information-source": "",
+        "distributor-data-format": "",
+        "distribution-data-format": [],
+        "distributor": [],
+        "resource-locator-group": [],
+        "resource-locator-identification": [],
+        "conformity-specification": "",
+        "conformity-pass": "",
+        "conformity-explanation": "",
+        "lineage": "",
+        "browse-graphic": [],
+        "date-released": "",
+        "date-updated": "",
+        "date-created": "",
+        "url": "",
+        "tags": [],
+        "publisher": "",
+        "contact": "",
+        "contact-email": ""
+    }
+}

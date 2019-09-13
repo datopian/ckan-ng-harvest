@@ -88,8 +88,8 @@ class CSWDataset(CKANDatasetAdapter):
                 self.ckan_dataset = self.set_destination_element(raw_field=field_ckan, new_value=origin)
                 logger.debug(f'Connected OK fields "{old_field}"="{origin}"')
 
-        # TODO find and adapt resources
-        # self.ckan_dataset['resources'] = self.transform_resources ?
+        self.infer_resources()
+        self.ckan_dataset['resources'] = self.transform_resources()
 
         # custom changes
         self.fix_licence_url()
@@ -149,25 +149,31 @@ class CSWDataset(CKANDatasetAdapter):
         # we need to read more but we have two kind of resources
         for resource in resource_locator_group_data_format:
             res = {'type': 'resource_locator_group_data_format', 'data': resource}
-            self.resources.append(resource)
+            self.resources.append(res)
 
         resource_locators = self.original_dataset.get('resource-locator-identification', [])
 
         for resource in resource_locators:
             res = {'type': 'resource_locator', 'data': resource}
-            self.resources.append(resource)
+            self.resources.append(res)
 
         return self.resources
 
     def transform_resources(self):
         ''' Transform this resources in list of resources '''
 
+        resources = []
         for original_resource in self.resources:
             cra = CSWResource(original_resource=original_resource)
             resource_transformed = cra.transform_to_ckan_resource()
-            resources.append(resource_transformed)
+            if resource_transformed is not None:
+                resources.append(resource_transformed)
+            else:
+                # TODO is this an error?
+                pass
 
-        return resources
+        self.resources = resources
+        return self.resources
 
     def set_bbox(self):
         bbx = self.original_dataset.get('bbox', None)

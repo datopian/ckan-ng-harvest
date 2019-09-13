@@ -6,7 +6,6 @@ from slugify import slugify
 import base64
 from harvester.logs import logger
 
-
 class CKANPortalAPI:
     """ API and data from data.gov
         API SPECS: https://docs.ckan.org/en/latest/api/index.html """

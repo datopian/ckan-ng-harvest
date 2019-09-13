@@ -25,7 +25,8 @@ setuptools.setup(
         'validate_email>=1.3',
         'Jinja2>=2.10.1',
         'pathlib>=1.0.1',
-        'importlib-resources>=1.0.2'
+        'importlib-resources>=1.0.2',
+        'lxml>=4.4.1'
      ],
      include_package_data=True,
      packages=setuptools.find_packages(exclude=("tests",)),

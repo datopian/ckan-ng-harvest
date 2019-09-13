@@ -24,6 +24,7 @@ from harvester.validator_constants import (ACCRUAL_PERIODICITY_VALUES, BUREAU_CO
                                       PROGRAM_CODE_REGEX, REDACTED_REGEX,
                                       TEMPORAL_REGEX_1, TEMPORAL_REGEX_2,
                                       TEMPORAL_REGEX_3)
+from harvester.logs import logger
 
 
 class JSONSchema:
