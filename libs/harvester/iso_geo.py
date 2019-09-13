@@ -3,8 +3,12 @@ Migrated clases from Geo CKAN extensions
 https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/model/harvested_metadata.py#L145
 ISO 19115: https://www.iso.org/standard/26020.html
 """
+from lxml import etree as letree
+
 
 class ISOElement:
+    elements = []
+
     namespaces = {
        "gts": "http://www.isotc211.org/2005/gts",
        "gml": "http://www.opengis.net/gml",
@@ -60,19 +64,16 @@ class ISOElement:
             for child in self.elements:
                 value[child.name] = child.read_value(element)
             return value
-        elif type(element) == etree._ElementStringResult:
-            # TODO get an LXML version of etree
+        elif type(element) == letree._ElementStringResult:
             value = str(element)
-        elif type(element) == etree._ElementUnicodeResult:
-            # TODO get an LXML version of etree
-            value = unicode(element)
+        elif type(element) == letree._ElementUnicodeResult:
+            value = element
         else:
             value = self.element_tostring(element)
         return value
 
     def element_tostring(self, element):
-        # TODO get an LXML version of etree
-        return etree.tostring(element)
+        return letree.tostring(element)
 
     def fix_multiplicity(self, values):
         '''
@@ -111,6 +112,310 @@ class ISOElement:
         else:
             logger.warning('Multiplicity not specified for element: {}'.format(self.name))
             return values
+
+
+class ISOResourceLocator(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="url",
+            search_paths=[
+                "gmd:linkage/gmd:URL/text()",
+            ],
+            multiplicity="1",
+        ),
+        ISOElement(
+            name="function",
+            search_paths=[
+                "gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="name",
+            search_paths=[
+                "gmd:name/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="description",
+            search_paths=[
+                "gmd:description/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="protocol",
+            search_paths=[
+                "gmd:protocol/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ]
+
+
+class ISOKeyword(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="keyword",
+            search_paths=[
+                "gmd:keyword/gco:CharacterString/text()",
+            ],
+            multiplicity="*",
+        ),
+        ISOElement(
+            name="type",
+            search_paths=[
+                "gmd:type/gmd:MD_KeywordTypeCode/@codeListValue",
+                "gmd:type/gmd:MD_KeywordTypeCode/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        # If Thesaurus information is needed at some point, this is the
+        # place to add it
+   ]
+
+
+class ISOResponsibleParty(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="individual-name",
+            search_paths=[
+                "gmd:individualName/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="organisation-name",
+            search_paths=[
+                "gmd:organisationName/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="position-name",
+            search_paths=[
+                "gmd:positionName/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="contact-info",
+            search_paths=[
+                "gmd:contactInfo/gmd:CI_Contact",
+            ],
+            multiplicity="0..1",
+            elements = [
+                ISOElement(
+                    name="email",
+                    search_paths=[
+                        "gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString/text()",
+                    ],
+                    multiplicity="0..1",
+                ),
+                ISOResourceLocator(
+                    name="online-resource",
+                    search_paths=[
+                        "gmd:onlineResource/gmd:CI_OnlineResource",
+                    ],
+                    multiplicity="0..1",
+                ),
+
+            ]
+        ),
+        ISOElement(
+            name="role",
+            search_paths=[
+                "gmd:role/gmd:CI_RoleCode/@codeListValue",
+            ],
+            multiplicity="0..1",
+        ),
+    ]
+
+
+class ISOReferenceDate(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="type",
+            search_paths=[
+                "gmd:dateType/gmd:CI_DateTypeCode/@codeListValue",
+                "gmd:dateType/gmd:CI_DateTypeCode/text()",
+            ],
+            multiplicity="1",
+        ),
+        ISOElement(
+            name="value",
+            search_paths=[
+                "gmd:date/gco:Date/text()",
+                "gmd:date/gco:DateTime/text()",
+            ],
+            multiplicity="1",
+        ),
+    ]
+
+
+class ISOUsage(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="usage",
+            search_paths=[
+                "gmd:specificUsage/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOResponsibleParty(
+            name="contact-info",
+            search_paths=[
+                "gmd:userContactInfo/gmd:CI_ResponsibleParty",
+            ],
+            multiplicity="0..1",
+        ),
+
+   ]
+
+
+
+class ISOAggregationInfo(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="aggregate-dataset-name",
+            search_paths=[
+                "gmd:aggregateDatasetName/gmd:CI_Citation/gmd:title/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="aggregate-dataset-identifier",
+            search_paths=[
+                "gmd:aggregateDatasetIdentifier/gmd:MD_Identifier/gmd:code/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="association-type",
+            search_paths=[
+                "gmd:associationType/gmd:DS_AssociationTypeCode/@codeListValue",
+                "gmd:associationType/gmd:DS_AssociationTypeCode/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="initiative-type",
+            search_paths=[
+                "gmd:initiativeType/gmd:DS_InitiativeTypeCode/@codeListValue",
+                "gmd:initiativeType/gmd:DS_InitiativeTypeCode/text()",
+            ],
+            multiplicity="0..1",
+        ),
+   ]
+
+
+class ISOBoundingBox(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="west",
+            search_paths=[
+                "gmd:westBoundLongitude/gco:Decimal/text()",
+            ],
+            multiplicity="1",
+        ),
+        ISOElement(
+            name="east",
+            search_paths=[
+                "gmd:eastBoundLongitude/gco:Decimal/text()",
+            ],
+            multiplicity="1",
+        ),
+        ISOElement(
+            name="north",
+            search_paths=[
+                "gmd:northBoundLatitude/gco:Decimal/text()",
+            ],
+            multiplicity="1",
+        ),
+        ISOElement(
+            name="south",
+            search_paths=[
+                "gmd:southBoundLatitude/gco:Decimal/text()",
+            ],
+            multiplicity="1",
+        ),
+    ]
+
+
+class ISOCoupledResources(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="title",
+            search_paths=[
+                "@xlink:title",
+            ],
+            multiplicity="*",
+        ),
+        ISOElement(
+            name="href",
+            search_paths=[
+                "@xlink:href",
+            ],
+            multiplicity="*",
+        ),
+        ISOElement(
+            name="uuid",
+            search_paths=[
+                "@uuidref",
+            ],
+            multiplicity="*",
+        ),
+
+    ]
+
+
+class ISOResourceLocatorGroup(ISOElement):
+
+    elements = [
+        ISOResourceLocator(
+            name="resource-locator",
+            search_paths=[
+                "gmd:CI_OnlineResource",
+            ],
+            multiplicity="1..*",
+        ),
+        ]
+
+
+class ISOBrowseGraphic(ISOElement):
+
+    elements = [
+        ISOElement(
+            name="file",
+            search_paths=[
+                "gmd:fileName/gco:CharacterString/text()",
+            ],
+            multiplicity="1",
+        ),
+        ISOElement(
+            name="description",
+            search_paths=[
+                "gmd:fileDescription/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+        ISOElement(
+            name="type",
+            search_paths=[
+                "gmd:fileType/gco:CharacterString/text()",
+            ],
+            multiplicity="0..1",
+        ),
+    ]
 
 
 class ISODocument:
@@ -568,13 +873,12 @@ class ISODocument:
 
     def get_xml_tree(self):
         if self.xml_tree is None:
-            # TODO check for lxml version
-            parser = etree.XMLParser(remove_blank_text=True)
-            if type(self.xml_str) == unicode:
+            parser = letree.XMLParser(remove_blank_text=True)
+            if type(self.xml_str) == str:
                 xml_str = self.xml_str.encode('utf8')
             else:
                 xml_str = self.xml_str
-            self.xml_tree = etree.fromstring(xml_str, parser=parser)
+            self.xml_tree = letree.fromstring(xml_str, parser=parser)
         return self.xml_tree
 
     def infer_values(self, values):

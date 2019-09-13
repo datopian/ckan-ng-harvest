@@ -17,6 +17,8 @@ from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.ows import ExceptionReport
 from owslib import util
 import xml.etree.ElementTree as xet
+from harvester.iso_geo import ISODocument
+from harvester.logs import logger
 
 
 class CSWSource:
@@ -162,7 +164,9 @@ class CSWSource:
 
     def read_values_from_xml(self, xml_data):
         # transform the XML in a dict as ISODocument class (https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/model/harvested_metadata.py#L461) did with its read_values function.
-        return {}
+
+        iso_parser = ISODocument(xml_data)
+        return iso_parser.read_values()
 
     def process_xml(self, raw_xml):
         # get the XML part we need
