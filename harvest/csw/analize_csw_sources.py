@@ -5,6 +5,7 @@ Analize some CSW sources for test CSW library
 from slugify import slugify
 from harvester import config
 from harvester.csw import CSWSource
+from harvester.adapters.datasets.csw import CSWDataset
 from harvester.logs import logger
 import csv
 import json
@@ -20,8 +21,11 @@ url_services = [
         ]
 
 outputschema = 'gmd'
+source_type = f'csw-{outputschema}'
 # outputschema = 'csw'
+source = 0
 for url in url_services:
+    source += 1
     csw = CSWSource(url=url)
     connected = csw.connect_csw()
     if not connected:
@@ -49,14 +53,27 @@ for url in url_services:
                 logger.info(csw.errors)
             logger.info(record)
 
+            iso_values = record['iso_values']
+            cswd = CSWDataset(original_dataset=iso_values)
+            cswd.ckan_owner_org_id = 'xxxx'
+            ckan_dataset = cswd.transform_to_ckan_dataset()
+            as_str = json.dumps(ckan_dataset, indent=2)
+            dest = config.get_harvest_sources_data_path(source_type=source_type,
+                                                  name=name,
+                                                  file_name=f'sample-{source}-{c}.json')
+            f = open(dest, 'w')
+            f.write(as_str)
+            f.close()
+
     try:
         as_str = json.dumps(csw.as_json(), indent=2)
     except Exception as e:
         as_str = f'Error serializing {csw.csw_info}: {e}'
         logger.error(as_str)
 
-    source_type = f'csw-{outputschema}'
-    hspath = config.get_harvest_sources_data_path(source_type=source_type, name=name)
+    hspath = config.get_harvest_sources_data_path(source_type=source_type,
+                                                  name=name,
+                                                  file_name=f'{source_type}-{name}.json')
 
     f = open(hspath, 'w')
     f.write(as_str)
