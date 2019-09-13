@@ -121,10 +121,12 @@ class CSWSource:
                     value['error'] = error
 
                 try:
-                    value['iso_values'] = self.read_values_from_xml(xml_data=value['xml'])
+                    value['iso_values'] = self.read_values_from_xml(xml_data=value['content'])
                 except Exception as e:
-                    error = 'Error reading ISO values'
+                    error = f'Error reading ISO values {e}'
                     value['error'] = error
+                    raise  # Exception(error)
+
 
                 value['esn'] = esn
                 self.csw_info['records'][key] = value
@@ -165,7 +167,7 @@ class CSWSource:
     def read_values_from_xml(self, xml_data):
         # transform the XML in a dict as ISODocument class (https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/model/harvested_metadata.py#L461) did with its read_values function.
 
-        iso_parser = ISODocument(xml_data)
+        iso_parser = ISODocument(xml_str=xml_data)
         return iso_parser.read_values()
 
     def process_xml(self, raw_xml):
@@ -211,14 +213,18 @@ class CSWSource:
             error = f'{e}\n\n - gm1:{gm1} gm2:{gm2}\n\n Unable to string. \n\n: \t{str_xml[:150]} \n\n mdtree.root: {mdtree.tag}'
             raise Exception(error)
 
-        res = f'<?xml version="1.0" encoding="UTF-8"?>\n{res}'
+        if type(res) != str:
+            res = res.decode('utf-8')
+
         return res
 
     def md_metadata_to_dict(self, mdm):
         # analize an md_metadata object
         ret = {}
 
-        ret['xml'] = self.process_xml(raw_xml=mdm.xml)
+        ret['content'] = self.process_xml(raw_xml=mdm.xml)
+        res = '<?xml version="1.0" encoding="UTF-8"?>\n{}'.format(ret['content'])
+        ret['xml'] = res
         ret['identifier'] = mdm.identifier
         ret['parentidentifier'] = mdm.parentidentifier
         ret['language'] = mdm.language

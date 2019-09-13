@@ -4,6 +4,7 @@ https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b8
 ISO 19115: https://www.iso.org/standard/26020.html
 """
 from lxml import etree as letree
+from harvester.logs import logger
 
 
 class ISOElement:
@@ -874,10 +875,13 @@ class ISODocument:
     def get_xml_tree(self):
         if self.xml_tree is None:
             parser = letree.XMLParser(remove_blank_text=True)
-            if type(self.xml_str) == str:
-                xml_str = self.xml_str.encode('utf8')
+            if type(self.xml_str) != str:
+                logger.info('XML_STR is not str, is {}: {}'.format(type(self.xml_str), self.xml_str))
+                xml_str = str(self.xml_str)
             else:
                 xml_str = self.xml_str
+
+            logger.info(f'Parsing ISO XML {xml_str}')
             self.xml_tree = letree.fromstring(xml_str, parser=parser)
         return self.xml_tree
 
