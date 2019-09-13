@@ -88,8 +88,8 @@ class CSWDataset(CKANDatasetAdapter):
                 self.ckan_dataset = self.set_destination_element(raw_field=field_ckan, new_value=origin)
                 logger.debug(f'Connected OK fields "{old_field}"="{origin}"')
 
-        # TODO find and adapt resources
-        # self.ckan_dataset['resources'] = self.transform_resources ?
+        self.infer_resources()
+        self.ckan_dataset['resources'] = self.transform_resources()
 
         # custom changes
         self.fix_licence_url()

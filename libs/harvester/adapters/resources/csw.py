@@ -1,3 +1,5 @@
+import requests
+from owslib import wms
 from harvester.adapters.ckan_resource_adapters import CKANResourceAdapter
 from harvester.logs import logger
 from slugify import slugify
@@ -79,24 +81,22 @@ class CSWResource(CKANResourceAdapter):
 
         return ckan_resource
 
-    # TODO copie from previous plugin. UPGRADE required
-    # ALSO CHECK THIS from owslib import wms
-    # ALSO upgrade the URLLIB version
     def _is_wms(self, url):
         '''
         Checks if the provided URL actually points to a Web Map Service.
         Uses owslib WMS reader to parse the response.
         '''
-        # from owslib import wms
+
         try:
             capabilities_url = wms.WMSCapabilitiesReader().capabilities_url(url)
-            res = urllib2.urlopen(capabilities_url, None, 10)
-            xml = res.read()
+            res = requests.get(capabilities_url, timeout=10)
+            xml = res.text
 
             s = wms.WebMapService(url, xml=xml)
+            raise Exception('is_wms: {}'.format(s.contents))
             return isinstance(s.contents, dict) and s.contents != {}
         except Exception as e:
-            log.error('WMS check for %s failed with exception: %s' % (url, str(e)))
+            logger.error('WMS check for %s failed with exception: %s' % (url, str(e)))
         return False
 
     # TODO copie from previous plugin. UPGRADE required
