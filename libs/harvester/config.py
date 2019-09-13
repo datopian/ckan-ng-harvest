@@ -156,5 +156,9 @@ def get_report_files():
             'data_json_validation_errors': get_json_data_or_none(data_json_validation_errors_file)
             }
 
+
 def get_html_report_path():
     return os.path.join(get_base_path(), 'final-report.html')
+
+def get_final_json_results_for_report_path():
+    return os.path.join(get_base_path(), 'final-results.json')
