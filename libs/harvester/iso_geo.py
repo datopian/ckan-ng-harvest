@@ -35,6 +35,7 @@ class ISOElement:
         for xpath in self.get_search_paths():
             elements = self.get_elements(tree, xpath)
             values = self.get_values(elements)
+            # logger.info(f'values {values}')
             if values:
                 break
         return self.fix_multiplicity(values)
@@ -431,6 +432,8 @@ class ISODocument:
             search_paths=[
                 "gmd:language/gmd:LanguageCode/@codeListValue",
                 "gmd:language/gmd:LanguageCode/text()",
+                # add in 2019. Not sure.
+                "gmd:language/gco:CharacterString/text()"
             ],
             multiplicity="0..1",
         ),
