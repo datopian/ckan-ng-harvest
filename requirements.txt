@@ -17,3 +17,4 @@ mock
 Jinja2==2.10.1
 OWSLib>=0.18.0
 lxml>=4.4.1
+pytest-mock>=1.10.4

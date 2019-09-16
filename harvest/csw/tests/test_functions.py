@@ -1,7 +1,7 @@
 """
 Tests all functions used in flow file
 """
-from unittest import TestCase, mock
+from unittest import TestCase
 from functions import clean_duplicated_identifiers, get_csw_from_url
 
 
