@@ -42,7 +42,7 @@ class CSWResource(CKANResourceAdapter):
             url = resource_locator.get('url', '').strip()
             if url:
                 resource = {}
-                format_from_url = guess_resource_format(url)
+                format_from_url = self.guess_resource_format(url)
                 resource['format'] = format_from_url
                 cfg = True  # TODO config.get('ckanext.spatial.harvest.validate_wms', False)
                 if resource['format'] == 'wms' and cfg:
