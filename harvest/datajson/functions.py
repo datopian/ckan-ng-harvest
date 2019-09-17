@@ -1,7 +1,6 @@
 import json
 from harvester.logs import logger
 import os
-import requests
 from harvester.data_gov_api import CKANPortalAPI
 from harvester.data_json import DataJSON
 from harvester.data_json import DataJSONDataset

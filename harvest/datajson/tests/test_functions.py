@@ -16,71 +16,95 @@ class FunctionsTestClass(TestCase):
     # ret, info = datajson.load_data_json()
     # ret, info = datajson.validate_json()
 
-    @mock.patch.object(DataJSON, 'download_data_json')
-    def test_404_get_data_json(self, mock_dj_down):
+    def mocked_requests_get(*args, **kwargs):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.content = content
+                self.status_code = status_code
+        url = args[0]
+        if url == 'https://some-source.com/DO-NOT-EXISTS.json':
+            content = None
+            status_code = 404
+        elif url == 'https://some-source.com/BAD.json':
+            content = '{"a": 1, LALALLA}'
+            status_code = 200
+        elif url == 'https://some-source.com/usda.gov.data.json':
+            f = open('samples/usda.gov.data.json', 'r')
+            content = f.read()
+            f.close()
+            status_code = 200
+        # internal query for specs
+        elif url == 'https://project-open-data.cio.gov/v1.1/schema/catalog.json':
+            f = open('samples/schema1.1.json', 'r')
+            content = f.read()
+            f.close()
+            status_code = 200
+        elif url == 'https://some-source.com/healthdata.gov.data.json':
+            f = open('samples/healthdata.gov.data.json', 'r')
+            content = f.read()
+            f.close()
+            status_code = 200
+        else:
+            content = f'UNDEFINED URL {url}'
+            status_code = 400
 
-        mock_dj_down.return_value = False, 'HTTP error: 404'
+        return MockResponse(content, status_code)
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_404_get_data_json(self, mock_req):
 
         url = 'https://some-source.com/DO-NOT-EXISTS.json'
         with self.assertRaises(Exception) as context:
             for dataset in get_data_json_from_url(url=url):
                 pass
-        mock_dj_down.assert_called_once()
+        mock_req.assert_called_once()
         print(str(context.exception))
         self.assertTrue('Error getting data' in str(context.exception))
 
     @mock.patch("functions3.send_validation_error_email")
     @mock.patch("functions3.build_validation_error_email")
-    @mock.patch.object(DataJSON, 'raw_data_json')
-    @mock.patch.object(DataJSON, 'download_data_json')
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_bad_get_data_json(self,
-                               mock_download_json,
-                               mock_raw_data_json,
+                               mock_req,
                                build_validation_mock,
                                send_validation_mock):
-        mock_download_json.return_value = True, None
-        mock_raw_data_json.text = '{"a": 1, LALAL}'
 
-        url = 'https://some-bad.json'
+        url = 'https://some-source.com/BAD.json'
         with self.assertRaises(Exception) as context:
             for dataset in get_data_json_from_url(url=url):
                 pass
 
-        mock_download_json.assert_called_once()
-
+        mock_req.assert_called_once()
         print(str(context.exception))
         self.assertTrue('Error validating JSON' in str(context.exception))
 
     @mock.patch("functions3.send_validation_error_email")
     @mock.patch("functions3.build_validation_error_email")
-    @mock.patch.object(DataJSON, 'raw_data_json')
-    @mock.patch.object(DataJSON, 'download_data_json')
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_good_get_data_json(self,
-                                mock_download_json,
-                                mock_raw_data_json,
+                                mock_req,
                                 build_validation_mock,
                                 send_validation_mock):
-        f = open('samples/usda.gov.data.json', 'r')
-        # mock_raw_data_json.return_value = f.read()
-        mock_raw_data_json.text = '{"a": 1}'
-        f.close()
-        mock_download_json.return_value = True, None
-        url = 'https://some-source/usda.gov.data.json'
+
+        url = 'https://some-source.com/usda.gov.data.json'
         total = 0
         for dataset in get_data_json_from_url(url=url):
             self.assertIsInstance(dataset, dict)
             total += 1
 
-        mock_download_json.assert_called_once()
+        self.assertEqual(len(mock_req.call_args_list), 3)
         self.assertEqual(total, 1580)
 
-    def test_goodwitherrors_get_data_json(self):
-        url = f'{base_url}/healthdata.gov.data.json'
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_goodwitherrors_get_data_json(self, mock_req):
+
+        url = 'https://some-source.com/healthdata.gov.data.json'
         total = 0
         for dataset in get_data_json_from_url(url=url):
             self.assertIsInstance(dataset, dict)
             total += 1
 
+        self.assertEqual(len(mock_req.call_args_list), 3)
         self.assertEqual(total, 1762)
 
     def test_limit(self):
