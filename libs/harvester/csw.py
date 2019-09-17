@@ -34,6 +34,7 @@ class CSWSource:
 
     def __init__(self, url):
         self.url = url
+        self.csw = None
 
     def get_cleaned_url(self):
         # remove all URL params
@@ -86,7 +87,6 @@ class CSWSource:
 
         matches = 0
         self.csw_info['records'] = {}
-
         while True:
             try:
                 self.csw.getrecords2(**kwa)
@@ -94,6 +94,7 @@ class CSWSource:
                 error = f'Error getting records(2): {e}'
                 self.errors.append(error)
                 break
+
             if self.csw.exceptionreport:
                 exceptions = self.csw.exceptionreport.exceptions
                 error = 'Error getting records: {}'.format(exceptions)
