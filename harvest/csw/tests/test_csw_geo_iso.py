@@ -36,7 +36,6 @@ class TestCSWISOClass(object):
         assert iso_values['presentation-form'] == []
         # assert iso_values['abstract'] == 'The National Agriculture Imagery Program (NAIP) acquires aerial imagery during the agricultural growing seasons in the continental US A primary goal of the NAIP program is to make digital ortho photography available to governmental agencies and the public within a year of acquisition.\n\n    NAIP is administered by the USDA\'s Farm Service Agency (FSA) through the Aerial Photography Field Office in Salt Lake City. This "leaf-on" imagery is used as a base layer for GIS programs in FSA\'s County Service Centers, and is used to maintain the Common Land Unit (CLU) boundaries.\n\n    For more information please see: http://www.fsa.usda.gov/programs-and-services/aerial-photography/imagery-programs/naip-imagery'
         assert iso_values['purpose'] == ''
-        assert iso_values['alternative-title'] == []
         assert iso_values['responsible-organisation'] == [{
                 'individual-name': '',
                 'organisation-name': 'US Department of Agriculture, Farm Service Agency',
