@@ -116,13 +116,18 @@ def get_harvest_sources_path(hs_name):
     return final_path
 
 
-def get_harvest_sources_data_path(source_type, name):
+def get_harvest_sources_data_folder(source_type, name):
     base_path = os.path.join(DATA_FOLDER_PATH, 'harvest_sources', source_type)
 
     if not os.path.isdir(base_path):
         os.makedirs(base_path)
 
-    final_path = os.path.join(base_path, f'{source_type}-{name}.json')
+    return base_path
+
+
+def get_harvest_sources_data_path(source_type, name, file_name):
+    base_path = get_harvest_sources_data_folder(source_type, name)
+    final_path = os.path.join(base_path, file_name)
 
     return final_path
 
@@ -151,5 +156,9 @@ def get_report_files():
             'data_json_validation_errors': get_json_data_or_none(data_json_validation_errors_file)
             }
 
+
 def get_html_report_path():
     return os.path.join(get_base_path(), 'final-report.html')
+
+def get_final_json_results_for_report_path():
+    return os.path.join(get_base_path(), 'final-results.json')
