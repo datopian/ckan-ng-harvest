@@ -18,9 +18,17 @@ class FunctionsTestClass(TestCase):
 
     def mocked_requests_get(*args, **kwargs):
         class MockResponse:
-            def __init__(self, json_data, status_code):
+            def __init__(self, content, status_code):
                 self.content = content
                 self.status_code = status_code
+
+            def json(self):
+                return json.loads(self.content)
+
+            @property
+            def json_data(self):
+                return self.json()
+
         url = args[0]
         if url == 'https://some-source.com/DO-NOT-EXISTS.json':
             content = None
@@ -107,8 +115,9 @@ class FunctionsTestClass(TestCase):
         self.assertEqual(len(mock_req.call_args_list), 3)
         self.assertEqual(total, 1762)
 
-    def test_limit(self):
-        url = f'{base_url}/healthdata.gov.data.json'
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_limit(self, mock_req):
+        url = 'https://some-source.com/healthdata.gov.data.json'
         total = 0
         from harvester import config
         config.LIMIT_DATASETS = 15
@@ -116,6 +125,7 @@ class FunctionsTestClass(TestCase):
             self.assertIsInstance(dataset, dict)
             total += 1
 
+        self.assertEqual(len(mock_req.call_args_list), 3)
         self.assertEqual(total, 15)
 
     def test_clean_duplicated_identifiers_bad_field(self):
