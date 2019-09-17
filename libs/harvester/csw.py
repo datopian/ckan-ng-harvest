@@ -51,8 +51,6 @@ class CSWSource:
             return False
 
         self.read_csw_info()
-
-
         return True
 
     def as_json(self):
