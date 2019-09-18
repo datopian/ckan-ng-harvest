@@ -22,8 +22,8 @@ class CKANDatasetAdapter(ABC):
             'private': False,
             'author': None,  # (string) – the name of the dataset’s author (optional)
             'author_email': None,  # (string) – the email address of the dataset’s author (optional)
-            'maintainer': None,  # (string) – the name of the dataset’s maintainer (optional)
-            'maintainer_email': None,  # (string) – the email address of the dataset’s maintainer (optional)
+            'contact_name': None,  # (string) – the name of the dataset’s maintainer (optional)
+            'contact_email': None,  # (string) – the email address of the dataset’s maintainer (optional)
             # just aded when license exists
             # 'license_id': None,  # (license id string) – the id of the dataset’s license, see license_list() for available values (optional)
             'notes':  None,  # (string) – a description of the dataset (optional)
@@ -39,6 +39,17 @@ class CKANDatasetAdapter(ABC):
             'relationships_as_object': None,  # (list of relationship dictionaries) – see package_relationship_create() for the format of relationship dictionaries (optional)
             'relationships_as_subject': None,  # (list of relationship dictionaries) – see package_relationship_create() for the format of relationship dictionaries (optional)
             'groups': None,  # (list of dictionaries) – the groups to which the dataset belongs (optional), each group dictionary should have one or more of the following keys which identify an existing group: 'id' (the id of the group, string), or 'name' (the name of the group, string), to see which groups exist call group_list()
+
+            # SOME NEW FIELDS to check
+            # #########################
+            'modified': None,
+            'publisher': None,
+            'public_access_level': None,
+            'homepage_url': None,
+            'unique_id': None,
+            'contact_name': None,
+            # #########################
+
         }
 
         return pkg
@@ -83,7 +94,7 @@ class CKANDatasetAdapter(ABC):
 
         parts = raw_field.split('__')
         if parts[0] not in self.ckan_dataset:
-            raise Exception(f'Not found field "{parts[0]}" at CKAN destination dict')
+            raise Exception('Not found field "{}" at CKAN destination dict'.format(parts[0]))
         if len(parts) == 1:
             # check if need to be fixed
             self.ckan_dataset[raw_field] = self.fix_fields(field=raw_field,

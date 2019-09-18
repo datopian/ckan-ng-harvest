@@ -21,9 +21,9 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'keyword': 'tags',
         'modified': 'modified',  # ! revision_timestamp
         'publisher': 'publisher',  # !owner_org
-        'contactPoint__fn': 'maintainer',
-        'contactPoint__hasEmail': 'maintainer_email',
-        'identifier': 'extras__identifier',  # !id
+        'contactPoint__fn': 'contact_name',
+        'contactPoint__hasEmail': 'contact_email',
+        'identifier': 'unique_id',  # !id
         'accessLevel': 'public_access_level',
         'bureauCode': 'bureauCode[]',
         'programCode': 'programCode[]',
@@ -36,7 +36,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'dataQuality': 'data_quality',
         'accrualPeriodicity':'accrual_periodicity',
         'landingPage': 'homepage_url',
-        'language': 'language',
+        'language': 'language[]',
         'primaryITInvestmentUII': 'primary_it_investment_uii',  # !PrimaryITInvestmentUII
         'references': 'extras__references',
         'issued': 'extras__issued',
