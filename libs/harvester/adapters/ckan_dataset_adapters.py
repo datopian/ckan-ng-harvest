@@ -72,7 +72,8 @@ class CKANDatasetAdapter(ABC):
             return False, 'private is a required field'
         if 'name' not in self.ckan_dataset:
             return False, 'name is a required field'
-
+        if self.ckan_dataset['name'] == '':
+            return False, 'Empty "name" field'
         return True, None
 
     def set_destination_element(self, raw_field, new_value):

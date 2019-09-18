@@ -1,0 +1,212 @@
+{
+    "iso_values": {
+        "guid": "OT.012014.26904.2",
+        "metadata-language": "en",
+        "metadata-standard-name": "ISO 19139/19115 Metadata for Datasets",
+        "metadata-standard-version": "2003",
+        "resource-type": [
+        "dataset"
+        ],
+        "metadata-point-of-contact": [
+        {
+            "individual-name": "",
+            "organisation-name": "National Center for Airborne Laser Mapping",
+            "position-name": "",
+            "contact-info": {
+            "email": "",
+            "online-resource": {
+                "url": "http://www.ncalm.org",
+                "function": "",
+                "name": "",
+                "description": "",
+                "protocol": ""
+            }
+            },
+            "role": "originator"
+        },
+        {
+            "individual-name": "",
+            "organisation-name": "National Science Foundation",
+            "position-name": "",
+            "contact-info": {
+            "email": "",
+            "online-resource": {
+                "url": "http://nsf.gov",
+                "function": "",
+                "name": "",
+                "description": "",
+                "protocol": ""
+            }
+            },
+            "role": "originator"
+        },
+        {
+            "individual-name": "",
+            "organisation-name": "OpenTopography Facility",
+            "position-name": "",
+            "contact-info": {
+            "email": "info@opentopography.org",
+            "online-resource": {
+                "url": "https://opentopography.org",
+                "function": "",
+                "name": "",
+                "description": "",
+                "protocol": ""
+            }
+            },
+            "role": "originator"
+        }
+        ],
+        "metadata-date": "2014-01-27",
+        "spatial-reference-system": "UTM Z04N NAD83 (PA11) [EPSG: 26904]",
+        "title": "Na Pali Coast, Kauai, Hawaii",
+        "format": "",
+        "alternative-title": [],
+        "dataset-reference-date": [
+        {
+            "type": "publication",
+            "value": "2014-01-27"
+        }
+        ],
+        "unique-resource-identifier": "",
+        "presentation-form": [],
+        "abstract": "NCALM Seeds. PIs: Kimberly Huppert, Massachusetts Institute of Technology, and Mathuei Laporte, California Institute of Technology. The requested survey area consisted of a single irregular polygon of approximately 80 square kilometers on the island of KauaI, Hawaii. Data were collected to investigate the climate control of hillslope erosion across a steep rainfall gradient on KauaI (Kimberly Huppert) and the interplay of cliff erosion, landsliding, and knickpoint retreat along the Na Pali Coast, KauaI (Mathieu Lapotre). The survey attempts took placed from February 14, 2013 through February 16, 2013. This survey area encompasses two proposed survey areas from the NCALM Seed program.",
+        "purpose": "",
+        "responsible-organisation": [
+        {
+            "individual-name": "",
+            "organisation-name": "National Center for Airborne Laser Mapping",
+            "position-name": "",
+            "contact-info": {
+            "email": "",
+            "online-resource": {
+                "url": "http://www.ncalm.org",
+                "function": "",
+                "name": "",
+                "description": "",
+                "protocol": ""
+            }
+            },
+            "role": "originator"
+        },
+        {
+            "individual-name": "",
+            "organisation-name": "National Science Foundation",
+            "position-name": "",
+            "contact-info": {
+            "email": "",
+            "online-resource": {
+                "url": "http://nsf.gov",
+                "function": "",
+                "name": "",
+                "description": "",
+                "protocol": ""
+            }
+            },
+            "role": "originator"
+        },
+        {
+            "individual-name": "",
+            "organisation-name": "OpenTopography Facility",
+            "position-name": "",
+            "contact-info": {
+            "email": "info@opentopography.org",
+            "online-resource": {
+                "url": "https://opentopography.org",
+                "function": "",
+                "name": "",
+                "description": "",
+                "protocol": ""
+            }
+            },
+            "role": "originator"
+        }
+        ],
+        "frequency-of-update": "",
+        "maintenance-note": "",
+        "progress": [],
+        "keywords": [],
+        "keyword-inspire-theme": [],
+        "keyword-controlled-other": [],
+        "usage": [],
+        "limitations-on-public-access": [],
+        "access-constraints": [],
+        "use-constraints": [],
+        "aggregation-info": [],
+        "spatial-data-service-type": "",
+        "spatial-resolution": "",
+        "spatial-resolution-units": "",
+        "equivalent-scale": [],
+        "dataset-language": [],
+        "topic-category": [
+        "geoscientificInformation"
+        ],
+        "extent-controlled": [],
+        "extent-free-text": [],
+        "bbox": [
+        {
+            "west": "-159.765644864473",
+            "east": "-159.610746377409",
+            "north": "22.1798339953591",
+            "south": "22.0269698027763"
+        }
+        ],
+        "temporal-extent-begin": [],
+        "temporal-extent-end": [],
+        "vertical-extent": [],
+        "coupled-resource": [],
+        "additional-information-source": "",
+        "distributor-data-format": "",
+        "distribution-data-format": [],
+        "distributor": [],
+        "resource-locator-group": [
+        {
+            "resource-locator": [
+            {
+                "url": "https://doi.org/10.5069/G91834D5",
+                "function": "",
+                "name": "Download",
+                "description": "Navigate directly to the URL for data access and download.",
+                "protocol": "HTTP"
+            }
+            ]
+        }
+        ],
+        "resource-locator-identification": [
+        {
+            "url": "http://www.ncalm.org",
+            "function": "",
+            "name": "",
+            "description": "",
+            "protocol": ""
+        },
+        {
+            "url": "http://nsf.gov",
+            "function": "",
+            "name": "",
+            "description": "",
+            "protocol": ""
+        },
+        {
+            "url": "https://opentopography.org",
+            "function": "",
+            "name": "",
+            "description": "",
+            "protocol": ""
+        }
+        ],
+        "conformity-specification": "",
+        "conformity-pass": "",
+        "conformity-explanation": "",
+        "lineage": "",
+        "browse-graphic": [],
+        "date-released": "2014-01-27",
+        "date-updated": "",
+        "date-created": "",
+        "url": "",
+        "tags": [],
+        "publisher": "",
+        "contact": "National Center for Airborne Laser Mapping",
+        "contact-email": "info@opentopography.org"
+    }
+}
