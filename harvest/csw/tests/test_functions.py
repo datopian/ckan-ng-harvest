@@ -10,7 +10,6 @@ from tests.mock_csw import MockCatalogueServiceWeb
 class FunctionsTestClass(TestCase):
 
     def mocked_csw(url=None, timeout=30):
-
         return MockCatalogueServiceWeb(url=url)
 
     @mock.patch('harvester.csw.CatalogueServiceWeb', side_effect=mocked_csw)
@@ -26,17 +25,13 @@ class FunctionsTestClass(TestCase):
 
     @mock.patch('harvester.csw.CatalogueServiceWeb', side_effect=mocked_csw)
     def test_csw_data(self, mock_csw):
-        url = 'https://some-source.com/2-records-csw'
+        url = 'https://some-source.com/csw-records'
 
         total = 0
         for record in get_csw_from_url(url=url):
             total += 1
-            # print(f'Record: {record}')
-            if total > 8000:
-                raise Exception('WTF')
+            print('Record: {}'.format(record.get('identifier', '')))
 
         # print(mock_csw.mock_calls)
-        # self.assertEqual(len(mock_csw1.call_args_list), 6)
         mock_csw.assert_called_once()
-        # mock_csw2.assert_called_once()
         self.assertEqual(total, 363)

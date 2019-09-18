@@ -1,57 +1,58 @@
 """
 Tests all functions used in flow file
 """
-import pytest
-from harvester import config
+from unittest import TestCase, mock
 from functions import get_csw_from_url, save_as_data_packages
 from functions2 import get_current_ckan_resources_from_api, compare_resources
 from harvester import config
-base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
+from tests.mock_csw import MockCatalogueServiceWeb
+from harvester.logs import logger
 
 
-class Functions2TestClass(object):
+class TestFunctions2(TestCase):
 
-   def test_compare_resources(self):
-        config.SOURCE_NAME = 'usada-test'
-        url = f'{base_url}/usda.gov.data.json'
+    def mocked_csw(url=None, timeout=30):
+        return MockCatalogueServiceWeb(url=url)
+
+    @mock.patch('harvester.csw.CatalogueServiceWeb', side_effect=mocked_csw)
+    def test_compare_resources(self, mock_csw):
+        config.SOURCE_NAME = 'some-csw'
+        url = 'https://some-source.com/csw-records'
         config.SOURCE_URL = url
         total = 0
 
-        config.LIMIT_DATASETS = 0
-        for dataset in get_data_json_from_url(url=url):
-            self.assertIsInstance(dataset, dict)
+        config.LIMIT_DATASETS = 4
+        for record in get_csw_from_url(url=url):
+            self.assertIsInstance(record, dict)
             total += 1
-            save_as_data_packages(dataset)
+            print(record['identifier'])
+            save_as_data_packages(record)
 
-        self.assertEqual(total, 1580)
+        mock_csw.assert_called_once()
 
         # compare with fake results
         fake_rows = [
             # extras do not exist
             {'id': '0001',
-             'metadata_modified': '2019-05-02T21:36:22.693792',
              'NO-extras': [{'key': 'id', 'value': '000'}]},
             # key "identifier" do not exist inside extras
             {'id': '0002',
-             'metadata_modified': '2019-05-02T21:36:22.693792',
              'extras': [{'key': 'id', 'value': '000'}]},
             # must be marked for update
             {'id': '0003',
-             'metadata_modified': '2019-05-02T21:36:22.693792',
-             'extras': [{'key': 'identifier', 'value': 'usda-ocio-15-01'}]},
-            # NOT MODIFIED (by date)
+             'extras': [{'key': 'identifier', 'value': 'OTDS.082019.32616.1'}]},
+            # must be marked for update
             {'id': '0004',
-             'metadata_modified': '2014-10-03T14:36:22.693792',
-             'extras': [{'key': 'identifier', 'value': 'USDA-DM-003'}]},
+             'extras': [{'key': 'identifier', 'value': 'OTDS.082019.32616.2'}]},
             # NEW unknown identifier. I need to delete if is not in data.json
             {'id': '0005',
-             'metadata_modified': '2019-05-02T21:36:22.693792',
              'extras': [{'key': 'identifier', 'value': 'New unexpected identifier'}]},
         ]
 
         for row in compare_resources(rows=fake_rows):
             # I expect first resoults
 
+            logger.info(f'processing row {row}')
             cr = row['comparison_results']
             ckan_id = cr.get('ckan_id', None)
 
@@ -68,8 +69,8 @@ class Functions2TestClass(object):
                 self.assertIsInstance(cr['new_data'], dict)
 
             elif ckan_id == '0004':
-                self.assertEqual(cr['action'], 'ignore')
-                self.assertIsNone(cr['new_data'])
+                self.assertEqual(cr['action'], 'update')
+                self.assertIsInstance(cr['new_data'], dict)
 
             elif ckan_id == '0005':
                 self.assertEqual(cr['action'], 'delete')

@@ -6,8 +6,6 @@ from functions import clean_duplicated_identifiers, get_data_json_from_url
 from functions3 import build_validation_error_email, send_validation_error_email
 from harvester.data_json import DataJSON
 
-base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
-
 
 class FunctionsTestClass(TestCase):
 

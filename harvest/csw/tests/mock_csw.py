@@ -10,7 +10,7 @@ class MockCatalogueServiceWeb:
         self.version = '0'
         if url == 'https://some-source.com/404csw':
             raise Exception('Fail to connect. 404 Client Error')
-        if url == 'https://some-source.com/2-records-csw':
+        if url == 'https://some-source.com/csw-records':
             self.load_fom_file()
         else:  # defaults
             raise Exception('unknown URL')
@@ -89,6 +89,7 @@ class MockCatalogueServiceWeb:
                 ctc.organization = c['organization']
                 ctc.email = c['email']
                 ctc.country = c['country']
+                ctc.city = c['city']
                 ctcs.append(ctc)
             rec.contact = ctcs
 

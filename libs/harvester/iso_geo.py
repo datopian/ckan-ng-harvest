@@ -884,7 +884,7 @@ class ISODocument:
             else:
                 xml_str = self.xml_str
 
-            logger.info(f'Parsing ISO XML {xml_str}')
+            # logger.debug(f'Parsing ISO XML {xml_str}')
             self.xml_tree = letree.fromstring(xml_str, parser=parser)
         return self.xml_tree
 
