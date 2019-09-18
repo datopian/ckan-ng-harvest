@@ -79,8 +79,10 @@ def write_results_to_ckan(rows):
             # TODO add default tags
             # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/base.py#L215
 
-            djss = CSWDataset(original_dataset=csw_dataset)
+            iso_values = csw_dataset['iso_values']
+            djss = CSWDataset(original_dataset=iso_values)
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
+
             ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
 
         if action == 'create':
