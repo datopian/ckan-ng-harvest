@@ -19,8 +19,8 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'title': 'title',
         'description': 'notes',
         'keyword': 'tags',
-        'modified': 'extras__modified',  # ! revision_timestamp
-        # requires extra work 'publisher': 'extras__publisher',  # !owner_org
+        'modified': 'modified',  # ! revision_timestamp
+        'publisher': 'publisher',  # !owner_org
         'contactPoint__fn': 'maintainer',
         'contactPoint__hasEmail': 'maintainer_email',
         'identifier': 'extras__identifier',  # !id
@@ -29,18 +29,18 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         'programCode': 'programCode[]',
         'rights': 'extras__rights',
         'license': 'extras__license',  # !license_id
-        'spatial': 'extras__spatial',  # Geometry not valid GeoJSON, not indexing
-        'temporal': 'extras__temporal',
+        'spatial': 'spatial',  # Geometry not valid GeoJSON, not indexing
+        'temporal': 'temporal',
         'theme': 'extras__theme',
-        'dataDictionary': 'extras__dataDictionary',  # !data_dict
-        'dataQuality': 'extras__dataQuality',
-        'accrualPeriodicity':'extras__accrualPeriodicity',
-        'landingPage': 'extras__landingPage',
-        'language': 'extras__language',
-        'primaryITInvestmentUII': 'extras__primaryITInvestmentUII',  # !PrimaryITInvestmentUII
+        'dataDictionary': 'data_dictionary',  # !data_dict
+        'dataQuality': 'data_quality',
+        'accrualPeriodicity':'accrual_periodicity',
+        'landingPage': 'homepage_url',
+        'language': 'language',
+        'primaryITInvestmentUII': 'primary_it_investment_uii',  # !PrimaryITInvestmentUII
         'references': 'extras__references',
         'issued': 'extras__issued',
-        'systemOfRecords': 'extras__systemOfRecords',
+        'systemOfRecords': 'system_of_records',
         # 'distribution': 'resources'  # transformed with a custom adapter
 
         'harvest_ng_source_title': 'extras__harvest_source_title',
