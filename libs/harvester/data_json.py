@@ -103,7 +103,7 @@ class DataJSON:
         try:
             self.data_json = json.loads(self.raw_data_json)  # check for encoding errors
         except Exception as e:
-            error = 'ERROR parsing JSON data: {}'.format(e)
+            error = 'ERROR parsing JSON: {}. Data: {}'.format(e, self.raw_data_json)
             self.validation_errors.append(error)
             return False, error
 

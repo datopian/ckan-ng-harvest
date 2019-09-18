@@ -10,8 +10,7 @@ from dataflows import Flow, load
 
 from harvester import config
 from functions3 import (write_results_to_ckan,
-                        build_validation_error_email,
-                        assing_collection_pkg_id
+                        build_validation_error_email
                         )
 from harvester.logs import logger
 

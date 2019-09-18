@@ -1,7 +1,6 @@
 import json
 from harvester.logs import logger
 import os
-import requests
 from harvester.data_gov_api import CKANPortalAPI
 from harvester.data_json import DataJSON
 from harvester.data_json import DataJSONDataset
@@ -44,7 +43,7 @@ def get_data_json_from_url(url):
             build_validation_error_email()
         except Exception as e:
             logger.error('Error sending validation email: {}'.format(e))
-        raise Exception(datajson.validation_errors)
+        raise Exception('Error validating JSON ' + ', '.join(datajson.validation_errors))
 
     logger.info('JSON OK')
     ret, info = datajson.validate_json()

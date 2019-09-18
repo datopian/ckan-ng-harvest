@@ -125,9 +125,10 @@ def compare_resources(rows):
         result = {'action': 'update',
                     'ckan_id': ckan_id,
                     'new_data': csw_json_data,
-                    'reason': f'Changed: ~{seconds} seconds difference. {warning}'
+                    'reason': 'Update by default'
                 }
         found_update += 1
+        row.update({'comparison_results': result})
         yield row
 
         # remove so next step not detect it as new

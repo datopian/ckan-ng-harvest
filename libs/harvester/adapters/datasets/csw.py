@@ -85,7 +85,7 @@ class CSWDataset(CKANDatasetAdapter):
             if origin is None:
                 logger.debug(f'No data in origin for "{old_field}"')
             else:
-                self.ckan_dataset = self.set_destination_element(raw_field=field_ckan, new_value=origin)
+                self.set_destination_element(raw_field=field_ckan, new_value=origin)
                 logger.debug(f'Connected OK fields "{old_field}"="{origin}"')
 
         self.infer_resources()
