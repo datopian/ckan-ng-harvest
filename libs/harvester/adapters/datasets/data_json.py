@@ -236,8 +236,9 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             if v is None:
                 ckan_dataset_copy.pop(k)
         self.ckan_dataset = ckan_dataset_copy
+
         valid = self.validate_final_dataset()
-        if not valid:
+        if valid is None:
             return None
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))

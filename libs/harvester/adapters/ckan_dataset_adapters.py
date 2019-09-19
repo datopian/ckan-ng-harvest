@@ -119,7 +119,6 @@ class CKANDatasetAdapter(ABC):
             elif self.ckan_dataset[req] in [None, '']:
                 error = f'"{req}" field could not be empty'
                 self.errors.append(error)
-                return False, error
                 ok = False
 
         return ok
