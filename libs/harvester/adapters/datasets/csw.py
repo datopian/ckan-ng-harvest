@@ -105,9 +105,9 @@ class CSWDataset(CKANDatasetAdapter):
         # mandatory
         self.ckan_dataset['owner_org'] = self.ckan_owner_org_id
 
-        valid, error = self.validate_final_dataset()
+        valid = self.validate_final_dataset()
         if not valid:
-            raise Exception(f'Error validating final dataset: {error}')
+            raise Exception(f'Error validating final dataset: {self.errors}')
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return self.ckan_dataset

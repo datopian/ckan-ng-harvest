@@ -173,6 +173,7 @@ def compare_resources(rows):
 
     news = 0
     for name in glob.glob(f'{data_packages_path}/data-json-*.json'):
+        total += 1
         news += 1
         package = Package(name)
         data_json = package.get_resource('inline')

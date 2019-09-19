@@ -158,18 +158,23 @@ def write_results_to_ckan(rows):
             datajson_dataset['harvest_source_id'] = config.SOURCE_ID
 
             if schema_version == '1.1':
-                djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
+                djss = DataJSONSchema1_1(original_dataset=datajson_dataset,
+                                         schema='usmetadata')
             else:
                 results['errors'].append('We are not ready to harvest 1.0 schema datasets. Add it to harvester')
                 yield row
                 continue
                 # raise Exception('We are not ready to harvest 1.0 schema datasets. Check if this kind of dataset still exists')
-            # ORG is required!
+
+            #  ORG is required!
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
             ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
+
             # check errors
-            results['errors'].append(ckan_dataset['resources_errors'])
-            ckan_dataset.pop('resources_errors', None)
+            results['errors'] += djss.errors
+            if ckan_dataset is None:
+                yield row
+                continue
 
         if action == 'create':
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,

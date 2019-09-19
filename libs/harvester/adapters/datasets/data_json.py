@@ -14,61 +14,97 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
     ckan_owner_org_id = None  # required, the client must inform which existing org
 
-    MAPPING = {
-        'name': 'name',
-        'title': 'title',
-        'description': 'notes',
-        'keyword': 'tags',
-        'modified': 'modified',  # ! revision_timestamp
-        'publisher': 'publisher',  # !owner_org
-        'contactPoint__fn': 'contact_name',
-        'contactPoint__hasEmail': 'contact_email',
-        'identifier': 'unique_id',  # !id
-        'accessLevel': 'public_access_level',
-        'bureauCode': 'bureauCode[]',
-        'programCode': 'programCode[]',
-        'rights': 'extras__rights',
-        'license': 'extras__license',  # !license_id
-        'spatial': 'spatial',  # Geometry not valid GeoJSON, not indexing
-        'temporal': 'temporal',
-        'theme': 'extras__theme',
-        'dataDictionary': 'data_dictionary',  # !data_dict
-        'dataQuality': 'data_quality',
-        'accrualPeriodicity':'accrual_periodicity',
-        'landingPage': 'homepage_url',
-        'language': 'language[]',
-        'primaryITInvestmentUII': 'primary_it_investment_uii',  # !PrimaryITInvestmentUII
-        'references': 'extras__references',
-        'issued': 'extras__issued',
-        'systemOfRecords': 'system_of_records',
-        # 'distribution': 'resources'  # transformed with a custom adapter
+    def __init__(self, original_dataset, schema='default'):
+        super().__init__(original_dataset, schema=schema)
+        self.mapped_fields = self.get_field_mapping(schema=schema)
 
-        'harvest_ng_source_title': 'extras__harvest_source_title',
-        'harvest_ng_source_id': 'extras__harvest_source_id',
+    def get_field_mapping(self, schema='default'):
 
-        'harvest_source_title': 'extras__harvest_source_title',
-        'harvest_source_id': 'extras__harvest_source_id',
-        'source_schema_version': 'extras__source_schema_version',  # 1.1 or 1.0
-        'source_hash': 'extras__source_hash',
+        default_fields = {
+            'name': 'name',
+            'title': 'title',
+            'description': 'notes',
+            'keyword': 'tags',
+            'modified': 'extras__modified',  # ! revision_timestamp
+            # requires extra work 'publisher': 'extras__publisher',  # !owner_org
+            'contactPoint__fn': 'maintainer',
+            'contactPoint__hasEmail': 'maintainer_email',
+            'identifier': 'extras__identifier',  # !id
+            'accessLevel': 'extras__accessLevel',
+            'bureauCode': 'extras__bureauCode',
+            'programCode': 'extras__programCode',
+            'rights': 'extras__rights',
+            'license': 'extras__license',  # !license_id
+            'spatial': 'extras__spatial',  # Geometry not valid GeoJSON, not indexing
+            'temporal': 'extras__temporal',
+            'theme': 'extras__theme',
+            'dataDictionary': 'extras__dataDictionary',  # !data_dict
+            'dataQuality': 'extras__dataQuality',
+            'accrualPeriodicity':'extras__accrualPeriodicity',
+            'landingPage': 'extras__landingPage',
+            'language': 'extras__language',
+            'primaryITInvestmentUII': 'extras__primaryITInvestmentUII',  # !PrimaryITInvestmentUII
+            'references': 'extras__references',
+            'issued': 'extras__issued',
+            'systemOfRecords': 'extras__systemOfRecords',
+            # 'distribution': 'resources'  # transformed with a custom adapter
 
-        'catalog_@context': 'extras__catalog_@context',
-        'catalog_@id': 'extras__catalog_@id',
-        'catalog_conformsTo': 'extras__catalog_conformsTo',
-        'catalog_describedBy': 'extras__catalog_describedBy',
+            'harvest_ng_source_title': 'extras__harvest_source_title',
+            'harvest_ng_source_id': 'extras__harvest_source_id',
 
-        'is_collection': 'extras__is_collection',
-        'collection_pkg_id': 'extras__collection_package_id',  # don't like pkg vs package
-    }
+            'harvest_source_title': 'extras__harvest_source_title',
+            'harvest_source_id': 'extras__harvest_source_id',
+            'source_schema_version': 'extras__source_schema_version',  # 1.1 or 1.0
+            'source_hash': 'extras__source_hash',
+
+            'catalog_@context': 'extras__catalog_@context',
+            'catalog_@id': 'extras__catalog_@id',
+            'catalog_conformsTo': 'extras__catalog_conformsTo',
+            'catalog_describedBy': 'extras__catalog_describedBy',
+
+            'is_collection': 'extras__is_collection',
+            'collection_pkg_id': 'extras__collection_package_id',  # don't like pkg vs package
+        }
+
+        if schema == 'usmetadata':
+            default_fields = self.upgrade_usmetadata_default_fields(default_fields)
+
+        return default_fields
+
+    def upgrade_usmetadata_default_fields(self, default_fields):
+        # if endswith [] means it contains a list and must be = ','.join(value)
+        default_fields['modified'] = 'modified'
+        default_fields['publisher'] = 'publisher'
+        default_fields['contactPoint__fn'] = 'contact_name'
+        default_fields['contactPoint__hasEmail'] = 'contact_email'
+        default_fields['identifier'] = 'unique_id'
+        default_fields['accessLevel'] = 'public_access_level'
+        default_fields['bureauCode'] = 'bureau_code'
+        default_fields['programCode'] = 'program_code'
+        default_fields['spatial'] = 'spatial'
+        default_fields['temporal'] = 'temporal'
+        default_fields['dataDictionary'] = 'data_dictionary'
+        default_fields['dataQuality'] = 'data_quality'
+        default_fields['accrualPeriodicity'] = 'accrual_periodicity'
+        default_fields['landingPage'] = 'homepage_url'
+        default_fields['language'] = 'language'
+        default_fields['primaryITInvestmentUII'] = 'primary_it_investment_uii'
+        default_fields['systemOfRecords'] = 'system_of_records'
+
+        return default_fields
 
     def fix_fields(self, field, value):
         # some fields requires extra work
         if field == 'tags':
             return self.build_tags(value)
-        elif field == 'maintainer_email':
+        elif field in ['contact_email', 'maintainer_email']:  # TODO maybe schemas need to be separated
             if value.startswith('mailto:'):
                 value = value.replace('mailto:', '')
             return value
-
+        elif field in ['bureau_code', 'program_code', 'language']:
+            if type(value) == list:
+                value = ','.join(value)
+            return value
         else:
             return value
 
@@ -122,7 +158,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         datajson_dataset = self.original_dataset
 
         # previous transformations at origin
-        for old_field, field_ckan in self.MAPPING.items():
+        for old_field, field_ckan in self.mapped_fields.items():
             logger.debug(f'Connecting fields "{old_field}", "{field_ckan}"')
             # identify origin and set value to destination
             origin = self.identify_origin_element(raw_field=old_field)
@@ -143,11 +179,10 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         # move out the resources with validation errores
         # and log the error as a dataset error
-        self.ckan_dataset['resources_errors'] = []
         final_resources = []
         for resource in self.ckan_dataset['resources']:
             if 'error' in resource:
-                self.ckan_dataset['resources_errors'].append(resource)
+                self.errors.append(resource)
             else:
                 final_resources.append(resource)
         self.ckan_dataset['resources'] = final_resources
@@ -200,9 +235,9 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             if v is None:
                 ckan_dataset_copy.pop(k)
         self.ckan_dataset = ckan_dataset_copy
-        valid, error = self.validate_final_dataset()
+        valid = self.validate_final_dataset()
         if not valid:
-            raise Exception(f'Error validating final dataset: {error}')
+            return None
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return ckan_dataset_copy

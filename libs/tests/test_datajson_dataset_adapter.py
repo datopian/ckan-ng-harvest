@@ -148,9 +148,9 @@ class TestCKANDatasetAdapter(object):
         ckan_dataset = djss.transform_to_ckan_dataset()
         del ckan_dataset['name']
 
-        ret, error = djss.validate_final_dataset()
+        ret = djss.validate_final_dataset()
         assert ret == False
-        assert 'name is a required field' in error
+        assert 'name is a required field' in ','.join(djss.errors)
 
     def test_resources(self):
         djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)

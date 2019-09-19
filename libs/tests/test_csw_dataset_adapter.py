@@ -104,9 +104,9 @@ class TestCKANDatasetAdapter(object):
         ckan_dataset = dst.transform_to_ckan_dataset()
         del ckan_dataset['name']
 
-        ret, error = dst.validate_final_dataset()
+        ret = dst.validate_final_dataset()
         assert ret == False
-        assert 'name is a required field' in error
+        assert 'name is a required field' in ','.join(dst.errors)
 
     def test_resources(self):
         dst = CSWDataset(original_dataset=self.test_dataset)
