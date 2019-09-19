@@ -97,7 +97,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # some fields requires extra work
         if field == 'tags':
             return self.build_tags(value)
-        elif field in ['contact_email', 'maintainer_email']:  # TODO maybe schemas need to be separated
+        elif field in ['contact_email', 'maintainer_email']:  # TODO schemas need to be separated
             if value.startswith('mailto:'):
                 value = value.replace('mailto:', '')
             return value
@@ -157,6 +157,8 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         datajson_dataset = self.original_dataset
 
+        self.ckan_dataset['tag_string'] = ','.join(datajson_dataset.get('tags', []))
+
         # previous transformations at origin
         for old_field, field_ckan in self.mapped_fields.items():
             logger.debug(f'Connecting fields "{old_field}", "{field_ckan}"')
@@ -173,7 +175,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
         if distribution is None or distribution == []:
             distribution = self.infer_resources()
-
 
         self.ckan_dataset['resources'] = self.transform_resources(distribution)
 

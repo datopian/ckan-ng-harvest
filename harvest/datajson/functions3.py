@@ -173,6 +173,8 @@ def write_results_to_ckan(rows):
             # check errors
             results['errors'] += djss.errors
             if ckan_dataset is None:
+                error = 'Package skipped with errors: {}'.format(results['errors'])
+                logger.error(error)
                 yield row
                 continue
 
