@@ -18,7 +18,7 @@ total_sources = cpa.import_harvest_sources(catalog_url=args.import_from_url,
                                            on_duplicated='DELETE',
                                            harvest_type=args.harvest_type,
                                            source_type=args.source_type,
-                                           delete_local_harvest_sources=True)
+                                           delete_local_harvest_sources=False)
 
 # search
 total_searched = 0

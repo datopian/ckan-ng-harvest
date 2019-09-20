@@ -626,6 +626,7 @@ class CKANPortalAPI:
                 owner_org_id = organization['name']
 
                 # res = self.delete_package(name)
+                logger.info(external_harvest_source)
                 res = self.create_harvest_source(title=external_harvest_source['title'],
                                                 url=external_harvest_source['url'],
                                                 owner_org_id=owner_org_id,

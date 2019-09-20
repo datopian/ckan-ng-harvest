@@ -17,6 +17,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
     def __init__(self, original_dataset, schema='default'):
         super().__init__(original_dataset, schema=schema)
         self.mapped_fields = self.get_field_mapping(schema=schema)
+        self.load_default_values(schema=schema)
 
     def get_field_mapping(self, schema='default'):
 
@@ -71,6 +72,25 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         return default_fields
 
+    def load_default_values(self, schema='default'):
+
+        defvalues = {}   # ' field= value list: {'contactPoint__hasEmail': 'hola@gmail.com'}
+        if schema == 'usmetadata':
+            newdefs = {'accessLevel': 'public',
+                       # 'contactPoint__fn': 'Jhon',
+                       # 'programCode': '000:111',
+                       # 'bureauCode': '333:23',
+                       # 'contactPoint__hasEmail': 'jhon@gmail.com',
+                       # 'tags': ['tag1', 'tag2']
+                      }
+            defvalues.update(newdefs)
+
+            for key, value in defvalues.items():
+                if key not in self.original_dataset:
+                    self.original_dataset[key] = value
+                elif self.original_dataset[key] == '':
+                    self.original_dataset[key] = value
+
     def upgrade_usmetadata_default_fields(self, default_fields):
         # if endswith [] means it contains a list and must be = ','.join(value)
         default_fields['modified'] = 'modified'
@@ -101,24 +121,27 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             self.errors.append(error)
             return False
 
-        if self.schema =='usmetadata':
-            requireds = ['accessLevel', 'identifier',
-                         'contactPoint__fn', 'programCode',
-                         'bureauCode', 'contactPoint__hasEmail',
-                         'publisher', 'modified']
-            ok = True
-            for req in requireds:
-                if req not in self.ckan_dataset:
-                    error = f'"{req}" is a required field at origin dataset'
-                    self.errors.append(error)
-                    ok = False
-                elif self.ckan_dataset[req] in [None, '']:
-                    error = f'"{req}" field could not be empty at origin dataset'
-                    self.errors.append(error)
-                    ok = False
+        requireds = []
 
-            return ok
-        return True
+        if self.schema == 'usmetadata':
+            requireds += ['accessLevel', 'identifier',
+                          'contactPoint__fn', 'programCode',
+                          'bureauCode', 'contactPoint__hasEmail',
+                          'publisher', 'modified', 'keyword']
+
+        ok = True
+        for req in requireds:
+            # read fields considering the __ separator
+            identified = self.identify_origin_element(raw_field=req)
+            if identified in [None, '']:
+                error = f'"{req}" field could not be empty at origin dataset'
+                self.errors.append(error)
+                ok = False
+
+        if not ok:
+            logger.info(f'requires failed on {self.original_dataset}: {self.errors}')
+        return ok
+
 
     def fix_fields(self, field, value):
         # some fields requires extra work
@@ -176,7 +199,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             return None
 
         datajson_dataset = self.original_dataset
-        self.ckan_dataset['tag_string'] = ','.join(datajson_dataset.get('tags', []))
+        self.ckan_dataset['tag_string'] = ','.join(datajson_dataset.get('keyword', []))
 
         # previous transformations at origin
         for old_field, field_ckan in self.mapped_fields.items():

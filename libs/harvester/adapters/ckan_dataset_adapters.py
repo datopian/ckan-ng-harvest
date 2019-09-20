@@ -77,7 +77,9 @@ class CKANDatasetAdapter(ABC):
             'spatial': None,
             'program_code': None,
             'bureau_code': None,
-            'tag_string': None
+            'tag_string': None,
+            'data_quality': None,
+            'accrual_periodicity': None,
             }
 
         pkg.update(new_keys)
