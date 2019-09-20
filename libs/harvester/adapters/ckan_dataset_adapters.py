@@ -79,7 +79,12 @@ class CKANDatasetAdapter(ABC):
             'bureau_code': None,
             'tag_string': None,
             'data_quality': None,
+            'data_dictionary': None,
             'accrual_periodicity': None,
+            'temporal': None,
+            'system_of_records': None,
+            'primary_it_investment_uii': None,
+            'language': None,
             }
 
         pkg.update(new_keys)
