@@ -77,10 +77,10 @@ class HarvestedSource:
             'data_json': self.data_json,
             'results': self.results,
             'data_json_validation_errors': self.data_json_validation_errors,
-            'actions': self.final_results['actions'],
-            'validation_errors': self.final_results['validation_errors'],
-            'action_warnings': self.final_results['action_warnings'],
-            'action_errors': self.final_results['action_errors']
+            'actions': self.final_results.get('actions', {}),
+            'validation_errors': self.final_results.get('validation_errors', {}),
+            'action_warnings': self.final_results.get('action_warnings', {}),
+            'action_errors': self.final_results.get('action_errors', {})
         }
         return data
 

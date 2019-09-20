@@ -123,6 +123,7 @@ def write_results_to_ckan(rows):
 
         if action == 'error':
             results['errors'].append(comparison_results['reason'])
+            actions[action]['fails'] += 1
             yield row
             continue
 
@@ -162,6 +163,7 @@ def write_results_to_ckan(rows):
                                          schema='usmetadata')
             else:
                 results['errors'].append('We are not ready to harvest 1.0 schema datasets. Add it to harvester')
+                actions[action]['fails'] += 1
                 yield row
                 continue
                 # raise Exception('We are not ready to harvest 1.0 schema datasets. Check if this kind of dataset still exists')
@@ -175,6 +177,7 @@ def write_results_to_ckan(rows):
             if ckan_dataset is None:
                 error = 'Package skipped with errors: {}'.format(results['errors'])
                 logger.error(error)
+                actions[action]['fails'] += 1
                 yield row
                 continue
 

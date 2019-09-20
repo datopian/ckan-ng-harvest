@@ -93,6 +93,33 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         return default_fields
 
+    def validate_origin_dataset(self):
+        # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
+
+        if self.ckan_owner_org_id is None:
+            error = 'Owner organization ID is required'
+            self.errors.append(error)
+            return False
+
+        if self.schema =='usmetadata':
+            requireds = ['accessLevel', 'identifier',
+                         'contactPoint__fn', 'programCode',
+                         'bureauCode', 'contactPoint__hasEmail',
+                         'publisher', 'modified']
+            ok = True
+            for req in requireds:
+                if req not in self.ckan_dataset:
+                    error = f'"{req}" is a required field at origin dataset'
+                    self.errors.append(error)
+                    ok = False
+                elif self.ckan_dataset[req] in [None, '']:
+                    error = f'"{req}" field could not be empty at origin dataset'
+                    self.errors.append(error)
+                    ok = False
+
+            return ok
+        return True
+
     def fix_fields(self, field, value):
         # some fields requires extra work
         if field == 'tags':
@@ -107,14 +134,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             return value
         else:
             return value
-
-    def validate_origin_dataset(self):
-        # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
-
-        if self.ckan_owner_org_id is None:
-            return False, 'Owner organization ID is required'
-
-        return True, None
 
     def infer_resources(self):
         # if _distribution_ is empty then we try to create them from "accessURL" or "webService" URLs
@@ -151,12 +170,12 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         # if we are updating existing dataset we need to merge resources
 
         logger.info('Transforming data.json dataset {}'.format(self.original_dataset.get('identifier', '')))
-        valid, error = self.validate_origin_dataset()
+        valid = self.validate_origin_dataset()
         if not valid:
-            raise Exception(f'Error validating origin dataset: {error}')
+            # raise Exception(f'Error validating origin dataset: {error}')
+            return None
 
         datajson_dataset = self.original_dataset
-
         self.ckan_dataset['tag_string'] = ','.join(datajson_dataset.get('tags', []))
 
         # previous transformations at origin
