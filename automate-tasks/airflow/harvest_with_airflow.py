@@ -75,7 +75,7 @@ urls = []
 
 templated_harvest_command = """
             source {{ params.env_path }}/bin/activate
-            cd {{ params.app_path }}/harvest/{{ source_type }}
+            cd {{ params.app_path }}/harvest/{{ params.source_type }}
             python harvest.py \
                 --name {{ params.name }} \
                 --url {{ params.data_json_url }} \
@@ -87,7 +87,9 @@ templated_harvest_command = """
             """
 
 for source_type in source_types:
-    results = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type=source_type)
+    results = cpa.search_harvest_packages(rows=1000,
+                                          harvest_type='harvest',
+                                          source_type=source_type)
     for datasets in results:
         for harvest_source in datasets:
 
@@ -126,7 +128,7 @@ for source_type in source_types:
                 dag=dag  # set actual dag for this task
                 )
 
-            logger.info(f'set {dag} dag for the task: {task.bash_command}')
+            logger.info(f'set {dag} dag for the task: {task.bash_command} with params {params}')
 
             last_task = dags[frequency]['last_task']
             if last_task is not None:
