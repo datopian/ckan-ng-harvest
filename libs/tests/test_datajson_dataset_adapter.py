@@ -49,7 +49,7 @@ class TestCKANDatasetAdapter(object):
 
     def test_datajson_1_1_to_ckan(self):
 
-        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset, schema='usmetadata')
         # ORG is required!
         djss.ckan_owner_org_id = 'XXXX'
 
@@ -98,7 +98,7 @@ class TestCKANDatasetAdapter(object):
         assert ['XXXXX'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'harvest_source_id']
 
     def test_collections(self):
-        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset, schema='usmetadata')
         # ORG is required!
         djss.ckan_owner_org_id = 'XXXX'
         ckan_dataset = djss.transform_to_ckan_dataset()
@@ -116,7 +116,7 @@ class TestCKANDatasetAdapter(object):
         assert ['XXXXX'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'collection_package_id']
 
     def test_catalog_extras(self):
-        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset, schema='usmetadata')
         # ORG is required!
         djss.ckan_owner_org_id = 'XXXX'
         ckan_dataset = djss.transform_to_ckan_dataset()
@@ -138,7 +138,7 @@ class TestCKANDatasetAdapter(object):
 
         dataset = self.test_datajson_dataset
         # drop required keys
-        djss = DataJSONSchema1_1(original_dataset=dataset)
+        djss = DataJSONSchema1_1(original_dataset=dataset, schema='usmetadata')
         # ORG is required!
 
         with pytest.raises(Exception):
@@ -153,7 +153,7 @@ class TestCKANDatasetAdapter(object):
         assert 'name is a required field' in ','.join(djss.errors)
 
     def test_resources(self):
-        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset, schema='usmetadata')
         # ORG is required!
         djss.ckan_owner_org_id = 'XXXX'
 
@@ -241,12 +241,12 @@ class TestCKANDatasetAdapter(object):
 
         dataset = self.test_datajson_dataset
         # drop required keys
-        djss = DataJSONSchema1_1(original_dataset=dataset)
+        djss = DataJSONSchema1_1(original_dataset=dataset, schema='usmetadata')
         djss.ckan_owner_org_id = 'XXXX'
         ckan_dataset = djss.transform_to_ckan_dataset()
 
         del dataset['distribution']
-        djss = DataJSONSchema1_1(original_dataset=dataset)
+        djss = DataJSONSchema1_1(original_dataset=dataset, schema='usmetadata')
         djss.ckan_owner_org_id = 'XXXX'
         ckan_dataset = djss.transform_to_ckan_dataset()
 

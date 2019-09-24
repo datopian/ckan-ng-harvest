@@ -22,9 +22,10 @@ def assing_collection_pkg_id(rows):
     """ detect new CKAN ids for collections.
         The IDs are at different rows so we need to iterate all rows
         """
-
     # create a list of datajson identifiers -> CKAN indetifiers
     # to detect collection IDs
+    if rows is None:
+        raise Exception('NADA')
     related_ids = {}
     need_update_rows = []  # need to save the collection_pkg_id
     for row in rows:
@@ -186,7 +187,7 @@ def write_results_to_ckan(rows):
                                 api_key=config.CKAN_API_KEY)
 
             try:
-                ckan_response = cpa.create_package(ckan_package=ckan_dataset)
+                ckan_response = cpa.create_package(ckan_package=ckan_dataset, on_duplicated='DELETE')
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 

@@ -91,6 +91,7 @@ class CKANPortalAPI:
 
             headers = self.get_request_headers()
             try:
+                logger.info(f'Search harvest packages via {method}')
                 if method == 'POST':  # depend on CKAN version
                     req = requests.post(url, data=params, headers=headers)
                 else:

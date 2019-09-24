@@ -76,13 +76,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
         defvalues = {}   # ' field= value list: {'contactPoint__hasEmail': 'hola@gmail.com'}
         if schema == 'usmetadata':
-            newdefs = {'accessLevel': 'public',
-                       # 'contactPoint__fn': 'Jhon',
-                       # 'programCode': '000:111',
-                       # 'bureauCode': '333:23',
-                       # 'contactPoint__hasEmail': 'jhon@gmail.com',
-                       # 'tags': ['tag1', 'tag2']
-                      }
+            newdefs = {'accessLevel': 'public'}
             defvalues.update(newdefs)
 
             for key, value in defvalues.items():
@@ -259,7 +253,8 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         publisher = datajson_dataset.get('publisher', None)
         if publisher is not None:
             publisher_name = publisher.get('name', '')
-            self.set_extra('publisher', publisher_name)
+            # self.set_extra('publisher', publisher_name)
+            self.ckan_dataset['publisher'] = publisher_name
             parent_publisher = publisher.get('subOrganizationOf', None)
             if parent_publisher is not None:
                 publisher_hierarchy = [publisher_name]
