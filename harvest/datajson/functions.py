@@ -31,6 +31,7 @@ def get_data_json_from_url(url):
     ret, info = datajson.download_data_json(timeout=90)
     if not ret:
         error = 'Error getting data: {}'.format(info)
+        datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
         logger.error(error)
         raise Exception(error)
     logger.info('Downloaded OK')
@@ -50,13 +51,14 @@ def get_data_json_from_url(url):
     if not ret:
         logger.error('Error validating data: {}\n----------------\n'.format(info))
         # continue  # USE invalid too
-        logger.info('Validate FAILED: {} datasets'.format(len(datajson.datasets)))
+        logger.info('Validation errors: {}'.format(info))
     else:
         logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
 
-    # TODO move this as a DataJson function and add it to a validate function validate_data_json(data_json['dataset'])
+    # TODO move this as a DataJson function and add it to a validate function
+    # validate_data_json(data_json['dataset'])
 
-    logger.info('VALID JSON, {} datasets found'.format(len(datajson.datasets)))
+    logger.info('{} datasets found'.format(len(datajson.datasets)))
 
     # save data.json
     datajson.save_data_json(path=config.get_datajson_cache_path())
@@ -82,12 +84,12 @@ def clean_duplicated_identifiers(rows):
     processed = 0
     # resource = rows.res
     # logger.error('Rows from resource {}'.format(resource.name))
-
     for row in rows:
         if row['identifier'] not in unique_identifiers:
-            unique_identifiers.append(row['identifier'])
-            yield(row)
             processed += 1
+            unique_identifiers.append(row['identifier'])
+            logger.info('Dataset {} not duplicated: {}'.format(processed, row['identifier']))
+            yield(row)
         else:
             duplicates.append(row['identifier'])
             row['is_duplicate'] = 'True'

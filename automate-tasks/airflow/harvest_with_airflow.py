@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from harvester.data_gov_api import CKANPortalAPI
 from harvester.logs import logger
 
+source_types = ['datajson', 'csw']
 
 default_args = {
     'owner': 'airflow',
@@ -66,15 +67,15 @@ dags = {'DAILY': {'dag': dag_daily, 'last_task': None},
         }
 
 
-catalog_url = 'http://ckan:5000'
-catalog_api_key = '5ce77b38-3556-4a2c-9e44-5a18f53f9862'
+catalog_url = 'http://nginx:8080'
+catalog_api_key = '8d020294-74c1-4831-8fe1-3ccbbfff548a'
 
 cpa = CKANPortalAPI(base_url=catalog_url, api_key=catalog_api_key)
 urls = []
 
 templated_harvest_command = """
             source {{ params.env_path }}/bin/activate
-            cd {{ params.app_path }}
+            cd {{ params.app_path }}/harvest/{{ params.source_type }}
             python harvest.py \
                 --name {{ params.name }} \
                 --url {{ params.data_json_url }} \
@@ -85,50 +86,54 @@ templated_harvest_command = """
                 --limit_dataset 10 # limit for test, remove for production
             """
 
-results = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type='datajson')
-for datasets in results:
-    for harvest_source in datasets:
+for source_type in source_types:
+    results = cpa.search_harvest_packages(rows=1000,
+                                          harvest_type='harvest',
+                                          source_type=source_type)
+    for datasets in results:
+        for harvest_source in datasets:
 
-        frequency = harvest_source.get('frequency', 'MONTHLY').upper()
-        if frequency not in valid_frequencies:
-            raise Exception(f'Unknown frequency: {frequency}')
+            frequency = harvest_source.get('frequency', 'MONTHLY').upper()
+            if frequency not in valid_frequencies:
+                raise Exception(f'Unknown frequency: {frequency}')
 
-        url = harvest_source['url']
-        if url in urls:  # avoid duplicates
-            continue
-        urls.append(url)
+            url = harvest_source['url']
+            if url in urls:  # avoid duplicates
+                continue
+            urls.append(url)
 
-        organization = harvest_source['organization']
-        name = harvest_source['name']
-        # this is the ID of the organization at the external source
-        # we need to get our local organizaion ID
-        ckan_org_id = harvest_source['owner_org']
-        params = {
-            'env_path': env_path,
-            'app_path': app_path,
-            'name': name,
-            'data_json_url': url,
-            'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID
-            'ckan_org_id': ckan_org_id,
-            'catalog_url': catalog_url,
-            'ckan_api_key': catalog_api_key
-            }
+            organization = harvest_source['organization']
+            name = harvest_source['name']
+            # this is the ID of the organization at the external source
+            # we need to get our local organizaion ID
+            ckan_org_id = harvest_source['owner_org']
+            params = {
+                'env_path': env_path,
+                'app_path': app_path,
+                'name': name,
+                'source_type': source_type,
+                'data_json_url': url,
+                'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID
+                'ckan_org_id': ckan_org_id,
+                'catalog_url': catalog_url,
+                'ckan_api_key': catalog_api_key
+                }
 
-        dag = dags[frequency]['dag']
-        task = BashOperator(
-            task_id=f'harvest-{name}',
-            bash_command=templated_harvest_command,
-            params=params,
-            trigger_rule="all_done",  # continue regardless of whether it fails. Everything will stop if it fails without this line
-            dag=dag  # set actual dag for this task
-            )
+            dag = dags[frequency]['dag']
+            task = BashOperator(
+                task_id=f'harvest-{name}-{source_type}',
+                bash_command=templated_harvest_command,
+                params=params,
+                trigger_rule="all_done",  # continue regardless of whether it fails. Everything will stop if it fails without this line
+                dag=dag  # set actual dag for this task
+                )
 
-        logger.info(f'set {dag} dag for the task: {task.bash_command}')
+            logger.info(f'set {dag} dag for the task: {task.bash_command} with params {params}')
 
-        last_task = dags[frequency]['last_task']
-        if last_task is not None:
-            task.set_upstream(last_task)
+            last_task = dags[frequency]['last_task']
+            if last_task is not None:
+                task.set_upstream(last_task)
 
-        dags[frequency]['last_task'] = task
+            dags[frequency]['last_task'] = task
 
-        logger.info(f'task added {task}')
+            logger.info(f'task added {task}')

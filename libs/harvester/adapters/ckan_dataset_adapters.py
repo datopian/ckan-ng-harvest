@@ -7,13 +7,18 @@ from harvester.settings import ckan_settings
 class CKANDatasetAdapter(ABC):
     ''' transform other datasets objects into CKAN datasets '''
 
-    def __init__(self, original_dataset):
+    def __init__(self, original_dataset, schema='default'):
+        self.schema = schema
         self.original_dataset = original_dataset
-        self.ckan_dataset = self.get_base_ckan_dataset()
+        self.required = ['name', 'private']
+        self.ckan_dataset = self.get_base_ckan_dataset(schema=schema)
+        self.errors = []
 
-    def get_base_ckan_dataset(self):
-        # creates the Dict base for a CKAN dataset
+    def get_base_ckan_dataset(self, schema='default'):
+        # creates the Dict base for a base CKAN dataset
         # Check for required fields: https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
+        # This is the official version.
+        # Note that some CKAN extensions modify this schemas
 
         pkg = {
             'name': '',  # no spaces, just lowercases, - and _
@@ -41,6 +46,49 @@ class CKANDatasetAdapter(ABC):
             'groups': None,  # (list of dictionaries) – the groups to which the dataset belongs (optional), each group dictionary should have one or more of the following keys which identify an existing group: 'id' (the id of the group, string), or 'name' (the name of the group, string), to see which groups exist call group_list()
         }
 
+        if schema == 'usmetadata':
+            pkg = self.upgrade_usmetadata_schema(pkg)
+            self.upgrade_usmetadata_required()
+
+        return pkg
+
+    def upgrade_usmetadata_required(self):
+        required = ['public_access_level', 'unique_id',
+                    'contact_name', 'program_code',
+                    'bureau_code', 'contact_email',
+                    'publisher', 'modified',
+                    'tag_string']
+        self.required += required
+
+    def upgrade_usmetadata_schema(self, pkg):
+        to_remove = ['maintainer', 'maintainer_email']
+        for k in to_remove:
+            pkg.pop(k, None)
+
+        new_keys = {
+            'contact_name': None,
+            'contact_email': None,
+            'modified': None,
+            'publisher': None,
+            'public_access_level': None,
+            'homepage_url': None,
+            'unique_id': None,
+            'contact_name': None,
+            'spatial': None,
+            'program_code': None,
+            'bureau_code': None,
+            'tag_string': None,
+            'data_quality': None,
+            'data_dictionary': None,
+            'accrual_periodicity': None,
+            'temporal': None,
+            'system_of_records': None,
+            'primary_it_investment_uii': None,
+            'language': None,
+            }
+
+        pkg.update(new_keys)
+
         return pkg
 
     @abstractmethod
@@ -67,14 +115,20 @@ class CKANDatasetAdapter(ABC):
 
     def validate_final_dataset(self):
         # check required https://docs.ckan.org/en/2.8/api/#ckan.logic.action.create.package_create
+        # somo extensions changes this
 
-        if 'private' not in self.ckan_dataset:
-            return False, 'private is a required field'
-        if 'name' not in self.ckan_dataset:
-            return False, 'name is a required field'
-        if self.ckan_dataset['name'] == '':
-            return False, 'Empty "name" field'
-        return True, None
+        ok = True
+        for req in self.required:
+            if req not in self.ckan_dataset:
+                error = f'"{req}" is a required field'
+                self.errors.append(error)
+                ok = False
+            elif self.ckan_dataset[req] in [None, '']:
+                error = f'"{req}" field could not be empty'
+                self.errors.append(error)
+                ok = False
+
+        return ok
 
     def set_destination_element(self, raw_field, new_value):
         # in 'extras__issued' gets or creates self.ckan_dataset[extras][key][issued] and assing new_value to self.ckan_dataset[extras][value]
@@ -83,7 +137,7 @@ class CKANDatasetAdapter(ABC):
 
         parts = raw_field.split('__')
         if parts[0] not in self.ckan_dataset:
-            raise Exception(f'Not found field "{parts[0]}" at CKAN destination dict')
+            raise Exception('Not found field "{}" at CKAN destination dict'.format(parts[0]))
         if len(parts) == 1:
             # check if need to be fixed
             self.ckan_dataset[raw_field] = self.fix_fields(field=raw_field,

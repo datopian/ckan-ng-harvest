@@ -91,6 +91,7 @@ class CKANPortalAPI:
 
             headers = self.get_request_headers()
             try:
+                logger.info(f'Search harvest packages via {method}')
                 if method == 'POST':  # depend on CKAN version
                     req = requests.post(url, data=params, headers=headers)
                 else:
@@ -626,6 +627,7 @@ class CKANPortalAPI:
                 owner_org_id = organization['name']
 
                 # res = self.delete_package(name)
+                logger.info(external_harvest_source)
                 res = self.create_harvest_source(title=external_harvest_source['title'],
                                                 url=external_harvest_source['url'],
                                                 owner_org_id=owner_org_id,

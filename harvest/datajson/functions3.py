@@ -22,9 +22,10 @@ def assing_collection_pkg_id(rows):
     """ detect new CKAN ids for collections.
         The IDs are at different rows so we need to iterate all rows
         """
-
     # create a list of datajson identifiers -> CKAN indetifiers
     # to detect collection IDs
+    if rows is None:
+        raise Exception('NADA')
     related_ids = {}
     need_update_rows = []  # need to save the collection_pkg_id
     for row in rows:
@@ -123,6 +124,7 @@ def write_results_to_ckan(rows):
 
         if action == 'error':
             results['errors'].append(comparison_results['reason'])
+            actions[action]['fails'] += 1
             yield row
             continue
 
@@ -158,25 +160,34 @@ def write_results_to_ckan(rows):
             datajson_dataset['harvest_source_id'] = config.SOURCE_ID
 
             if schema_version == '1.1':
-                djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
+                djss = DataJSONSchema1_1(original_dataset=datajson_dataset,
+                                         schema='usmetadata')
             else:
                 results['errors'].append('We are not ready to harvest 1.0 schema datasets. Add it to harvester')
+                actions[action]['fails'] += 1
                 yield row
                 continue
                 # raise Exception('We are not ready to harvest 1.0 schema datasets. Check if this kind of dataset still exists')
-            # ORG is required!
+
+            #  ORG is required!
             djss.ckan_owner_org_id = config.CKAN_OWNER_ORG
             ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
+
             # check errors
-            results['errors'].append(ckan_dataset['resources_errors'])
-            ckan_dataset.pop('resources_errors', None)
+            results['errors'] += djss.errors
+            if ckan_dataset is None:
+                error = 'Package skipped with errors: {}'.format(results['errors'])
+                logger.error(error)
+                actions[action]['fails'] += 1
+                yield row
+                continue
 
         if action == 'create':
             cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL,
                                 api_key=config.CKAN_API_KEY)
 
             try:
-                ckan_response = cpa.create_package(ckan_package=ckan_dataset)
+                ckan_response = cpa.create_package(ckan_package=ckan_dataset, on_duplicated='DELETE')
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 

@@ -21,3 +21,5 @@ airflow initdb
 airflow webserver -p 8082
 airflow scheduler
 ```
+
+More commands: https://airflow.apache.org/cli.html

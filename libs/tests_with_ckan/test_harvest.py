@@ -64,7 +64,7 @@ class TestCKANHarvest(object):
 
     def test_create_package_with_tags(self):
 
-        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset)
+        djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset, schema='usmetadata')
         djss.ckan_owner_org_id = CKAN_ORG_ID
         package = djss.transform_to_ckan_dataset()
 

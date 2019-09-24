@@ -76,10 +76,12 @@ class DataJSON:
                                )
         except Exception as e:
             error = 'ERROR Donwloading data: {} [{}]'.format(self.url, e)
+            self.validation_errors.append(error)
             return False, error
 
         if req.status_code >= 400:
             error = '{} HTTP error: {}'.format(self.url, req.status_code)
+            self.validation_errors.append(error)
             return False, error
 
         self.raw_data_json = req.content

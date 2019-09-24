@@ -30,7 +30,7 @@ templated_harvest_command = """
                 --ckan_api_key {{ ckan_api_key }}
             """
 
-results = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type='csw')
+results = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type='datajson')
 for datasets in results:
     for harvest_source in datasets:
 
