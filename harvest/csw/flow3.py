@@ -36,6 +36,7 @@ res = Flow(
 build_validation_error_email(res[0][0])
 
 # save results
+# TODO in res[0][0] is an exception wi will fail here
 dmp = json.dumps(res[0][0], indent=2)
 f = open(config.get_flow2_datasets_result_path(), 'w')
 f.write(dmp)
