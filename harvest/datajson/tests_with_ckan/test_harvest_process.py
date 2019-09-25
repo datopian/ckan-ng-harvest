@@ -75,7 +75,7 @@ class HarvestTestClass(unittest.TestCase):
 
     harvest_source = cpa.create_harvest_source(title=NAME,
                                                 url=URL,
-                                                owner_org_id='california',
+                                                owner_org_id=CKAN_ORG_ID,
                                                 source_type='datajson',
                                                 notes='Some tests about local harvesting sources creation',
                                                 frequency='WEEKLY')
