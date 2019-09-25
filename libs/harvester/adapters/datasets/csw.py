@@ -62,7 +62,7 @@ class CSWDataset(CKANDatasetAdapter):
         if schema == 'usmetadata':
             newdefs = {
                 'accessLevel': 'public',
-                'bureauCode': '000:000',
+                'bureauCode': '000:00',
                 'programCode': '000:00',
                 'spatial': 'no data',
                 'dataDictionary': 'no data',
