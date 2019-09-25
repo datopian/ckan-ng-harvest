@@ -15,34 +15,97 @@ class CSWDataset(CKANDatasetAdapter):
 
     ckan_owner_org_id = None  # required, the client must inform which existing org
 
-    MAPPING = {
-        'name': 'name',
-        'title': 'title',
-        'tags': 'tags',
-        'abstract': 'notes',
-        'progress': 'extras__progress',
-        'resource-type': 'extras__resource-type',
+    def __init__(self, original_dataset, schema='default'):
+        super().__init__(original_dataset, schema=schema)
+        self.mapped_fields = self.get_field_mapping(schema=schema)
+        self.load_default_values(schema=schema)
 
-        # Essentials
-        'spatial-reference-system': 'extras__spatial-reference-system',
-        'guid': 'extras__guid',
-        # Usefuls
-        'dataset-reference-date': 'extras__dataset-reference-date',
-        'metadata-language': 'extras__metadata-language',  # Language
-        'metadata-date': 'extras__metadata-date',  # Released
-        'coupled-resource': 'extras__coupled-resource',
-        'contact-email': 'extras__contact-email',
-        'frequency-of-update': 'extras__frequency-of-update',
-        'spatial-data-service-type': 'extras__spatial-data-service-type',
+    def get_field_mapping(self, schema='default'):
 
-        'harvest_ng_source_title': 'extras__harvest_source_title',
-        'harvest_ng_source_id': 'extras__harvest_source_id',
-        'harvest_source_title': 'extras__harvest_source_title',
-        'harvest_source_id': 'extras__harvest_source_id',
-        'source_hash': 'extras__source_hash',
+        default_fields = {
+            'name': 'name',
+            'title': 'title',
+            'tags': 'tags',
+            'abstract': 'notes',
+            'progress': 'extras__progress',
+            'resource-type': 'extras__resource-type',
 
-        'use-constraints': 'extras__licence',
-    }
+            # Essentials
+            'spatial-reference-system': 'extras__spatial-reference-system',
+            'guid': 'extras__guid',
+            # Usefuls
+            'dataset-reference-date': 'extras__dataset-reference-date',
+            'metadata-language': 'extras__metadata-language',  # Language
+            'metadata-date': 'extras__metadata-date',  # Released
+            'coupled-resource': 'extras__coupled-resource',
+            'contact-email': 'extras__contact-email',
+            'frequency-of-update': 'extras__frequency-of-update',
+            'spatial-data-service-type': 'extras__spatial-data-service-type',
+
+            'limitations-on-public-access': 'extras__access_constraints',
+            'harvest_ng_source_title': 'extras__harvest_source_title',
+            'harvest_ng_source_id': 'extras__harvest_source_id',
+            'harvest_source_title': 'extras__harvest_source_title',
+            'harvest_source_id': 'extras__harvest_source_id',
+            'source_hash': 'extras__source_hash',
+
+            'use-constraints': 'extras__licence',
+            }
+        if schema == 'usmetadata':
+            default_fields = self.upgrade_usmetadata_default_fields(default_fields)
+
+        return default_fields
+
+    def load_default_values(self, schema='default'):
+
+        defvalues = {}
+        if schema == 'usmetadata':
+            newdefs = {
+                'accessLevel': 'public',
+                'bureauCode': '000:000',
+                'programCode': '000:00',
+                'spatial': 'no data',
+                'dataDictionary': 'no data',
+                'dataQuality': 'no data',
+                'accrualPeriodicity': 'no data',
+                'primaryITInvestmentUII': 'no data',
+                'systemOfRecords': 'no data',
+                'publisher': 'no data',
+                'tags': ['no tags'],
+                }
+
+            defvalues.update(newdefs)
+
+            for key, value in defvalues.items():
+                if key not in self.original_dataset:
+                    self.original_dataset[key] = value
+                elif self.original_dataset[key] == '':
+                    self.original_dataset[key] = value
+
+    def upgrade_usmetadata_default_fields(self, default_fields):
+        # if endswith [] means it contains a list and must be = ','.join(value)
+        default_fields['metadata-date'] = 'modified'
+        # TODO check for the "date-released", "date-updated" and "date-created" fields
+        default_fields['guid'] = 'unique_id'
+        default_fields['accessLevel'] = 'public_access_level'
+        default_fields['contact-email'] = 'contact_email'
+        default_fields['publisher'] = 'publisher'
+        default_fields['contact'] = 'contact_name'
+        default_fields['url'] = 'homepage_url'
+        default_fields['language'] = 'language'
+
+        # we need to get this fields
+        default_fields['bureauCode'] = 'bureau_code'
+        default_fields['programCode'] = 'program_code'
+        default_fields['spatial'] = 'spatial'
+        default_fields['temporal'] = 'temporal'
+        default_fields['dataDictionary'] = 'data_dictionary'
+        default_fields['dataQuality'] = 'data_quality'
+        default_fields['accrualPeriodicity'] = 'accrual_periodicity'
+        default_fields['primaryITInvestmentUII'] = 'primary_it_investment_uii'
+        default_fields['systemOfRecords'] = 'system_of_records'
+
+        return default_fields
 
     def fix_fields(self, field, value):
         # some fields requires extra work
@@ -76,9 +139,11 @@ class CSWDataset(CKANDatasetAdapter):
             raise Exception(f'Error validating origin dataset: {error}')
 
         dataset = self.original_dataset.get('iso_values', {})
+        tags = dataset.get('tags', ['no tags'])
+        self.ckan_dataset['tag_string'] = ','.join(tags)
 
         # previous transformations at origin
-        for old_field, field_ckan in self.MAPPING.items():
+        for old_field, field_ckan in self.mapped_fields.items():
             logger.debug(f'Connecting fields "{old_field}", "{field_ckan}"')
             # identify origin and set value to destination
             origin = self.identify_origin_element(raw_field=old_field)
@@ -114,7 +179,7 @@ class CSWDataset(CKANDatasetAdapter):
 
         valid = self.validate_final_dataset()
         if not valid:
-            raise Exception(f'Error validating final dataset: {self.errors}')
+            raise Exception(f'Error validating final dataset: {self.errors} from {self.original_dataset}')
 
         logger.info('Dataset transformed {} OK'.format(self.original_dataset.get('identifier', '')))
         return self.ckan_dataset

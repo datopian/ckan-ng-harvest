@@ -74,7 +74,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
     def load_default_values(self, schema='default'):
 
-        defvalues = {}   # ' field= value list: {'contactPoint__hasEmail': 'hola@gmail.com'}
+        defvalues = {}
         if schema == 'usmetadata':
             newdefs = {'accessLevel': 'public'}
             defvalues.update(newdefs)

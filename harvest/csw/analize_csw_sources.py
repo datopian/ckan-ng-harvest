@@ -54,7 +54,7 @@ for url in url_services:
             logger.info(record)
 
             iso_values = record['iso_values']
-            cswd = CSWDataset(original_dataset=iso_values)
+            cswd = CSWDataset(original_dataset=iso_values, schema='usmetadata')
             cswd.ckan_owner_org_id = 'xxxx'
             ckan_dataset = cswd.transform_to_ckan_dataset()
             as_str = json.dumps(ckan_dataset, indent=2)
