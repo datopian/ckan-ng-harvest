@@ -61,7 +61,7 @@ def get_data_json_from_url(url):
     logger.info('{} datasets found'.format(len(datajson.datasets)))
 
     # save data.json
-    datajson.save_data_json(path=config.get_datajson_cache_path())
+    datajson.save_data_json(path=config.get_data_cache_path())
     # save headers errors
     datajson.save_errors(path=config.get_errors_path())
 

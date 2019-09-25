@@ -140,11 +140,11 @@ class HarvestedSources:
                 data = hs.get_json_data()
                 self.all_data.append(data)
 
-                if type(data['data_json']) == list:
+                if type(data['data']) == list:
                     datasets = []
                     logger.error(f'{name}: Data JSON Source is a list. Must be a dict')
-                if type(data['data_json']) == dict:
-                    datasets = data['data_json'].get('dataset', [])
+                if type(data['data']) == dict:
+                    datasets = data['data'].get('dataset', [])
                 if len(datasets) == 0:
                     logger.error(f'Source with 0 datasets {name}')
                 self.summary_data['total_datasets'] += len(datasets)

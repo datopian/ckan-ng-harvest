@@ -25,7 +25,7 @@ def get_base_path():
     return base_path
 
 
-def get_datajson_cache_path(create=True):
+def get_data_cache_path(create=True):
     """ local path for data.json source file """
     path =  os.path.join(get_base_path(), 'data.json')
     if not os.path.isfile(path):
@@ -147,11 +147,11 @@ def get_json_data_or_none(path):
 
 def get_report_files():
     # collect important files to write a final report
-    data_json_file = get_datajson_cache_path(create=False)
+    data_file = get_data_cache_path(create=False)
     results_file = get_flow2_datasets_result_path(create=False)
     errors_file = get_errors_path(create=False)
 
-    return {'data_json': get_json_data_or_none(data_json_file),
+    return {'data': get_json_data_or_none(data_file),
             'results': get_json_data_or_none(results_file),
             'errors': get_json_data_or_none(errors_file)
             }
