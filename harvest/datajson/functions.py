@@ -31,14 +31,14 @@ def get_data_json_from_url(url):
     ret, info = datajson.download_data_json(timeout=90)
     if not ret:
         error = 'Error getting data: {}'.format(info)
-        datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
+        datajson.save_errors(path=config.get_errors_path())
         logger.error(error)
         raise Exception(error)
     logger.info('Downloaded OK')
 
     ret, info = datajson.load_data_json()
     if not ret:
-        datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
+        datajson.save_errors(path=config.get_errors_path())
         logger.error(datajson.validation_errors)
         try:
             build_validation_error_email()
@@ -63,7 +63,7 @@ def get_data_json_from_url(url):
     # save data.json
     datajson.save_data_json(path=config.get_datajson_cache_path())
     # save headers errors
-    datajson.save_validation_errors(path=config.get_datajson_validation_errors_path())
+    datajson.save_errors(path=config.get_errors_path())
 
     # the real dataset list
 

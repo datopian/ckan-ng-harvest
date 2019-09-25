@@ -233,7 +233,7 @@ class DataJSON:
         f.write(dmp)
         f.close()
 
-    def save_validation_errors(self, path):
+    def save_errors(self, path):
         dmp = json.dumps(self.validation_errors, indent=2)
         f = open(path, 'w')
         f.write(dmp)

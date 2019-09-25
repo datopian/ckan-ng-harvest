@@ -64,9 +64,9 @@ def get_flow2_datasets_result_path(create=True):
     return path
 
 
-def get_datajson_validation_errors_path(create=True):
-    """ local path for data-json-errors.json source file """
-    path =  os.path.join(get_base_path(), 'data-json-errors.json')
+def get_errors_path(create=True):
+    """ local path for errors """
+    path =  os.path.join(get_base_path(), 'errors.json')
     if not os.path.isfile(path):
         open(path, 'w').close()
     return path
@@ -149,11 +149,11 @@ def get_report_files():
     # collect important files to write a final report
     data_json_file = get_datajson_cache_path(create=False)
     results_file = get_flow2_datasets_result_path(create=False)
-    data_json_validation_errors_file = get_datajson_validation_errors_path(create=False)
+    errors_file = get_errors_path(create=False)
 
     return {'data_json': get_json_data_or_none(data_json_file),
             'results': get_json_data_or_none(results_file),
-            'data_json_validation_errors': get_json_data_or_none(data_json_validation_errors_file)
+            'errors': get_json_data_or_none(errors_file)
             }
 
 

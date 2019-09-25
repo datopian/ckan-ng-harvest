@@ -164,7 +164,7 @@ def write_results_to_ckan(rows):
 def build_validation_error_email(error_items=[]):
     # json errors
     errors = {}
-    json_errors_path = config.get_datajson_validation_errors_path()
+    json_errors_path = config.get_errors_path()
     f = open(json_errors_path, "r")
     json_validation_errors = f.read()
     errors['json_validation_errors'] = json_validation_errors

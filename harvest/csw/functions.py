@@ -15,6 +15,7 @@ def get_csw_from_url(url):
     csw = CSWSource(url=url)
     if not csw.connect_csw():
         error = f'Fail to connect {csw.errors}'
+        csw.save_errors(path=config.get_errors_path())
         raise Exception(error)
 
     c = 0
