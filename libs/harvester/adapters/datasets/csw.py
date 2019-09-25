@@ -105,6 +105,13 @@ class CSWDataset(CKANDatasetAdapter):
         # mandatory
         self.ckan_dataset['owner_org'] = self.ckan_owner_org_id
 
+        # clean all empty unused values (can't pop keys while iterating)
+        ckan_dataset_copy = self.ckan_dataset.copy()
+        for k, v in self.ckan_dataset.items():
+            if v is None:
+                ckan_dataset_copy.pop(k)
+        self.ckan_dataset = ckan_dataset_copy
+
         valid = self.validate_final_dataset()
         if not valid:
             raise Exception(f'Error validating final dataset: {self.errors}')

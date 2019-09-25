@@ -136,7 +136,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             logger.info(f'requires failed on {self.original_dataset}: {self.errors}')
         return ok
 
-
     def fix_fields(self, field, value):
         # some fields requires extra work
         if field == 'tags':

@@ -379,6 +379,13 @@ class CSWSource:
             pass  # TODO
         return total
 
+    def save_data_json(self, path):
+        """ save the source data.json file """
+        dmp = json.dumps(self.as_json(), indent=2)
+        f = open(path, 'w')
+        f.write(dmp)
+        f.close()
+
     def save_errors(self, path):
         dmp = json.dumps(self.errors, indent=2)
         f = open(path, 'w')
