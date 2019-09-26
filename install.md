@@ -27,7 +27,7 @@ python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --s
 You can count and analyze al harvest sources:
 
 ```
-python3 analize_harvest_sources.py 
+python3 analyze_harvest_sources.py 
 ```
 This creates a CSV file with all the harvest sources.
 

@@ -7,7 +7,7 @@ import pkg_resources
 
 class HarvestedSource:
     """
-    Analize all data from a particular previously harvested source
+    analyze all data from a particular previously harvested source
     """
     name = None  # source name (and folder name)
     data = None  # data dict
@@ -107,7 +107,7 @@ class HarvestedSource:
 
 class HarvestedSources:
     """
-    Analize ALL harvested sources. Iterate and process all
+    analyze ALL harvested sources. Iterate and process all
     """
     base_folder = None
     all_data = []  # one row per harvest source

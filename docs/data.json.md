@@ -12,6 +12,6 @@ The json-ld files are like RDF serialized files. [DCAT](https://www.w3.org/TR/vo
 
 Data.json is like json with DCAT vocabulary. [See the fields context](https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld) we use.  
 
-In the GSA fork of datajson extension we [only expect](https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L138) and analize the _project-open-data_ [schema](https://project-open-data.cio.gov/v1.1/schema/catalog.json) (from CIO).  
+In the GSA fork of datajson extension we [only expect](https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L138) and analyze the _project-open-data_ [schema](https://project-open-data.cio.gov/v1.1/schema/catalog.json) (from CIO).  
 
 At ckanext-datajson exists the [datajsonvalidator.py](https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py) file for check this resource.

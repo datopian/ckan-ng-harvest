@@ -1,5 +1,5 @@
 """
-Analize some CSW sources for test CSW library
+analyze some CSW sources for test CSW library
 """
 
 from slugify import slugify

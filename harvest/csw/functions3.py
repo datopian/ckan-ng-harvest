@@ -19,7 +19,7 @@ def hash_dataset(datasetdict):
 def write_results_to_ckan(rows):
     """ each row it's a dataset to delete/update/create """
 
-    # TODO analize the import_stage function
+    # TODO analyze the import_stage function
     # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/base.py#L432
 
     actions = {}

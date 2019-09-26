@@ -219,7 +219,7 @@ class CSWSource:
         return res
 
     def md_metadata_to_dict(self, mdm):
-        # analize an md_metadata object
+        # analyze an md_metadata object
         ret = {}
 
         ret['content'] = self.process_xml(raw_xml=mdm.xml)
