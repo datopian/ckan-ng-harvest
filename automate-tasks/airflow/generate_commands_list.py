@@ -6,7 +6,7 @@ generate a list of the commands to harvest
 APP_PATH = '/home/hudson/dev/datopian/harvesting-data-json-v2'
 import sys
 sys.path.append(APP_PATH)
-
+import shlex
 from harvester.data_gov_api import CKANPortalAPI
 from harvester.logs import logger
 from jinja2 import Template
@@ -23,7 +23,7 @@ templated_harvest_command = """
             cd {{ app_path }}
             python harvest.py \
                 --name {{ name }} \
-                --url "{{ data_json_url }}" \
+                --url {{ data_json_url }} \
                 --harvest_source_id {{ harvest_source_id }} \
                 --ckan_owner_org_id {{ ckan_org_id }} \
                 --catalog_url {{ catalog_url }} \
@@ -48,10 +48,10 @@ for datasets in results:
             'env_path': PYTHON_ENV_PATH,
             'app_path': APP_PATH,
             'name': name,
-            'data_json_url': url,
+            'data_json_url': shlex.quote(url),
             'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID
             'ckan_org_id': ckan_org_id,
-            'catalog_url': catalog_url,
+            'catalog_url': shlex.quote(catalog_url),
             'ckan_api_key': catalog_api_key
             }
 
