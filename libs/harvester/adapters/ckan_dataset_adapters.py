@@ -53,6 +53,9 @@ class CKANDatasetAdapter(ABC):
         return pkg
 
     def upgrade_usmetadata_required(self):
+        # read about usmetadata schema here
+        # https://github.com/akariv/USMetadata/blob/master/ckanext/usmetadata/plugin.py
+
         required = ['public_access_level', 'unique_id',
                     'contact_name', 'program_code',
                     'bureau_code', 'contact_email',

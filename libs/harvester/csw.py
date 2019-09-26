@@ -11,6 +11,7 @@ GeoNode State CSW: http://geonode.state.gov/catalogue/csw?service=CSW&version=2.
 OpenTopography CSW: https://portal.opentopography.org/geoportal/csw
 """
 import requests
+import json
 from slugify import slugify
 from urllib.parse import urlparse, urlencode, urlunparse
 from owslib.csw import CatalogueServiceWeb, namespaces
@@ -29,7 +30,6 @@ class CSWSource:
 
     errors = []
     datasets = []  # all datasets included
-    validation_errors = []
     duplicates = []  # list of datasets with the same identifier
 
     def __init__(self, url):
@@ -379,8 +379,15 @@ class CSWSource:
             pass  # TODO
         return total
 
-    def save_validation_errors(self, path):
-        dmp = json.dumps(self.validation_errors, indent=2)
+    def save_data_json(self, path):
+        """ save the source data.json file """
+        dmp = json.dumps(self.as_json(), indent=2)
+        f = open(path, 'w')
+        f.write(dmp)
+        f.close()
+
+    def save_errors(self, path):
+        dmp = json.dumps(self.errors, indent=2)
         f = open(path, 'w')
         f.write(dmp)
         f.close()

@@ -23,7 +23,7 @@ templated_harvest_command = """
             cd {{ app_path }}
             python harvest.py \
                 --name {{ name }} \
-                --url {{ data_json_url }} \
+                --url "{{ data_json_url }}" \
                 --harvest_source_id {{ harvest_source_id }} \
                 --ckan_owner_org_id {{ ckan_org_id }} \
                 --catalog_url {{ catalog_url }} \

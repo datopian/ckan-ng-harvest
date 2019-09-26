@@ -74,7 +74,7 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
 
     def load_default_values(self, schema='default'):
 
-        defvalues = {}   # ' field= value list: {'contactPoint__hasEmail': 'hola@gmail.com'}
+        defvalues = {}
         if schema == 'usmetadata':
             newdefs = {'accessLevel': 'public'}
             defvalues.update(newdefs)
@@ -135,7 +135,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
         if not ok:
             logger.info(f'requires failed on {self.original_dataset}: {self.errors}')
         return ok
-
 
     def fix_fields(self, field, value):
         # some fields requires extra work

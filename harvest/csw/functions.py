@@ -15,6 +15,7 @@ def get_csw_from_url(url):
     csw = CSWSource(url=url)
     if not csw.connect_csw():
         error = f'Fail to connect {csw.errors}'
+        csw.save_errors(path=config.get_errors_path())
         raise Exception(error)
 
     c = 0
@@ -30,6 +31,7 @@ def get_csw_from_url(url):
         if config.LIMIT_DATASETS > 0 and c > config.LIMIT_DATASETS:
             break
         c += 1
+    csw.save_data_json(path=config.get_data_cache_path())
 
 
 def clean_duplicated_identifiers(rows):

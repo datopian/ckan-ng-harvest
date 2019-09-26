@@ -1961,7 +1961,7 @@
       }
     }
   ],
-  "data_json_validation_errors": [],
+  "errors": [],
   "actions": {
     "create": {
       "total": 16,

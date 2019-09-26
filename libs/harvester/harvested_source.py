@@ -10,20 +10,18 @@ class HarvestedSource:
     Analize all data from a particular previously harvested source
     """
     name = None  # source name (and folder name)
-
-    data_json = None  # data.json dict
+    data = None  # data dict
     results = None  # harvest results
-    data_json_validation_errors = None
-
+    errors = None
     final_results = {}  # all files processed
 
     def __init__(self, name):
         config.SOURCE_NAME = name
         self.name = name
         data = config.get_report_files()
-        self.data_json = data['data_json']
+        self.data = data['data']
         self.results = data['results']
-        self.data_json_validation_errors = data['data_json_validation_errors']
+        self.errors = data['errors']
 
     def process_results(self):
 
@@ -74,9 +72,9 @@ class HarvestedSource:
     def get_json_data(self):
         data = {
             'name': self.name,
-            'data_json': self.data_json,
+            'data': self.data,
             'results': self.results,
-            'data_json_validation_errors': self.data_json_validation_errors,
+            'errors': self.errors,
             'actions': self.final_results.get('actions', {}),
             'validation_errors': self.final_results.get('validation_errors', {}),
             'action_warnings': self.final_results.get('action_warnings', {}),
@@ -115,7 +113,7 @@ class HarvestedSources:
     all_data = []  # one row per harvest source
     summary_data = {'harvest_sources_readed': 0,
                     'harvest_sources_failed': 0,
-                    'total_data_json_datasets': 0,
+                    'total_datasets': 0,
 
                     }
 
@@ -142,22 +140,22 @@ class HarvestedSources:
                 data = hs.get_json_data()
                 self.all_data.append(data)
 
-                if type(data['data_json']) == list:
+                if type(data['data']) == list:
                     datasets = []
                     logger.error(f'{name}: Data JSON Source is a list. Must be a dict')
-                if type(data['data_json']) == dict:
-                    datasets = data['data_json'].get('dataset', [])
+                if type(data['data']) == dict:
+                    datasets = data['data'].get('dataset', [])
                 if len(datasets) == 0:
                     logger.error(f'Source with 0 datasets {name}')
-                self.summary_data['total_data_json_datasets'] += len(datasets)
-                logger.info(' - Total datasets: {}'.format(self.summary_data['total_data_json_datasets']))
+                self.summary_data['total_datasets'] += len(datasets)
+                logger.info(' - Total datasets: {}'.format(self.summary_data['total_datasets']))
 
         harvest_sources_readed = self.summary_data['harvest_sources_readed']
         harvest_sources_failed = self.summary_data['harvest_sources_failed']
-        total_data_json_datasets = self.summary_data['total_data_json_datasets']
+        total_datasets = self.summary_data['total_datasets']
         logger.info('''**************
                         Harvest sources readed: {}
                         Harvest sources failed: {}
                         Total datasets: {}'''.format(harvest_sources_readed,
                                                      harvest_sources_failed,
-                                                     total_data_json_datasets))
+                                                     total_datasets))
