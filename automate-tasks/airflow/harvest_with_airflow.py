@@ -7,7 +7,7 @@ app_path = '/home/hudson/dev/datopian/harvesting-data-json-v2'
 env_path = '/home/hudson/envs/data_json_etl'
 import sys
 sys.path.append(app_path)
-
+import shlex
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta
@@ -112,10 +112,10 @@ for source_type in source_types:
                 'app_path': app_path,
                 'name': name,
                 'source_type': source_type,
-                'data_json_url': url,
+                'data_json_url': shlex.quote(url),
                 'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID
                 'ckan_org_id': ckan_org_id,
-                'catalog_url': catalog_url,
+                'catalog_url': shlex.quote(catalog_url),
                 'ckan_api_key': catalog_api_key
                 }
 

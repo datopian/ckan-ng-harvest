@@ -55,7 +55,7 @@ python3 read_harvest_sources.py --base_url http://ckan:5000 --source_type datajs
 Creates a CSV file with all the harvest sources. Analyze each one to validate it, count datastets and resources.
 
 ```
-python3 analize_harvest_sources.py 
+python3 analyze_harvest_sources.py 
 
 Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest)'}
 977 results
