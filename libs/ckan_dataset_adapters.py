@@ -316,41 +316,6 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
                 return extra["value"]
         return default
 
-    # -----------------------------------------------------
-    # copied from previous extensions
-    # -----------------------------------------------------
-    def flatten_list(self, data, flattened=None, old_key=None):
-        '''flatten a list of dicts'''
-
-        flattened = flattened or {}
-        old_key = old_key or []
-
-        for num, value in enumerate(data):
-            if not isinstance(value, dict):
-                raise Exception('Values in lists need to be dicts')
-            new_key = old_key + [num]
-            flattened = self.flatten_dict(value, flattened, new_key)
-
-        return flattened
-
-    def flatten_dict(self, data, flattened=None, old_key=None):
-        '''Flatten a dict'''
-
-        flattened = flattened or {}
-        old_key = old_key or []
-
-        for key, value in data.items():
-            new_key = old_key + [key]
-            if isinstance(value, list) and value and isinstance(value[0], dict):
-                flattened = self.flatten_list(value, flattened, new_key)
-            else:
-                flattened[tuple(new_key)] = value
-
-        return flattened
-
-# -----------------------------------------------------
-# -----------------------------------------------------
-
     def __set_extra(self, ckan_dataset, key, value):
         found = False
         for extra in ckan_dataset['extras']:
