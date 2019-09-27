@@ -33,10 +33,11 @@ The harvester base extension:
  - adds a form to create a harvest source.
  - add forms to check the harvest results.
  - Save harvester jobs to a database table for future process
- - Define the structure for other harvesters to inherit.
+ - [Define the structure for other harvesters to inherit](https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/interfaces.py).
  - Generate several CLI commands for harvesting.
  - Includes a CKAN harvester
- - Give some API call (e.g. _harvest_log_list_)
+ - Give some API call (e.g. _harvest_log_list_). This includes reports and statuses.
+ - [Define actions from after/befor create/update/view/search](https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/plugin.py#L28).
 
 ### Spatial
 
