@@ -24,9 +24,10 @@ The new harvester is an external tool. This allows to:
  - Create and fix harvesters without needing a CKAN instance
  - This harvester is a step forward to solve the Python version deprecation problem
 
-## Remove extensions?
+## Remove or upgrade extensions?
 
 These extensions fulfill functions that must be replaced if they are removed.
+Some data transformations occurs after they are saved as CKAN package so is not enough to adapt this data before sending to _package_create_ function.
 
 ### Harvester Base
 The harvester base extension:
@@ -41,4 +42,6 @@ The harvester base extension:
 
 ### Spatial
 
-The spatial extension add extra info (maps) for packages with some [HTML snipets](https://github.com/gsa/ckanext-spatial/tree/master/ckanext/spatial/templates/spatial/snippets).  
+The spatial extension:
+ - [Get spatial data and save it in PostGIS](https://github.com/GSA/ckanext-spatial/blob/datagov/ckanext/spatial/plugin.py#L99).
+ - add extra info (maps) for packages with some [HTML snipets](https://github.com/gsa/ckanext-spatial/tree/master/ckanext/spatial/templates/spatial/snippets).  
