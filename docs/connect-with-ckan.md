@@ -23,3 +23,21 @@ The new harvester is an external tool. This allows to:
  - Run the harvesters in a different infrastructure
  - Create and fix harvesters without needing a CKAN instance
  - This harvester is a step forward to solve the Python version deprecation problem
+
+## Remove extensions?
+
+These extensions fulfill functions that must be replaced if they are removed.
+
+### Harvester Base
+The harvester base extension:
+ - adds a form to create a harvest source.
+ - add forms to check the harvest results.
+ - Save harvester jobs to a database table for future process
+ - Define the structure for other harvesters to inherit.
+ - Generate several CLI commands for harvesting.
+ - Includes a CKAN harvester
+ - Give some API call (e.g. _harvest_log_list_)
+
+### Spatial
+
+The spatial extension add extra info (maps) for packages with some [HTML snipets](https://github.com/gsa/ckanext-spatial/tree/master/ckanext/spatial/templates/spatial/snippets).  
