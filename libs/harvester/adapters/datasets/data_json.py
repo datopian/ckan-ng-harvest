@@ -148,6 +148,8 @@ class DataJSONSchema1_1(CKANDatasetAdapter):
             if type(value) == list:
                 value = ','.join(value)
             return value
+        elif field == 'accrual_periodicity':
+            return self.get_accrual_periodicity(value, reverse=True)
         else:
             return value
 
