@@ -1,5 +1,6 @@
-from harvester.data_gov_api import CKANPortalAPI
 import argparse
+from harvester.data_gov_api import CKANPortalAPI
+from harvester.logs import logger
 from settings import CKAN_BASE_URL, CKAN_API_KEY
 
 
@@ -27,5 +28,9 @@ for harvest_sources in cpa.search_harvest_packages(method='POST',
                                                    source_type=args.source_type):
     for harvest_source in harvest_sources:
         total_searched += 1
+
+print('----------------------------------------------')
+print(f'Finished: {total_sources} sources')
+print('----------------------------------------------')
 
 assert total_sources == total_searched

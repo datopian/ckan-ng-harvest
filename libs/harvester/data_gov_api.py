@@ -604,7 +604,7 @@ class CKANPortalAPI:
         """ import harvest sources from another CKAN open data portal """
 
         if delete_local_harvest_sources:
-            deleted = self.delete_all_harvest_sources()
+            deleted = self.delete_all_harvest_sources(source_type=source_type)
 
         logger.info(f'Getting external harvest sources for {catalog_url}')
         external_portal = CKANPortalAPI(base_url=catalog_url)

@@ -7,4 +7,5 @@ __pycache__
 data/
 datapackages/
 local_settings.py
+.~lock*
 
