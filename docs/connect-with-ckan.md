@@ -45,3 +45,4 @@ The harvester base extension:
 The spatial extension:
  - [Get spatial data and save it in PostGIS](https://github.com/GSA/ckanext-spatial/blob/datagov/ckanext/spatial/plugin.py#L99).
  - add extra info (maps) for packages with some [HTML snipets](https://github.com/gsa/ckanext-spatial/tree/master/ckanext/spatial/templates/spatial/snippets).  
+ - [add new API calls](https://github.com/GSA/ckanext-spatial/blob/ce4f03bcd2000f98de1a9534dce92de674eb9806/ckanext/spatial/plugin.py#L393) and [geo queries](https://github.com/GSA/ckanext-spatial/blob/ce4f03bcd2000f98de1a9534dce92de674eb9806/ckanext/spatial/plugin.py#L306)
