@@ -72,7 +72,7 @@ class TestCKANDatasetAdapter(object):
         assert ['en'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'metadata-language']
         assert ['2010-12-01T12:00:00Z'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'dataset-reference-date']
 
-        assert [['CC-BY', 'http://licence.com']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence']
+        assert ["['CC-BY', 'http://licence.com']"] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence']
         assert ['http://licence.com'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence_url']
 
         assert ['some'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-file']
@@ -82,7 +82,8 @@ class TestCKANDatasetAdapter(object):
         assert ['teb1'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'temporal-extent-begin']
         assert ['tee1'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'temporal-extent-end']
 
-        rp = [{'name': 'GSA', 'roles': ['admin', 'admin2']}, {'name': 'NASA', 'roles': ['moon']}]
+        # rp = [{'name': 'GSA', 'roles': ['admin', 'admin2']}, {'name': 'NASA', 'roles': ['moon']}]
+        rp = 'GSA (admin, admin2); NASA (moon)'
         assert [rp] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'responsible-party']
 
         coords = '[[[{xmin}, {ymin}], [{xmax}, {ymin}], [{xmax}, {ymax}], [{xmin}, {ymax}], [{xmin}, {ymin}]]]'.format(xmax=-61.9, ymax=-33.1, xmin=34.3, ymin=51.8)
@@ -109,7 +110,7 @@ class TestCKANDatasetAdapter(object):
 
         ret = dst.validate_final_dataset()
         assert ret == False
-        assert 'name is a required field' in ','.join(dst.errors)
+        assert '"name" is a required field' in ','.join(dst.errors)
 
     def test_resources(self):
         dst = CSWDataset(original_dataset=self.test_dataset)
