@@ -63,13 +63,13 @@ class CSWDataset(CKANDatasetAdapter):
             newdefs = {
                 'accessLevel': 'public',
                 'bureauCode': '000:00',
-                'programCode': '000:00',
-                'spatial': 'no data',
-                'dataDictionary': 'no data',
-                'dataQuality': 'no data',
-                'accrualPeriodicity': 'no data',
-                'primaryITInvestmentUII': 'no data',
-                'systemOfRecords': 'no data',
+                'programCode': '000:000',
+                'spatial': '{"type": "Point", "coordinates": (0.0, 0.0)}',
+                'dataDictionary': 'http://missing.data.dictionary.com',
+                'dataQuality': 'false',
+                'accrualPeriodicity': 'irregular',
+                'primaryITInvestmentUII': '000-000000000',
+                'systemOfRecords': None,
                 'publisher': 'no data',
                 'tags': ['no tags'],
                 }
@@ -111,16 +111,27 @@ class CSWDataset(CKANDatasetAdapter):
         # some fields requires extra work
         if field == 'tags':
             return self.build_tags(value)
-        elif field == 'extras__progress':  # previous harvester take just the first one
+        elif field in ['extras__progress', 'extras__resource-type']:  # previous harvester take just the first one
             if type(value) == list and len(value) > 0:
                 return value[0]
             else:
                 return ''
-        elif field == 'extras__resource-type':  # previous harvester take just the first one
-            if type(value) == list and len(value) > 0:
-                return value[0]
+        elif field == 'accrual_periodicity':
+            if value is None or value == 'irregular' or value == '':
+                value = 'unknown'
             else:
-                return ''
+                return self.get_accrual_periodicity(value, reverse=True)
+        elif field == 'extras__dataset-reference-date':
+            # we expect someting like
+            # [{'type': 'publication','value': '2010-12-01T12:00:00Z'}]
+            if type(value) == list:
+                v0 = value[0]
+                if type(v0) == dict:
+                    return v0.get('value', None)
+            else:
+                return value
+        elif field in ['extras__access_constraints', 'extras__coupled-resource']:
+            return str(value) if type(value) == list else value
         else:
             return value
 
@@ -297,7 +308,10 @@ class CSWDataset(CKANDatasetAdapter):
                 parties[party['organisation-name']] = [party['role']]
 
         rp = [{'name': k, 'roles': v} for k, v in parties.items()]
-        self.set_extra('responsible-party', rp)
+
+        ret = ['{} ({})'.format(r['name'], ', '.join(r['roles'])) for r in rp]
+
+        self.set_extra('responsible-party', '; '.join(ret))
 
     def fix_licence_url(self):
         # https://github.com/GSA/ckanext-spatial/blob/2a25f8d60c31add77e155c4136f2c0d4e3b86385/ckanext/spatial/harvesters/base.py#L278
@@ -308,6 +322,7 @@ class CSWDataset(CKANDatasetAdapter):
                     u = urlparse(licence)
                     if u.scheme and u.netloc:
                         self.set_extra(key='licence_url', value=licence)
+                self.set_extra(key='licence', value=str(licences))
 
     def set_browse_graphic(self):
         browse_graphic = self.original_dataset.get('browse-graphic', None)

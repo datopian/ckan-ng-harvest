@@ -12,7 +12,10 @@ class TestCKANDatasetAdapter(object):
             'spatial-reference-system': 'EPSG:27700',
             'guid' : 'unique ID 971897198',
             # Usefuls
-            'dataset-reference-date': '2019-09-09',
+            'dataset-reference-date': [{
+                    'type': 'publication',
+                    'value': '2010-12-01T12:00:00Z'
+                }],
             'metadata-language': 'en',
             'metadata-date': '2019-02-02',
             'coupled-resource': 'coup res',
@@ -67,7 +70,7 @@ class TestCKANDatasetAdapter(object):
         assert ['coup res'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'coupled-resource']
         assert ['2019-02-02'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'metadata-date']
         assert ['en'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'metadata-language']
-        assert ['2019-09-09'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'dataset-reference-date']
+        assert ['2010-12-01T12:00:00Z'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'dataset-reference-date']
 
         assert [['CC-BY', 'http://licence.com']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence']
         assert ['http://licence.com'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence_url']
