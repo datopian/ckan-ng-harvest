@@ -1,7 +1,7 @@
 """
 generate a list of the commands to harvest
 """
-
+import argparse
 # from settings import APP_PATH
 APP_PATH = '/home/hudson/dev/datopian/harvesting-data-json-v2'
 import sys
@@ -14,6 +14,11 @@ from settings import CKAN_BASE_URL, CKAN_API_KEY, PYTHON_ENV_PATH
 
 catalog_url = CKAN_BASE_URL
 catalog_api_key = CKAN_API_KEY
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--source_type", type=str, default='datajson', help="Tipe of harvest source: datajson|csw|waf etc")
+args = parser.parse_args()
+source_type = args.source_type
 
 cpa = CKANPortalAPI(base_url=catalog_url, api_key=catalog_api_key)
 urls = []
@@ -30,7 +35,7 @@ templated_harvest_command = """
                 --ckan_api_key {{ ckan_api_key }}
             """
 
-results = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type='datajson')
+results = cpa.search_harvest_packages(rows=1000, harvest_type='harvest', source_type=source_type)
 for datasets in results:
     for harvest_source in datasets:
 
