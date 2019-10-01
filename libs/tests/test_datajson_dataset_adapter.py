@@ -58,16 +58,24 @@ class TestCKANDatasetAdapter(object):
         assert ckan_dataset['owner_org'] == 'XXXX'
         assert ckan_dataset['notes'] == 'Some notes ...'
         assert len(ckan_dataset['resources']) == 2
-        assert ckan_dataset['maintainer_email'] == 'Fred.Teensma@ams.usda.gov'
+
+        if djss.schema == 'usmetadata':
+            assert ckan_dataset['contact_email'] == 'Fred.Teensma@ams.usda.gov'
+            # test *Code
+            assert ckan_dataset['bureau_code'] == '005:45'
+            assert ckan_dataset['program_code'] == '005:047'
+            assert ckan_dataset['publisher'] == 'Agricultural Marketing Service'
+        else:
+            assert ckan_dataset['maintainer_email'] == 'Fred.Teensma@ams.usda.gov'
+            # test *Code
+            assert [['005:45']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'bureauCode']
+            assert [['005:047']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'programCode']
+            # test publisher processor
+            assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+
+
         assert len(ckan_dataset['tags']) == 2
         assert ckan_dataset['license_id'] == 'cc-by'  # transformation
-
-        # test *Code
-        assert [['005:45']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'bureauCode']
-        assert [['005:047']] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'programCode']
-
-        # test publisher processor
-        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
         assert [] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
 
         # test publisher subOrganizationOf
@@ -78,7 +86,12 @@ class TestCKANDatasetAdapter(object):
                         }
         djss.original_dataset = t2
         ckan_dataset = djss.transform_to_ckan_dataset()
-        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+
+        if djss.schema == 'usmetadata':
+            assert ckan_dataset['publisher'] == 'Agricultural Marketing Service'
+        else:
+            assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+
         assert ['Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
 
         t2['publisher']['subOrganizationOf']['subOrganizationOf'] = {
@@ -87,7 +100,12 @@ class TestCKANDatasetAdapter(object):
                         }
         djss.original_dataset = t2
         ckan_dataset = djss.transform_to_ckan_dataset()
-        assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+
+        if djss.schema == 'usmetadata':
+            assert ckan_dataset['publisher'] == 'Agricultural Marketing Service'
+        else:
+            assert ['Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher']
+
         assert ['USA GOV > Department of Agriculture > Agricultural Marketing Service'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'publisher_hierarchy']
 
         t2 = self.test_datajson_dataset
@@ -141,16 +159,17 @@ class TestCKANDatasetAdapter(object):
         djss = DataJSONSchema1_1(original_dataset=dataset, schema='usmetadata')
         # ORG is required!
 
-        with pytest.raises(Exception):
-            ckan_dataset = djss.transform_to_ckan_dataset()
+        ckan_dataset = djss.transform_to_ckan_dataset()
+        assert ckan_dataset is None
+        assert 'Owner organization ID is required' in djss.errors
 
         djss.ckan_owner_org_id = 'XXXX'
         ckan_dataset = djss.transform_to_ckan_dataset()
         del ckan_dataset['name']
 
         ret = djss.validate_final_dataset()
-        assert ret == False
-        assert 'name is a required field' in ','.join(djss.errors)
+        assert not ret
+        assert '"name" is a required field' in djss.errors
 
     def test_resources(self):
         djss = DataJSONSchema1_1(original_dataset=self.test_datajson_dataset, schema='usmetadata')
