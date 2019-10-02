@@ -24,11 +24,6 @@ test:
     - cd "$DEVHOME/harvest/csw/"
     - pwd
     - python -m pytest tests/
-    - echo '***************************'
-    - echo 'Test package'
-    - cd "$DEVHOME/libs/"
-    - pwd
-    - python -m pytest tests/
 
   only:
   - merge_requests
