@@ -22,6 +22,21 @@ We can import all the harvest sources from a productive CKAN instance with the c
 For example import all CSW harvest sources from _data.gov_.  
 ```
 python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
+
+Getting external harvest sources for https://catalog.data.gov
+Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest source_type:csw)'}
+Search harvest packages via GET
+6 results
+**** Importing Organization {'description': 'The Arctic Landscape  ...
+**** Creating Organization 
+POST http://nginx:8080/api/3/action/package_create data:{'frequency': 'MANUAL', 'title': 'Alaska LCC CSW Server', 'name': 'alaska-lcc-csw-server', 'type': 'harvest', 'source_type': 'csw', 'url': 'http://metadata.arcticlcc.org/csw', 'notes': 'The CSW server for [Alaska-based Landscape Conservation Cooperatives](http://climate.arcticlcc.org/).', 'owner_org': 'alcc-fws-gov', 'private': False, 'state': 'active', 'active': True, 'tags': [{'name': 'harvest source'}], 'config': None, 'extras': []}
+
+...
+
+----------------------------------------------
+Finished: 6 sources
+----------------------------------------------
+
 ```
 This also import and create _organizations_.  
 
