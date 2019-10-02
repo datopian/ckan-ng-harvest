@@ -1,5 +1,9 @@
 # Harvesting 
 
+This project is about harvesting
+
+For the core harvester package go to [ckan-harvest package](https://pypi.org/project/ckan-harvester/).  
+
 ## data.json files
 
 [More info](harvest/datajson/README.md)

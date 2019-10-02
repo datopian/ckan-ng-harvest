@@ -7,9 +7,10 @@ The harvest process includes:
  - Compare both resources and list the differences.
  - Update the CKAN instance with these updates 
 
-Current CKAN process: [using ckan extensions](harvest-in-ckanext.md).  
-
-Process using [dataflows](https://github.com/datahq/dataflows) and [datapackages](https://github.com/frictionlessdata/datapackage-py).  
+This process is using:
+ - [dataflows](https://github.com/datahq/dataflows) 
+ - [datapackages](https://github.com/frictionlessdata/datapackage-py).  
+ - [CKAN core data.json harvester](https://gitlab.com/datopian/ckan-ng-harvester-core).
 
 ## Using harvester
 

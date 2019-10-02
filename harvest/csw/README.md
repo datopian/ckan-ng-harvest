@@ -1,5 +1,22 @@
 # Harvesting CSW resources
 
+[CSW stands for Catalog Service for the Web](https://en.wikipedia.org/wiki/Catalogue_Service_for_the_Web) is a standard for exposing a catalogue of geospatial records in XML.  
+
+You can use the _analyze_csw_sources_ command to leqrn more about the CSW sources.  
+
+This harvest process includes:
+ - Reads a CSW resource from an external source I want to harvest.
+ - Validate and save these results.
+ - Search the previous datasets harvested for that particular source
+ - Compare both resources and list the differences.
+ - Update the CKAN instance with these updates. 
+
+This process is using:
+ - [dataflows](https://github.com/datahq/dataflows) 
+ - [datapackages](https://github.com/frictionlessdata/datapackage-py).  
+ - [CKAN core data.json harvester](https://gitlab.com/datopian/ckan-ng-harvester-core).
+
+
 Firsts trys
 ```
 cd harvest/csw
