@@ -1,8 +1,6 @@
 # Harvesting 
 
-This project is about harvesting
-
-For the core harvester package go to [ckan-harvest package](https://pypi.org/project/ckan-harvester/).  
+This project is about harvesting from external sources to a CKAN (local or remote) instance. For the core harvester package go to [ckan-harvest package](https://pypi.org/project/ckan-harvester/).  
 
 ## data.json files
 
