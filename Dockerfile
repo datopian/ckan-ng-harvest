@@ -2,6 +2,7 @@ FROM python:3.7-alpine
 
 RUN echo "************** Installing dependencies ... **************" && \
     apk add --no-cache \
+        bash \
         build-base \
         libxml2 \
         libxml2-dev \
