@@ -3,7 +3,7 @@
 ## Build image
 Build the image
 ```
-docker run -it --rm havesrter_ng:v0.103 python
+docker build -t havesrter_ng:v0.103 .
 ```
 
 ## Run analyze sources
