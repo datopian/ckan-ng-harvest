@@ -192,6 +192,10 @@ If you want to check the com
 
 Check the [tests.md](tests.md) file.  
 
+### Docker usage
+
+Use harvester with docker. More info [here](docker.md).  
+
 
 
 

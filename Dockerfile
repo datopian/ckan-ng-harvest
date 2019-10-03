@@ -20,9 +20,5 @@ RUN apk add --no-cache --virtual .build-deps \
     && pip install -r requirements.txt \
     && apk del --no-cache .build-deps
 
-
-# pip install -U pip && \
-# pip install --no-cache-dir -r requirements.txt
-
 ADD . .
-ENTRYPOINT ["/bin/bash"]
+CMD [ "/bin/bash", "-c" ]
