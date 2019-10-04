@@ -1,4 +1,4 @@
-ckan-harvester>=0.108
+ckan-harvester>=0.109
 
 dataflows==0.0.56
 python-slugify==3.0.2

@@ -160,8 +160,7 @@ def write_results_to_ckan(rows):
             datajson_dataset['harvest_source_id'] = config.SOURCE_ID
 
             if schema_version == '1.1':
-                djss = DataJSONSchema1_1(original_dataset=datajson_dataset,
-                                         schema='usmetadata')
+                djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
             else:
                 results['errors'].append('We are not ready to harvest 1.0 schema datasets. Add it to harvester')
                 actions[action]['fails'] += 1
