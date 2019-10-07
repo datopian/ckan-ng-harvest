@@ -1,5 +1,8 @@
 .git
 .gitignore
+.gitlab
+.pytest_cache
+__pycache__
 Dockerfile*
 docker-compose*
 README.md
@@ -8,3 +11,7 @@ LICENSE
 *.log
 /harvest/datajson/data
 /harvest/csw/data
+/public
+/docs
+/data
+/imgs
