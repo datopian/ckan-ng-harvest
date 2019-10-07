@@ -5,3 +5,5 @@ docker-compose*
 README.md
 LICENSE
 .vscode
+/harvest/datajson/data
+/harvest/csw/data
