@@ -13,8 +13,7 @@ RUN echo "************** Installing dependencies ... **************" && \
 WORKDIR /app
 ADD requirements.txt .
 
-RUN apk add --no-cache --virtual .build-deps \
-    && pip install pyproj==1.9.6 \
+RUN pip install pyproj==1.9.6 \
     && pip install -r requirements.txt \
     && apk del --no-cache .build-deps
 
