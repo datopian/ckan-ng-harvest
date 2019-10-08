@@ -8,7 +8,7 @@ services:
       env_file:
         - env.harvester
       volumes:
-        - ../app:/app
+        - .:/app
       depends_on:
         - webserver
 
