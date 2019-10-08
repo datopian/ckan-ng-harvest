@@ -1,0 +1,84 @@
+version: '2.1'
+# based on https://github.com/puckel/docker-airflow
+# and https://medium.com/@tomaszdudek/yet-another-scalable-apache-airflow-with-docker-example-setup-84775af5c451
+services:
+    harvester:
+      build: .
+      command: ["bash"]
+      env_file:
+        - env.harvester
+      volumes:
+        - ../app:/app
+      depends_on:
+        - webserver
+
+    redis:
+        image: 'redis:5.0.5'
+        # command: redis-server --requirepass redispass
+
+    postgres:
+        image: postgres:9.6
+        env_file:
+          - env.airflow
+        # Uncomment these lines to persist data on the local filesystem.
+        #     - PGDATA=/var/lib/postgresql/data/pgdata
+        # volumes:
+        #     - ./pgdata:/var/lib/postgresql/data/pgdata
+
+    webserver:
+        image: puckel/docker-airflow:1.10.4
+        restart: always
+        depends_on:
+            - postgres
+            - redis
+        env_file:
+          - env.airflow
+        volumes:
+            - ./automate-tasks/airflow/dags:/usr/local/airflow/dags
+            # Uncomment to include custom plugins
+            # - ./plugins:/usr/local/airflow/plugins
+        ports:
+            - "8080:8080"
+        command: webserver
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+
+    flower:
+        image: puckel/docker-airflow:1.10.4
+        restart: always
+        depends_on:
+            - redis
+        env_file:
+          - env.airflow
+        ports:
+            - "5555:5555"
+        command: flower
+
+    scheduler:
+        image: puckel/docker-airflow:1.10.4
+        restart: always
+        depends_on:
+            - webserver
+        volumes:
+            - ./dags:/usr/local/airflow/dags
+            # Uncomment to include custom plugins
+            # - ./plugins:/usr/local/airflow/plugins
+        env_file:
+          - env.airflow
+        command: scheduler
+
+    worker:
+        image: puckel/docker-airflow:1.10.4
+        restart: always
+        depends_on:
+            - scheduler
+        volumes:
+            - ./dags:/usr/local/airflow/dags
+            # Uncomment to include custom plugins
+            # - ./plugins:/usr/local/airflow/plugins
+        env_file:
+          - env.airflow
+        command: worker

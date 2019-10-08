@@ -1,13 +1,10 @@
-FROM python:3.7-alpine
+FROM python:3.7
 
 RUN echo "************** Installing dependencies ... **************" && \
-    apk add --no-cache \
-        bash \
-        build-base \
+    apt-get update && apt-get install -y \
         libxml2 \
         libxml2-dev \
         libxslt-dev \
-        linux-headers \
         python-dev
 
 WORKDIR /app
