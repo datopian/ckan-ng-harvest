@@ -4,7 +4,7 @@ Tests all functions used in flow file
 import unittest
 from harvester import config
 from harvester.data_gov_api import CKANPortalAPI
-from functions3 import assing_collection_pkg_id, write_results_to_ckan
+from functions3 import write_results_to_ckan
 from harvester.logs import logger
 
 import sys
@@ -24,7 +24,7 @@ from settings import (HARVEST_SOURCE_ID,
 
 class Functions3TestClass(unittest.TestCase):
 
-    def test_assing_collection_pkg_id(self):
+    def test_write_results(self):
         config.CKAN_API_KEY = CKAN_API_KEY
         config.CKAN_CATALOG_URL = CKAN_BASE_URL
         config.CKAN_OWNER_ORG = CKAN_ORG_ID
@@ -159,29 +159,5 @@ class Functions3TestClass(unittest.TestCase):
                 elif identifier == 'USDA-6000':  # is R4
                     assert r4['id'] == row['id']
                     r4['new_package'] = package
-                else:
-                    assert "You never get here {}".format(row['id']) == False
-
-            for row in assing_collection_pkg_id(rows_processed):
-
-                datajson_dataset = row['comparison_results']['new_data']
-                package_show = cpa.show_package(ckan_package_id_or_name=row['id'])
-                package = package_show['result']
-                logger.info(f'Assigned package: {package}')
-                extras = package.get('extras', None)
-                assert type(extras) == list
-
-                if row['id'] == r1['id']:  # this is part of r2-0002 dataset
-                    ckan_collection_package_id = [extra['value'] for extra in extras if extra['key'] == 'collection_package_id'][0]
-                    assert ckan_collection_package_id == r2['id']
-                elif row['id'] == r4['id']:  # this is part of r2-0002 dataset
-                    ckan_collection_package_id = [extra['value'] for extra in extras if extra['key'] == 'collection_package_id'][0]
-                    assert ckan_collection_package_id == r2['id']
-                elif row['id'] == r3['id']:  # this has a unknown father
-                    ckan_collection_package_id = [extra['value'] for extra in extras if extra['key'] == 'collection_package_id']
-                    assert [] == ckan_collection_package_id
-                elif row['id'] == r2['id']:  # this has no father
-                    ckan_collection_package_id = [extra['value'] for extra in extras if extra['key'] == 'collection_package_id']
-                    assert [] == ckan_collection_package_id
                 else:
                     assert "You never get here {}".format(row['id']) == False

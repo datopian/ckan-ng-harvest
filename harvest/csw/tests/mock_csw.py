@@ -49,6 +49,8 @@ class MockCatalogueServiceWeb:
         for op in d['operations']:
             oop = mock.Mock()
             setattr(oop, 'methods', op['methods'])
+            setattr(oop, 'name', op['name'])
+            setattr(oop, 'formatOptions', op['formatOptions'])
             oops.append(oop)
         self.operations = oops
 
