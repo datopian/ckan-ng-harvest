@@ -90,7 +90,7 @@ def write_results_to_ckan(rows):
                                 api_key=config.CKAN_API_KEY)
 
             try:
-                ckan_response = cpa.create_package(ckan_package=ckan_dataset)
+                ckan_response = cpa.create_package(ckan_package=ckan_dataset, on_duplicated='DELETE')
             except Exception as e:
                 ckan_response = {'success': False, 'error': str(e)}
 
@@ -101,6 +101,7 @@ def write_results_to_ckan(rows):
                 actions[action]['success'] += 1
                 # add this new CKAN ID in the case we need as collection_pkg_id
                 row['id'] = ckan_response['result']['id']
+                row['extras'] = ckan_response['result'].get('extras', [])
                 comparison_results['ckan_id'] = ckan_response['result']['id']
             else:
                 actions[action]['fails'] += 1
@@ -122,6 +123,7 @@ def write_results_to_ckan(rows):
 
             if ckan_response['success']:
                 actions[action]['success'] += 1
+                row['extras'] = ckan_response['result'].get('extras', [])
             else:
                 actions[action]['fails'] += 1
                 error = 'Error updating dataset: {}'.format(ckan_response['error'])
@@ -145,7 +147,6 @@ def write_results_to_ckan(rows):
                 actions[action]['success'] += 1
             else:
                 actions[action]['fails'] += 1
-
 
         elif action == 'ignore':
             continue
