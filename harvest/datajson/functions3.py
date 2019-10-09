@@ -70,6 +70,8 @@ def assing_collection_pkg_id(rows):
 
                 try:
                     ckan_response = cpa.update_package(ckan_package=ckan_dataset)
+                    # save for not ask package_show again in tests
+                    row['extras'] = ckan_response['result']['extras']
                 except Exception as e:
                     error = f'Error updating collection_package_id at {ckan_dataset}: {e}'
                     comparison_results['action_results']['errors'].append(error)
@@ -197,6 +199,7 @@ def write_results_to_ckan(rows):
                 actions[action]['success'] += 1
                 # add this new CKAN ID in the case we need as collection_pkg_id
                 row['id'] = ckan_response['result']['id']
+                row['extras'] = ckan_response['result'].get('extras', [])
                 comparison_results['ckan_id'] = ckan_response['result']['id']
             else:
                 actions[action]['fails'] += 1
@@ -218,6 +221,7 @@ def write_results_to_ckan(rows):
 
             if ckan_response['success']:
                 actions[action]['success'] += 1
+                row['extras'] = ckan_response['result'].get('extras', [])
             else:
                 actions[action]['fails'] += 1
                 error = 'Error updating dataset: {}'.format(ckan_response['error'])

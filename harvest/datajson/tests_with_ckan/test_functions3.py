@@ -108,8 +108,10 @@ class Functions3TestClass(unittest.TestCase):
             for row in assing_collection_pkg_id(rows_processed):
 
                 datajson_dataset = row['comparison_results']['new_data']
-                package_show = cpa.show_package(ckan_package_id_or_name=row['id'])
-                package = package_show['result']
+                # We already show at functions3
+                # package_show = cpa.show_package(ckan_package_id_or_name=row['id'])
+                # package = package_show['result']
+                package = row
                 logger.info(f'Assigned package: {package}')
                 extras = package.get('extras', None)
                 assert type(extras) == list
