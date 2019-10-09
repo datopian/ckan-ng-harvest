@@ -49,25 +49,42 @@ class Functions3TestClass(unittest.TestCase):
                 logger.error(error)
                 raise Exception(error)
             package_show = cpa.show_package(ckan_package_id_or_name=name)
-            package = package_show['result']
-            extras = package.get('extras', None)
+            ckan_dataset = package_show['result']
+            extras = ckan_dataset.get('extras', None)
             assert type(extras) == list
-            logger.info(f'writed package: {package}')
-            identifier = [extra['value'] for extra in extras if extra['key'] == 'identifier'][0]
-            # for usmetadata schema: identifier = [extra['value'] for extra in extras if extra['key'] == 'unique_id'][0]
-            if identifier == 'USDA-9000':  # is R1
-                r1['id'] = row['id']
-                r1['new_package'] = package
-            elif identifier == 'USDA-8000':  # is R2
-                assert r2['id'] == row['id']
-                r2['new_package'] = package
-            elif identifier == 'USDA-7000':  # is R3
-                r3['id'] = row['id']
-                r3['new_package'] = package
-            elif identifier == 'USDA-6000':  # is R4
-                assert r4['id'] == row['id']
-                r4['new_package'] = package
-            else:
-                error = "BAD Identifier {} AT {}".format(identifier, row)
-                logger.error(error)
-                raise Exception(error)
+            logger.info(f'writed package: {ckan_dataset}')
+
+            guids = [extra['value'] for extra in extras if extra['key'] == 'guid']
+            assert len(guids) == 1
+            guid = guids[0]
+            if guid == '47da09d2-46c4-48db-b503-819dd0fa84dd':
+                assert [''] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'spatial-reference-system']
+                """
+                assert ['unique ID 971897198'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'guid']
+                assert ['other'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'spatial-data-service-type']
+                assert ['WEEKLY'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'frequency-of-update']
+                assert ['some@email.com'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'contact-email']
+                assert ['coup res'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'coupled-resource']
+                assert ['2019-02-02'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'metadata-date']
+                assert ['en'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'metadata-language']
+                assert ['2010-12-01T12:00:00Z'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'dataset-reference-date']
+
+                assert ["['CC-BY', 'http://licence.com']"] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence']
+                assert ['http://licence.com'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'licence_url']
+
+                assert ['some'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-file']
+                assert ['some descr'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-description']
+                assert ['some type'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'graphic-preview-type']
+
+                assert ['teb1'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'temporal-extent-begin']
+                assert ['tee1'] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'temporal-extent-end']
+
+                # rp = [{'name': 'GSA', 'roles': ['admin', 'admin2']}, {'name': 'NASA', 'roles': ['moon']}]
+                rp = 'GSA (admin, admin2); NASA (moon)'
+                assert [rp] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'responsible-party']
+
+                coords = '[[[{xmin}, {ymin}], [{xmax}, {ymin}], [{xmax}, {ymax}], [{xmin}, {ymax}], [{xmin}, {ymin}]]]'.format(xmax=-61.9, ymax=-33.1, xmin=34.3, ymin=51.8)
+                spatial = '{{"type": "Polygon", "coordinates": {coords}}}'.format(coords=coords)
+
+                assert [spatial] == [extra['value'] for extra in ckan_dataset['extras'] if extra['key'] == 'spatial']
+                """
