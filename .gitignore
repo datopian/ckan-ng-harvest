@@ -9,3 +9,6 @@ datapackages/
 local_settings.py
 .~lock*
 
+# environment variables
+env.airflow
+env.harvester
