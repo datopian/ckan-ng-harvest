@@ -4,7 +4,6 @@
 #
 #    pip-compile requirements.in
 #
-colander==1.6.0           # VULNERABLE!
 alembic==1.2.1            # via apache-airflow
 apache-airflow==1.10.4
 apispec[yaml]==3.0.0      # via flask-appbuilder
