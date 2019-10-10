@@ -27,7 +27,7 @@ test:
     - echo '***************************'
     - echo 'Checking dependencies for vulnerabilities'
     - cd "$DEVHOME"
-    - safety
+    - safety check --full-report
 
   only:
   - merge_requests
