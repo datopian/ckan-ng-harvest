@@ -2,15 +2,6 @@ version: '2.1'
 # based on https://github.com/puckel/docker-airflow
 # and https://medium.com/@tomaszdudek/yet-another-scalable-apache-airflow-with-docker-example-setup-84775af5c451
 services:
-    harvester:
-      build: .
-      command: ["bash"]
-      env_file:
-        - env.harvester
-      volumes:
-        - .:/app
-      depends_on:
-        - webserver
 
     redis:
         image: 'redis:5.0.5'
@@ -26,19 +17,22 @@ services:
         #     - ./pgdata:/var/lib/postgresql/data/pgdata
 
     webserver:
-        image: puckel/docker-airflow:1.10.4
+        build: .
+        # image: puckel/docker-airflow:1.10.4
         restart: always
         depends_on:
             - postgres
             - redis
         env_file:
+          - env.harvester
           - env.airflow
         volumes:
+            - .:/app
             - ./automate-tasks/airflow/dags:/usr/local/airflow/dags
             # Uncomment to include custom plugins
             # - ./plugins:/usr/local/airflow/plugins
         ports:
-            - "8080:8080"
+            - "8081:8080"
         command: webserver
         healthcheck:
             test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]

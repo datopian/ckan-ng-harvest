@@ -2,7 +2,8 @@
 
 ## Define environment variables
 
-Copy `env.airflow.sample` to `env.airflow` and `env.harvester.sample` to `env.harvester`
+Copy `env.airflow.sample` to `env.airflow` and `env.harvester.sample` to `env.harvester`.  
+Then define your custom values in this private files.  
 
 ## Run Airflow + Harvester
 
