@@ -1,0 +1,10 @@
+ckan-harvester>=0.109
+
+dataflows==0.0.56
+python-slugify==3.0.2
+requests==2.22.0
+datapackage==1.6.2
+pytz
+apache-airflow==1.10.4
+Jinja2==2.10.1
+OWSLib>=0.18.0
