@@ -34,7 +34,7 @@ services:
         ports:
             - "8081:8081"
         extra_hosts:
-            - "nginx:127.0.0.1"
+            - "nginx:${HOST_IP}"
         command: webserver
         healthcheck:
             test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
