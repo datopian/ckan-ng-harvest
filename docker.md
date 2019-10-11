@@ -17,7 +17,7 @@ docker-compose up -d
 docker-compose logs -f
 ```
 This will compile and start a scheduler to harvest periodically all you harvest sources.  
-You will be able to check airflow status at `http://localhosts:8080`.  
+You will be able to check airflow status at `http://localhosts:8081`.  
 
 ## Internals
 
