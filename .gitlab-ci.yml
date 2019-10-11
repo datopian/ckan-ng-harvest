@@ -29,6 +29,10 @@ test:
     - cd "$DEVHOME"
     - safety check --full-report
 
+    - echo '***************************'
+    - echo 'Static security scan'
+    - bandit -r .
+
   only:
   - merge_requests
 
