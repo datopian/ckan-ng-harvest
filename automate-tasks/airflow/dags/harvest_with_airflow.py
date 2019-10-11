@@ -6,6 +6,7 @@ import os
 import shlex
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
+from airflow.utils import dates
 from datetime import datetime, timedelta
 from harvester.data_gov_api import CKANPortalAPI
 from harvester.logs import logger
@@ -19,7 +20,7 @@ source_types = ['datajson', 'csw']
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.today(),
+    'start_date': dates.days_ago(7),  # 7 days ago
     'email': ['devops@datopian.com'],  # TODO check
     'email_on_failure': False,
     'email_on_retry': False,
@@ -77,8 +78,7 @@ templated_harvest_command = """
                 --harvest_source_id {{ params.harvest_source_id }} \
                 --ckan_owner_org_id {{ params.ckan_org_id }} \
                 --catalog_url {{ params.catalog_url }} \
-                --ckan_api_key {{ params.ckan_api_key }} \
-                --limit_dataset 10 # limit for test, remove for production
+                --ckan_api_key {{ params.ckan_api_key }}
             """
 
 for source_type in source_types:
