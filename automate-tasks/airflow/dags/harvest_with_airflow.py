@@ -2,17 +2,17 @@
 Harvester DAGs
  This file must live at the airflow dags folder
 """
-
-app_path = '/home/hudson/dev/datopian/harvesting-data-json-v2'
-env_path = '/home/hudson/envs/data_json_etl'
-import sys
-sys.path.append(app_path)
+import os
 import shlex
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta
 from harvester.data_gov_api import CKANPortalAPI
 from harvester.logs import logger
+
+app_path = os.environ.get('HARVESTER_APP_PATH', None)
+catalog_url = os.environ.get('CKAN_BASE_URL', None)
+catalog_api_key = os.environ.get('CKAN_API_KEY', None)
 
 source_types = ['datajson', 'csw']
 
@@ -66,15 +66,10 @@ dags = {'DAILY': {'dag': dag_daily, 'last_task': None},
         'BIWEEKLY': {'dag': dag_biweekly, 'last_task': None}
         }
 
-
-catalog_url = 'http://nginx:8080'
-catalog_api_key = '8d020294-74c1-4831-8fe1-3ccbbfff548a'
-
 cpa = CKANPortalAPI(base_url=catalog_url, api_key=catalog_api_key)
 urls = []
 
 templated_harvest_command = """
-            source {{ params.env_path }}/bin/activate
             cd {{ params.app_path }}/harvest/{{ params.source_type }}
             python harvest.py \
                 --name {{ params.name }} \
@@ -108,7 +103,6 @@ for source_type in source_types:
             # we need to get our local organizaion ID
             ckan_org_id = harvest_source['owner_org']
             params = {
-                'env_path': env_path,
                 'app_path': app_path,
                 'name': name,
                 'source_type': source_type,
