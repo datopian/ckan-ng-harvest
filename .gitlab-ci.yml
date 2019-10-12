@@ -31,7 +31,7 @@ test:
 
     - echo '***************************'
     - echo 'Static security scan'
-    - bandit -r .
+    - bandit -c bandit.yml -r .
 
   only:
   - merge_requests
