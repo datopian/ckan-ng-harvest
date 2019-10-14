@@ -13,7 +13,7 @@ from harvester.logs import logger
 
 app_path = os.environ.get('HARVESTER_APP_PATH', None)
 catalog_url = os.environ.get('CKAN_BASE_URL', None)
-catalog_api_key = os.environ.get('CKAN_API_KEY', None)z
+catalog_api_key = os.environ.get('CKAN_API_KEY', None)
 
 source_types = ['datajson', 'csw']
 
