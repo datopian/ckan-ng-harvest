@@ -30,7 +30,7 @@ test:
     - safety check --full-report
 
     - echo '***************************'
-    - echo 'Static security scan: pipeline will fail on medium/high severity'
+    - echo 'Static security scan -- pipeline will fail on medium/high issues'
     - bandit -c bandit.yml -ll -r .
 
   only:
