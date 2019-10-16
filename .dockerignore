@@ -2,13 +2,13 @@
 .gitignore
 .gitlab
 .pytest_cache
-__pycache__
+**/__pycache__
 Dockerfile*
 docker-compose*
 README.md
 LICENSE
 .vscode
-*.log
+**/*.log
 /harvest/datajson/data
 /harvest/csw/data
 /public
