@@ -15,7 +15,7 @@ app_path = os.environ.get('HARVESTER_APP_PATH', None)
 catalog_url = os.environ.get('CKAN_BASE_URL', None)
 catalog_api_key = os.environ.get('CKAN_API_KEY', None)
 
-source_types = ['datajson', 'csw']
+source_types = ['datajson']  # , 'csw']
 
 default_args = {
     'owner': 'airflow',
@@ -38,34 +38,6 @@ valid_frequencies = {'DAILY': {'interval': timedelta(days=1)},
                      'MANUAL': {'interval': timedelta(days=20)},
                      'BIWEEKLY': {'interval': timedelta(weeks=2)}
                      }  # TODO how for manual ?
-
-# we need dags visibles
-# https://airflow.readthedocs.io/en/stable/concepts.html#scope
-# one dag for each _frequency_
-logger.info('CREATING DAGs')
-dag_daily = DAG('HARVEST_DAILY',
-                default_args=default_args,
-                schedule_interval=valid_frequencies['DAILY']['interval'])
-dag_weekly = DAG('HARVEST_WEEKLY',
-                 default_args=default_args,
-                 schedule_interval=valid_frequencies['WEEKLY']['interval'])
-dag_monthly = DAG('HARVEST_MONTHLY',
-                  default_args=default_args,
-                  schedule_interval=valid_frequencies['MONTHLY']['interval'])
-dag_manual = DAG('HARVEST_MANUAL',
-                 default_args=default_args,
-                 schedule_interval=valid_frequencies['MANUAL']['interval'])
-dag_biweekly = DAG('HARVEST_BIWEEKLY',
-                   default_args=default_args,
-                   schedule_interval=valid_frequencies['BIWEEKLY']['interval'])
-
-
-dags = {'DAILY': {'dag': dag_daily, 'last_task': None},
-        'WEEKLY': {'dag': dag_weekly, 'last_task': None},
-        'MONTHLY': {'dag': dag_monthly, 'last_task': None},
-        'MANUAL': {'dag': dag_manual, 'last_task': None},
-        'BIWEEKLY': {'dag': dag_biweekly, 'last_task': None}
-        }
 
 cpa = CKANPortalAPI(base_url=catalog_url, api_key=catalog_api_key)
 urls = []
@@ -90,7 +62,9 @@ for source_type in source_types:
 
             frequency = harvest_source.get('frequency', 'MONTHLY').upper()
             if frequency not in valid_frequencies:
-                raise Exception(f'Unknown frequency: {frequency}')
+                # use default
+                frequency = 'MONTHLY'
+                # raise Exception(f'Unknown frequency: {frequency}')
 
             url = harvest_source['url']
             if url in urls:  # avoid duplicates
@@ -113,21 +87,18 @@ for source_type in source_types:
                 'ckan_api_key': catalog_api_key
                 }
 
-            dag = dags[frequency]['dag']
+            interval = valid_frequencies[frequency]['interval']
+            tp = source_type.upper()
+            nm = name.upper()
+            dag_id = f'HARVEST_{tp}_{nm}'
+            new_dag = DAG(dag_id, default_args=default_args, schedule_interval=interval)
+            # http://airflow.apache.org/faq.html#how-can-i-create-dags-dynamically
+            globals()[dag_id] = new_dag
             task = BashOperator(
-                task_id=f'harvest-{name}-{source_type}',
+                task_id=f'harvest-{source_type}-{name}',
                 bash_command=templated_harvest_command,
                 params=params,
-                trigger_rule="all_done",  # continue regardless of whether it fails. Everything will stop if it fails without this line
-                dag=dag  # set actual dag for this task
+                dag=new_dag
                 )
 
-            logger.info(f'set {dag} dag for the task: {task.bash_command} with params {params}')
-
-            last_task = dags[frequency]['last_task']
-            if last_task is not None:
-                task.set_upstream(last_task)
-
-            dags[frequency]['last_task'] = task
-
-            logger.info(f'task added {task}')
+            logger.info(f'task added {dag_id} {task}')

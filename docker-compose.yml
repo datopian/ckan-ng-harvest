@@ -25,7 +25,7 @@ services:
             - CKAN_VALID_USER_ID=admin
             - HARVESTER_APP_PATH=/app
             - AIRFLOW__CORE__DAGS_FOLDER=/app/automate-tasks/airflow/dags
-            - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+            - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
             - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=180
         ports:
             - "8081:8080"
