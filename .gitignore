@@ -13,3 +13,4 @@ local_settings.py
 # environment variables
 env.airflow
 env.harvester
+harvest_datasets_datagov_analysis.csv
