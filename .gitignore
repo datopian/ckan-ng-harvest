@@ -9,7 +9,7 @@ datapackages/
 local_settings.py
 .~lock*
 *~
-
+.pytest_cache
 # environment variables
 env.airflow
 env.harvester
