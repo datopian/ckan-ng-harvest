@@ -1,80 +1,38 @@
 version: '2.1'
-# based on https://github.com/puckel/docker-airflow
-# and https://medium.com/@tomaszdudek/yet-another-scalable-apache-airflow-with-docker-example-setup-84775af5c451
 services:
-
-    redis:
-        image: 'redis:5.0.5'
-        # command: redis-server --requirepass redispass
-
     postgres:
         image: postgres:9.6
-        env_file:
-          - env.airflow
-        # Uncomment these lines to persist data on the local filesystem.
-        #     - PGDATA=/var/lib/postgresql/data/pgdata
-        # volumes:
-        #     - ./pgdata:/var/lib/postgresql/data/pgdata
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
 
     webserver:
         build: .
-        # image: puckel/docker-airflow:1.10.4
         restart: always
+        command: webserver
         depends_on:
             - postgres
-            - redis
-        env_file:
-          - env.harvester
-          - env.airflow
-        volumes:
-            - .:/app
-            - ./automate-tasks/airflow/dags:/usr/local/airflow/dags
-            # Uncomment to include custom plugins
-            # - ./plugins:/usr/local/airflow/plugins
+        environment:
+            - LOAD_EX=n
+            - EXECUTOR=Local
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+            # CKAN instance to write harvested packages
+            - CKAN_API_KEY=625bafb3-42da-48a5-b9c2-c35c0e6085e1
+            - CKAN_BASE_URL=http://nginx:8080
+            - CKAN_VALID_USER_ID=admin
+
+            HARVESTER_APP_PATH=/app
         ports:
-            - "8081:8081"
+            - "8081:8080"
         extra_hosts:
+            # just if you have a local CKAN instance running in _nginx_ host in you local machine
+            # export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
             - "nginx:${HOST_IP}"
-        command: webserver
         healthcheck:
             test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
             interval: 30s
             timeout: 30s
             retries: 3
-
-    flower:
-        image: puckel/docker-airflow:1.10.4
-        restart: always
-        depends_on:
-            - redis
-        env_file:
-          - env.airflow
-        ports:
-            - "5555:5555"
-        command: flower
-
-    scheduler:
-        image: puckel/docker-airflow:1.10.4
-        restart: always
-        depends_on:
-            - webserver
-        volumes:
-            - ./dags:/usr/local/airflow/dags
-            # Uncomment to include custom plugins
-            # - ./plugins:/usr/local/airflow/plugins
-        env_file:
-          - env.airflow
-        command: scheduler
-
-    worker:
-        image: puckel/docker-airflow:1.10.4
-        restart: always
-        depends_on:
-            - scheduler
-        volumes:
-            - ./dags:/usr/local/airflow/dags
-            # Uncomment to include custom plugins
-            # - ./plugins:/usr/local/airflow/plugins
-        env_file:
-          - env.airflow
-        command: worker

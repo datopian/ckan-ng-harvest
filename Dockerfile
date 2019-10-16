@@ -19,4 +19,4 @@ RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
 ADD . .
-CMD [ "/bin/bash", "-c" ]
+RUN mv /app/automate-tasks/airflow/dags /usr/local/airflow/
