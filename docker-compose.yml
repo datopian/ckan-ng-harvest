@@ -23,8 +23,10 @@ services:
             - CKAN_API_KEY=625bafb3-42da-48a5-b9c2-c35c0e6085e1
             - CKAN_BASE_URL=http://nginx:8080
             - CKAN_VALID_USER_ID=admin
-
-            HARVESTER_APP_PATH=/app
+            - HARVESTER_APP_PATH=/app
+            - AIRFLOW__CORE__DAGS_FOLDER=/app/automate-tasks/airflow/dags
+            - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+            - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=180
         ports:
             - "8081:8080"
         extra_hosts:
