@@ -62,4 +62,5 @@ push-docker:
   - master
   - develop
   script:
+    - echo -n $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
     - docker push viderum/ckan-ng-harvest
