@@ -47,11 +47,19 @@ pages:
   only:
   - master
 
-docker:
+services:
+  - docker:dind
+
+build-docker:
   image: docker:18
-  stage: deploy
+  stage: build
+  script:
+    - docker build -t viderum/ckan-ng-harvest .
+
+push-docker:
+  image: docker:18
   only:
   - master
   - develop
   script:
-    - docker build . -t viderum/ckan-ng-harvest
+    - docker push viderum/ckan-ng-harvest
