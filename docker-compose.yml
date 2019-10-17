@@ -25,8 +25,15 @@ services:
             - CKAN_VALID_USER_ID=admin
             - HARVESTER_APP_PATH=/app
             - AIRFLOW__CORE__DAGS_FOLDER=/app/automate-tasks/airflow/dags
-            - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
             - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=180
+            # The amount of parallelism as a setting to the executor. This defines
+            # the max number of task instances that should run simultaneously
+            # on this airflow installation
+            - AIRFLOW__CORE__PARALLELISM=3
+            # The number of task instances allowed to run concurrently by the scheduler
+            - AIRFLOW__CORE__DAG_CONCURRENCY=2
+            # if False all (or limited by other settings) the harvesters will run at start
+            - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
         ports:
             - "8081:8080"
         extra_hosts:
