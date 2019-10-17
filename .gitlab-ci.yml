@@ -1,5 +1,10 @@
 image: python:3.6
 
+stages:
+  - build
+  - test
+  - deploy
+
 test:
   stage: test
   script:
@@ -41,3 +46,11 @@ pages:
     - public
   only:
   - master
+
+docker:
+  stage: deploy
+  only:
+  - master
+  - develop
+  script:
+    - docker build . -t viderum/ckan-ng-harvest
