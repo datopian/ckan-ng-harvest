@@ -58,6 +58,7 @@ build-docker:
 
 push-docker:
   image: docker:18
+  stage: deploy
   only:
   - master
   - develop
