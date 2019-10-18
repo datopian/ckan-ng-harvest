@@ -1,5 +1,10 @@
 image: python:3.6
 
+stages:
+  - build
+  - test
+  - deploy
+
 test:
   stage: test
   script:
@@ -41,3 +46,23 @@ pages:
     - public
   only:
   - master
+
+services:
+  - docker:dind
+
+build-docker:
+  image: docker:18
+  stage: build
+  script:
+    - docker build -t viderum/ckan-ng-harvest .
+
+push-docker:
+  image: docker:18
+  stage: deploy
+  only:
+  - master
+  - develop
+  script:
+    - echo -n $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+    - docker build -t viderum/ckan-ng-harvest .
+    - docker push viderum/ckan-ng-harvest
