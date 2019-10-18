@@ -24,7 +24,7 @@ You will be able to check airflow status at `http://localhosts:8081`.
 ### Build the main image
 
 ```
-docker build -t havesrter_ng:latest .
+docker build -t viderum/ckan-harvest-ng:latest .
 ```
 
 ### Run analyze sources
