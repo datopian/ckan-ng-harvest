@@ -2,8 +2,7 @@
 
 ## Define environment variables
 
-Copy `env.airflow.sample` to `env.airflow` and `env.harvester.sample` to `env.harvester`.  
-Then define your custom values in this private files.  
+Set you values at the _environment_ section at the _docker-compose.yaml_ file.  
 
 ## Run Airflow + Harvester
 
