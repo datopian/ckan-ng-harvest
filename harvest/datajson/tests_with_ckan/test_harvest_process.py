@@ -38,7 +38,7 @@ class HarvestTestClass(unittest.TestCase):
 
     HARVEST_SOURCE_ID = harvest_source['result']['id']
 
-    result = Popen(['python3 harvest.py --name {} --url {} --harvest_source_id {} --ckan_owner_org_id {} --catalog_url {} --ckan_api_key {}'.format(
+    result = Popen(['python3 harvest.py --name {} --url {} --harvest_source_id {} --ckan_owner_org_id {} --catalog_url {} --ckan_api_key {}'.format( #nosec
       NAME,
       URL,
       HARVEST_SOURCE_ID,
@@ -82,7 +82,7 @@ class HarvestTestClass(unittest.TestCase):
 
     HARVEST_SOURCE_ID = harvest_source['result']['id']
 
-    result = Popen(['python3 harvest.py --name {} --url {} --harvest_source_id {} --ckan_owner_org_id {} --catalog_url {} --ckan_api_key {}'.format(
+    result = Popen(['python3 harvest.py --name {} --url {} --harvest_source_id {} --ckan_owner_org_id {} --catalog_url {} --ckan_api_key {}'.format(#nosec
       NAME,
       URL,
       HARVEST_SOURCE_ID,
