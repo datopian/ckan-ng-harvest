@@ -19,7 +19,3 @@ RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
 ADD . .
-# RUN mv /app/automate-tasks/airflow/dags /usr/local/airflow/dags && ls -la /usr/local/airflow/dags
-# RUN cp -r ./automate-tasks/airflow/dags /usr/local/airflow/dags && ls -la /usr/local/airflow/dags
-# ADD ./automate-tasks/airflow/dags /usr/local/airflow/dags
-# RUN ls -la /usr/local/airflow/dags
