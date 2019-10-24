@@ -16,7 +16,7 @@ catalog_url = os.environ.get('CKAN_BASE_URL', None)
 catalog_api_key = os.environ.get('CKAN_API_KEY', None)
 
 strs = '************************'
-logger.info(f'{strs}\nStarting DAG file for Harvest\n{catalog_url}\n{catalog_api_key}\n{strs}')
+logger.info(f'{strs}\nStarting Harvest DAGs\n{catalog_url}\n{catalog_api_key}\n{strs}')
 
 # in some environments we need to read the just created CKAN API KEY from databases
 api_key_from_db = catalog_api_key == 'READ_FROM_DB'
