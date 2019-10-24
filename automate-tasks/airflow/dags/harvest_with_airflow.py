@@ -15,6 +15,23 @@ app_path = os.environ.get('HARVESTER_APP_PATH', None)
 catalog_url = os.environ.get('CKAN_BASE_URL', None)
 catalog_api_key = os.environ.get('CKAN_API_KEY', None)
 
+strs = '************************'
+logger.info(f'{strs}\nStarting DAG file for Harvest\n{catalog_url}\n{catalog_api_key}\n{strs}')
+
+# in some environments we need to read the just created CKAN API KEY from databases
+api_key_from_db = catalog_api_key == 'READ_FROM_DB'
+if api_key_from_db:
+    import sqlalchemy as db
+    engine = db.create_engine('postgresql://ckan:123456@db/ckan')
+    conn = engine.connect()
+    query = conn.execute("select apikey from public.user where name='admin'")
+    if len(query) == 1:
+        os.environ['CKAN_API_KEY'] = query[0]
+        logger.info('Read API KEY from database: {}'.format(query[0]))
+    else:
+        logger.error('Unable to read API KEY from database')
+
+
 source_types = ['datajson']  # , 'csw']
 
 default_args = {
