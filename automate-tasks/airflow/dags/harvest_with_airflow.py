@@ -22,7 +22,9 @@ logger.info(f'{strs}\nStarting DAG file for Harvest\n{catalog_url}\n{catalog_api
 api_key_from_db = catalog_api_key == 'READ_FROM_DB'
 if api_key_from_db:
     import sqlalchemy as db
-    engine = db.create_engine('postgresql://ckan:123456@db/ckan')
+    # string connection to CKAN psql, like: postgresql://ckan:123456@db/ckan
+    psql_ckan_conn = os.environ.get('PSQL_CKAN_CONN', None)
+    engine = db.create_engine(psql_ckan_conn)
     conn = engine.connect()
     query = conn.execute("select apikey from public.user where name='admin'")
     if len(query) == 1:
