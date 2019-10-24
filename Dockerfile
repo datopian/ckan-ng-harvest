@@ -11,11 +11,13 @@ RUN echo "************** Installing dependencies ... **************" && \
         libxslt-dev \
         python-dev
 
+
 WORKDIR /app
 ADD requirements.txt .
 
 RUN pip install --upgrade pip && \
     pip install pyproj==1.9.6 && \
-    pip install -r requirements.txt
+    pip install -r requirements.txt && \
+    pip install SQLAlchemy
 
 ADD . .

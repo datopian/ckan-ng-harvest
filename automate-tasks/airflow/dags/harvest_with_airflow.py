@@ -3,6 +3,7 @@ Harvester DAGs
  This file must live at the airflow dags folder
 """
 import os
+import sys
 import shlex
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
@@ -24,22 +25,32 @@ if api_key_from_db:
     import sqlalchemy as db
     # string connection to CKAN psql, like: postgresql://ckan:123456@db/ckan
     psql_ckan_conn = os.environ.get('PSQL_CKAN_CONN', None)
-    engine = db.create_engine(psql_ckan_conn)
+    try:
+        engine = db.create_engine(psql_ckan_conn)
+    except Exception as e:
+        error = f'Failed to connect with CKAN DB {psql_ckan_conn}'
+        logger.error(error)
+        sys.exit(error)
     conn = engine.connect()
-    query = conn.execute("select apikey from public.user where name='admin'")
-    if len(query) == 1:
-        os.environ['CKAN_API_KEY'] = query[0]
-        logger.info('Read API KEY from database: {}'.format(query[0]))
-    else:
-        logger.error('Unable to read API KEY from database')
+    result = conn.execute("select apikey from public.user where name='admin'")
+    try:
+        row = result.fetchone()
+    except Exception as e:
+        error = f'Unable to read API KEY from database {psql_ckan_conn}'
+        logger.error(error)
+        sys.exit(error)
 
+    os.environ['CKAN_API_KEY'] = row['apikey']
+    catalog_api_key = row['apikey']
+    logger.info('Read API KEY from database: {} ({})'.format(row['apikey'], psql_ckan_conn))
+    result.close()
 
 source_types = ['datajson']  # , 'csw']
 
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': dates.days_ago(7),  # 7 days ago
+    'start_date': dates.days_ago(1),
     'email': ['devops@datopian.com'],  # TODO check
     'email_on_failure': False,
     'email_on_retry': False,

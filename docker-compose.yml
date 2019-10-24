@@ -26,7 +26,6 @@ services:
             - HARVESTER_APP_PATH=/app
             - AIRFLOW__CORE__DAGS_FOLDER=/app/automate-tasks/airflow/dags
             - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=180
-            - PSQL_CKAN_CONN=postgresql://ckan:123456@db/ckan
             # The amount of parallelism as a setting to the executor. This defines
             # the max number of task instances that should run simultaneously
             # on this airflow installation
