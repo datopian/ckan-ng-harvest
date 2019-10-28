@@ -24,7 +24,8 @@ api_key_from_db = catalog_api_key == 'READ_FROM_DB'
 if api_key_from_db:
     import sqlalchemy as db
     # string connection to CKAN psql, like: postgresql://ckan:123456@db/ckan
-    psql_ckan_conn = os.environ.get('PSQL_CKAN_CONN', None)
+    # readed from CKAN secrets in CKAN CLOUD DOCKER or defined locally
+    psql_ckan_conn = os.environ.get('SQLALCHEMY_URL', None)
     try:
         engine = db.create_engine(psql_ckan_conn)
     except Exception as e:
