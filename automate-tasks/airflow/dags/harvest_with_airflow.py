@@ -41,6 +41,11 @@ if api_key_from_db:
         logger.error(error)
         sys.exit(error)
 
+    if row is None:
+        error = f'There is no API KEY for user "admin"'
+        logger.error(error)
+        sys.exit(error)
+
     os.environ['CKAN_API_KEY'] = row['apikey']
     catalog_api_key = row['apikey']
     logger.info('Read API KEY from database: {} ({})'.format(row['apikey'], psql_ckan_conn))
