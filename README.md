@@ -186,7 +186,7 @@ We create [a script](https://gitlab.com/datopian/ckan-ng-harvest/blob/develop/au
 
 ## Generate harvest commands list
 
-If you want to check the com
+If you want to check the command `generate_commands_list.py`
 
 ### Tests
 
