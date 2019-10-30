@@ -186,7 +186,8 @@ We create [a script](https://gitlab.com/datopian/ckan-ng-harvest/blob/develop/au
 
 ## Generate harvest commands list
 
-If you want to check the command `generate_commands_list.py`
+If you want to check or analize the harvest commands you can run the script `generate_commands_list.py`.  
+This script will list all the valid commands to harvest each source.
 
 ### Tests
 
