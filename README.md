@@ -197,6 +197,24 @@ Check the [tests.md](tests.md) file.
 
 Use harvester with docker. More info [here](docker.md).  
 
+### Security scanning
 
+Merge requests are scanned using `safety` to detect known vulnerabilities in
+dependencies and with `bandit` to find security issues in the code via static
+analysis.
 
+### Dependency management
+
+Required dependencies are installed using pip.  Pinned production requirements are found 
+in `requirements.txt`, development requirements in `dev-requirements.txt`.
+
+These files are generated using `pip-compile` (from `pip-tools`) from `requirements.in`
+and `dev-requirements.in`, respectively.
+
+To update the pinned requirement files, install `pip-tools` and run:
+
+```
+$ pip-compile requirements.in
+$ pip-compile dev-requirements.in
+```
 

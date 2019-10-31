@@ -15,7 +15,7 @@ def hash_dataset(datasetdict):
     #  https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/harvester_base.py#L730
     dmp_dataset = json.dumps(datasetdict, sort_keys=True)
     str_to_hash = dmp_dataset.encode('utf-8')
-    return hashlib.sha1(str_to_hash).hexdigest()
+    return hashlib.sha256(str_to_hash).hexdigest()
 
 
 def assing_collection_pkg_id(rows):
