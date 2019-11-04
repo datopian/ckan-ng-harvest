@@ -11,7 +11,11 @@ PYTHON_ENV_PATH = ''
 APP_PATH = ''
 
 # replace with you local values in this ignored file
-from local_settings import *
+try:
+    from local_settings import *
+except:
+    # do not fail if not exists
+    pass
 
 # check for ENV variables
 env_ckan_api_key = os.environ.get('CKAN_API_KEY', None)
