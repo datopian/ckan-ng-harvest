@@ -1,6 +1,6 @@
-from harvester.data_gov_api import CKANPortalAPI
-from harvester.data_json import DataJSON
-from harvester.logs import logger
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvesters.datajson.harvester import DataJSON
+from harvesters.logs import logger
 import csv
 import json
 from harvester import config
@@ -88,7 +88,12 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
         else:
             dj = DataJSON()
             dj.url = url
-            ret, error = dj.download_data_json()
+            try:
+                dj.fetch()
+                ret = True
+            except Exception as e:
+                ret = False
+
             result['download_ok'] = ret
             if not ret:
                 result['error'] = 'Download error (truncated): {} ...'.format(error[:70])
@@ -97,23 +102,15 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
                 writer.writerow(result)
                 continue
 
-            ret, error = dj.load_data_json()
-            result['parsed_ok'] = ret
-            if not ret:
-                result['error'] = 'Parsing error (truncated): {} ...'.format(error[:70])
-                logger.error(' +++++++++++ ERROR')
-                logger.error(result['error'])
-                writer.writerow(result)
-                continue
-
-            ret, errors = dj.validate_json()
+            ret = dj.validate()
             result['validate_ok'] = ret
             if not ret:
-                result['error'] = 'Validation error (truncated): {} ...'.format(errors[0][:70])
+                result['error'] = 'Validation error (truncated): {} ...'.format(js.errors[0][:70])
                 logger.error(' +++++++++++ ERROR')
                 logger.error(result['error'])
                 # some resources could be harvested with validation errors, continue by now
 
+            dj.post_fetch()
             result['schema_version'] = dj.schema_version
             result['total_dataset'] = len(dj.datasets)
 

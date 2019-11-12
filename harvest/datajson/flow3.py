@@ -16,7 +16,7 @@ from functions3 import (write_results_to_ckan, write_final_report,
                         build_validation_error_email,
                         assing_collection_pkg_id
                         )
-from harvester.logs import logger
+from harvesters.logs import logger
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")

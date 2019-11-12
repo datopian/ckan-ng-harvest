@@ -4,15 +4,10 @@ Tests all functions used in flow file
 from unittest import TestCase, mock
 from functions import clean_duplicated_identifiers, get_data_json_from_url
 from functions3 import build_validation_error_email, send_validation_error_email
-from harvester.data_json import DataJSON
+from harvesters.datajson.harvester import DataJSON
 
 
 class FunctionsTestClass(TestCase):
-
-    # datajson = DataJSON()
-    # ret, info = datajson.download_data_json(timeout=90)
-    # ret, info = datajson.load_data_json()
-    # ret, info = datajson.validate_json()
 
     def mocked_requests_get(*args, **kwargs):
         class MockResponse:
@@ -119,6 +114,11 @@ class FunctionsTestClass(TestCase):
         total = 0
         from harvester import config
         config.LIMIT_DATASETS = 15
+
+        # with self.assertRaises(Exception) as context:
+        # for dataset in get_data_json_from_url(url=url):
+        #     pass
+
         for dataset in get_data_json_from_url(url=url):
             self.assertIsInstance(dataset, dict)
             total += 1

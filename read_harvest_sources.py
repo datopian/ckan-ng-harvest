@@ -1,4 +1,4 @@
-from harvester.data_gov_api import CKANPortalAPI
+from harvester_adapters.ckan.api import CKANPortalAPI
 import argparse
 from settings import CKAN_BASE_URL, CKAN_API_KEY
 

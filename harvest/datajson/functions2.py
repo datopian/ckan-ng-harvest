@@ -1,9 +1,9 @@
 import json
-from harvester.logs import logger
+from harvesters.logs import logger
 import os
 import requests
-from harvester.data_gov_api import CKANPortalAPI
-from harvester.data_json import DataJSON
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvesters.datajson.harvester import DataJSON
 from datapackage import Package, Resource
 from slugify import slugify
 from harvester import config

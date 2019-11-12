@@ -9,8 +9,8 @@ from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.utils import dates
 from datetime import datetime, timedelta
-from harvester.data_gov_api import CKANPortalAPI
-from harvester.logs import logger
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvesters.logs import logger
 
 app_path = os.environ.get('HARVESTER_APP_PATH', None)
 catalog_url = os.environ.get('CKAN_BASE_URL', None)

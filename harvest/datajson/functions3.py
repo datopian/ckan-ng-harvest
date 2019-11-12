@@ -1,7 +1,7 @@
-from harvester.logs import logger
+from harvesters.logs import logger
 from harvester import config
-from harvester.adapters.datasets.data_json import DataJSONSchema1_1
-from harvester.data_gov_api import CKANPortalAPI
+from harvesters.datajson.ckan.dataset import DataJSONSchema1_1
+from harvester_adapters.ckan.api import CKANPortalAPI
 import json
 from datetime import datetime
 import pytz

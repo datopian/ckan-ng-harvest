@@ -1,5 +1,5 @@
 import pytest
-from harvester.csw import CSWSource
+from harvesters.csw.harvester import CSWSource
 
 
 class TestCSWISOClass(object):

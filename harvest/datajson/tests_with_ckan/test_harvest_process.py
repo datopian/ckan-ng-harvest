@@ -3,8 +3,8 @@ import unittest
 
 from subprocess import call, check_output, Popen, PIPE
 
-from harvester.logs import logger
-from harvester.data_gov_api import CKANPortalAPI
+from harvesters.logs import logger
+from harvester_adapters.ckan.api import CKANPortalAPI
 
 from pathlib import Path
 FULL_BASE_PROJECT_PATH = str(Path().cwd().parent.parent.absolute())

@@ -1,8 +1,8 @@
-from harvester.logs import logger
+from harvesters.logs import logger
 import os
 import requests
-from harvester.data_gov_api import CKANPortalAPI
-from harvester.csw import CSWSource
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvesters.csw.harvester import CSWSource
 from datapackage import Package, Resource
 from slugify import slugify
 from harvester import config

@@ -4,9 +4,9 @@ analyze some CSW sources for test CSW library
 
 from slugify import slugify
 from harvester import config
-from harvester.csw import CSWSource
-from harvester.adapters.datasets.csw import CSWDataset
-from harvester.logs import logger
+from harvesters.csw.harvester import CSWSource
+from harvesters.csw.ckan.dataset import CSWDataset
+from harvesters.logs import logger
 import csv
 import json
 
@@ -27,7 +27,11 @@ source = 0
 for url in url_services:
     source += 1
     csw = CSWSource(url=url)
-    connected = csw.connect_csw()
+    try:
+        csw.fetch()
+        connected = True
+    except Exception as e:
+        connected = False
     if not connected:
         logger.error(f'Fail to connect {csw.errors}')
         continue

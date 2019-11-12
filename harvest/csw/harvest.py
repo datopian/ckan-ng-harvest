@@ -3,7 +3,7 @@ Full harvest process. Include task in flow, flow2 and flow3
 """
 # use always base project folder as base path for imports
 import subprocess
-from harvester.logs import logger
+from harvesters.logs import logger
 import argparse
 
 parser = argparse.ArgumentParser()

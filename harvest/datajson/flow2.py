@@ -15,7 +15,7 @@ from harvester import config
 from functions2 import (get_current_ckan_resources_from_api,
                         compare_resources
                         )
-from harvester.logs import logger
+from harvesters.logs import logger
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="Name of the resource (for generate the containing folder)")

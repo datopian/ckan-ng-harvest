@@ -1,5 +1,5 @@
 import pytest
-from harvester.csw import CSWSource
+from harvesters.csw.harvester import CSWSource
 from owslib.csw import CatalogueServiceWeb
 
 
@@ -28,7 +28,11 @@ class TestCSWClass(object):
         for url in self.url_services:
 
             csw = CSWSource(url=url)
-            connected = csw.connect_csw()
+            try:
+                csw.fetch()
+                connected = True
+            except Exception as e:
+                connected = False
             # since we use remote URLs, if fails to connect is not our error, is a CSW source failing
             if connected and csw.errors == []:
 

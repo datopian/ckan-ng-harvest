@@ -1,6 +1,6 @@
 import argparse
-from harvester.data_gov_api import CKANPortalAPI
-from harvester.logs import logger
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvesters.logs import logger
 from settings import CKAN_BASE_URL, CKAN_API_KEY
 
 

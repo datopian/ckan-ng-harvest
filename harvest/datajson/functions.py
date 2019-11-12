@@ -1,13 +1,13 @@
-import json
-from harvester.logs import logger
 import os
-from harvester.data_gov_api import CKANPortalAPI
-from harvester.data_json import DataJSON
-from harvester.data_json import DataJSONDataset
+import json
+import base64
+from harvesters.logs import logger
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvesters.datajson.harvester import DataJSON
+from harvesters.datajson.harvester import DataJSONDataset
 from datapackage import Package, Resource
 from functions3 import build_validation_error_email
 from harvester import config
-import base64
 
 
 def validate_data_json(row):
@@ -28,40 +28,31 @@ def get_data_json_from_url(url):
     datajson = DataJSON()
     datajson.url = url
 
-    ret, info = datajson.download_data_json(timeout=90)
+    try:
+        datajson.fetch(timeout=90)
+        ret = True
+    except Exception as e:
+        ret = False
     if not ret:
-        error = 'Error getting data: {}'.format(info)
+        error = 'Error getting data: {}'.format(datajson.errors)
         datajson.save_errors(path=config.get_errors_path())
         logger.error(error)
         raise Exception(error)
     logger.info('Downloaded OK')
 
-    ret, info = datajson.load_data_json()
+    ret = datajson.validate()
     if not ret:
-        datajson.save_errors(path=config.get_errors_path())
-        logger.error(datajson.validation_errors)
-        try:
-            build_validation_error_email()
-        except Exception as e:
-            logger.error('Error sending validation email: {}'.format(e))
-        raise Exception('Error validating JSON ' + ', '.join(datajson.validation_errors))
-
-    logger.info('JSON OK')
-    ret, info = datajson.validate_json()
-    if not ret:
-        logger.error('Error validating data: {}\n----------------\n'.format(info))
-        # continue  # USE invalid too
-        logger.info('Validation errors: {}'.format(info))
+        error = 'Error validating data: {}'.format(datajson.errors)
+        logger.error(error)
+        raise Exception(error)
     else:
+        datajson.post_fetch()
         logger.info('Validate OK: {} datasets'.format(len(datajson.datasets)))
-
-    # TODO move this as a DataJson function and add it to a validate function
-    # validate_data_json(data_json['dataset'])
 
     logger.info('{} datasets found'.format(len(datajson.datasets)))
 
     # save data.json
-    datajson.save_data_json(path=config.get_data_cache_path())
+    datajson.save_json(path=config.get_data_cache_path())
     # save headers errors
     datajson.save_errors(path=config.get_errors_path())
 

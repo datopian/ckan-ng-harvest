@@ -7,8 +7,8 @@ APP_PATH = '/home/hudson/dev/datopian/harvesting-data-json-v2'
 import sys
 sys.path.append(APP_PATH)
 import shlex
-from harvester.data_gov_api import CKANPortalAPI
-from harvester.logs import logger
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvesters.logs import logger
 from jinja2 import Template
 from settings import CKAN_BASE_URL, CKAN_API_KEY, PYTHON_ENV_PATH
 

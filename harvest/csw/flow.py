@@ -8,13 +8,13 @@ import os
 
 from dataflows import Flow, update_resource
 # from dataflows.join import join_with_self
-from harvester.logs import logger
+from harvesters.logs import logger
 from functions import (get_csw_from_url,
                        clean_duplicated_identifiers,
                        validate_datasets,
                        save_as_data_packages,
                        )
-from harvester.logs import logger
+from harvesters.logs import logger
 from harvester import config
 import argparse
 parser = argparse.ArgumentParser()

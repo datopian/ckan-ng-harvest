@@ -4,9 +4,9 @@ Tests all functions used in flow file
 import json
 import unittest
 from harvester import config
-from harvester.data_gov_api import CKANPortalAPI
+from harvester_adapters.ckan.api import CKANPortalAPI
 from functions3 import assing_collection_pkg_id, write_results_to_ckan
-from harvester.logs import logger
+from harvesters.logs import logger
 
 import sys
 from pathlib import Path

@@ -3,7 +3,7 @@ Full harvest process. Include task in flow, flow2 and flow3
 """
 import subprocess
 import argparse
-from harvester.logs import logger
+from harvesters.logs import logger
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", type=str, help="URL of the data.json", required=True)

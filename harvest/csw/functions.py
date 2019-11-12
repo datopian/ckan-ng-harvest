@@ -1,8 +1,8 @@
 import json
-from harvester.logs import logger
+from harvesters.logs import logger
 import os
 import requests
-from harvester.csw import CSWSource
+from harvesters.csw.harvester import CSWSource
 from datapackage import Package, Resource
 from slugify import slugify
 from harvester import config
@@ -13,7 +13,12 @@ def get_csw_from_url(url):
     logger.info(f'Geting CSW from {url}')
 
     csw = CSWSource(url=url)
-    if not csw.connect_csw():
+    try:
+        csw.fetch()
+        connected = True
+    except Exception as e:
+        connected = False
+    if not connected:
         error = f'Fail to connect {csw.errors}'
         csw.save_errors(path=config.get_errors_path())
         raise Exception(error)
@@ -31,7 +36,7 @@ def get_csw_from_url(url):
         if config.LIMIT_DATASETS > 0 and c > config.LIMIT_DATASETS:
             break
         c += 1
-    csw.save_data_json(path=config.get_data_cache_path())
+    csw.save_json(path=config.get_data_cache_path())
 
 
 def clean_duplicated_identifiers(rows):

@@ -12,7 +12,7 @@ from dataflows import Flow, printer, dump_to_path, load, update_resource
 # from dataflows.join import join_with_self
 import json
 import os
-from harvester.logs import logger
+from harvesters.logs import logger
 from harvester import config
 from functions import (get_data_json_from_url,
                        clean_duplicated_identifiers,

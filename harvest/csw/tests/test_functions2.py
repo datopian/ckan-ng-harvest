@@ -6,7 +6,7 @@ from functions import get_csw_from_url, save_as_data_packages
 from functions2 import get_current_ckan_resources_from_api, compare_resources
 from harvester import config
 from tests.mock_csw import MockCatalogueServiceWeb
-from harvester.logs import logger
+from harvesters.logs import logger
 
 
 class TestFunctions2(TestCase):
