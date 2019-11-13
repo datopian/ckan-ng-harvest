@@ -12,7 +12,7 @@ class FunctionsTestClass(TestCase):
     def mocked_csw(url=None, timeout=30):
         return MockCatalogueServiceWeb(url=url)
 
-    @mock.patch('harvester.csw.CatalogueServiceWeb', side_effect=mocked_csw)
+    @mock.patch('harvesters.csw.harvester.CatalogueServiceWeb', side_effect=mocked_csw)
     def test_404_csw(self, mock_csw):
         url = 'https://some-source.com/404csw'
         with self.assertRaises(Exception) as context:
@@ -23,7 +23,7 @@ class FunctionsTestClass(TestCase):
         self.assertTrue('Fail to connect' in str(context.exception))
         self.assertTrue('404 Client Error' in str(context.exception))
 
-    @mock.patch('harvester.csw.CatalogueServiceWeb', side_effect=mocked_csw)
+    @mock.patch('harvesters.csw.harvester.CatalogueServiceWeb', side_effect=mocked_csw)
     def test_csw_data(self, mock_csw):
         url = 'https://some-source.com/csw-records'
 

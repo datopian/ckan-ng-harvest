@@ -14,7 +14,7 @@ class TestFunctions2(TestCase):
     def mocked_csw(url=None, timeout=30):
         return MockCatalogueServiceWeb(url=url)
 
-    @mock.patch('harvester.csw.CatalogueServiceWeb', side_effect=mocked_csw)
+    @mock.patch('harvesters.csw.harvester.CatalogueServiceWeb', side_effect=mocked_csw)
     def test_compare_resources(self, mock_csw):
         config.SOURCE_NAME = 'some-csw'
         url = 'https://some-source.com/csw-records'
