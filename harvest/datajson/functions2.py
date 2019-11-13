@@ -6,7 +6,7 @@ from harvester_adapters.ckan.api import CKANPortalAPI
 from harvesters.datajson.harvester import DataJSON
 from datapackage import Package, Resource
 from slugify import slugify
-from harvester import config
+from harvesters import config
 import base64
 from dateutil.parser import parse
 import glob

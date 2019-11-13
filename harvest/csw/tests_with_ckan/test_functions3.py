@@ -2,7 +2,7 @@
 Tests all functions used in flow file
 """
 import unittest
-from harvester import config
+from harvesters import config
 from harvester_adapters.ckan.api import CKANPortalAPI
 from functions3 import write_results_to_ckan
 from harvesters.logs import logger

@@ -7,7 +7,7 @@ from harvesters.datajson.harvester import DataJSON
 from harvesters.datajson.harvester import DataJSONDataset
 from datapackage import Package, Resource
 from functions3 import build_validation_error_email
-from harvester import config
+from harvesters import config
 
 
 def validate_data_json(row):

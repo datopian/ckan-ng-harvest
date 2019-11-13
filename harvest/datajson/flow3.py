@@ -11,7 +11,7 @@ from dataflows import (Flow, dump_to_path, load, printer,
                        duplicate, add_field
                        )
 
-from harvester import config
+from harvesters import config
 from functions3 import (write_results_to_ckan, write_final_report,
                         build_validation_error_email,
                         assing_collection_pkg_id

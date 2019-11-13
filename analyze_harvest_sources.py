@@ -3,7 +3,7 @@ from harvesters.datajson.harvester import DataJSON
 from harvesters.logs import logger
 import csv
 import json
-from harvester import config
+from harvesters import config
 
 
 # search each data.json source and analyze them

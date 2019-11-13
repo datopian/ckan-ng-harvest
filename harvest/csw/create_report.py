@@ -3,7 +3,7 @@ Read ALL results files about the harvest process and write a report
 """
 import json
 import argparse
-from harvester import config
+from harvesters import config
 from harvesters.harvested_source import HarvestedSource
 
 parser = argparse.ArgumentParser()

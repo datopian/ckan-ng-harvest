@@ -1,5 +1,5 @@
 from harvesters.logs import logger
-from harvester import config
+from harvesters import config
 from harvesters.csw.ckan.dataset import CSWDataset
 from harvester_adapters.ckan.api import CKANPortalAPI
 import json

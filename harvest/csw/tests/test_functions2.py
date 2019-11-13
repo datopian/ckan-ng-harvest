@@ -4,7 +4,7 @@ Tests all functions used in flow file
 from unittest import TestCase, mock
 from functions import get_csw_from_url, save_as_data_packages
 from functions2 import get_current_ckan_resources_from_api, compare_resources
-from harvester import config
+from harvesters import config
 from tests.mock_csw import MockCatalogueServiceWeb
 from harvesters.logs import logger
 

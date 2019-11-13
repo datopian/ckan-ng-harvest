@@ -5,7 +5,7 @@ from harvester_adapters.ckan.api import CKANPortalAPI
 from harvesters.csw.harvester import CSWSource
 from datapackage import Package, Resource
 from slugify import slugify
-from harvester import config
+from harvesters import config
 import base64
 from dateutil.parser import parse
 import glob

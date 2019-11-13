@@ -15,7 +15,7 @@ from functions import (get_csw_from_url,
                        save_as_data_packages,
                        )
 from harvesters.logs import logger
-from harvester import config
+from harvesters import config
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", type=str, help="URL of the data.json")

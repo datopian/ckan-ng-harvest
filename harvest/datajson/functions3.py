@@ -1,5 +1,5 @@
 from harvesters.logs import logger
-from harvester import config
+from harvesters import config
 from harvesters.datajson.ckan.dataset import DataJSONSchema1_1
 from harvester_adapters.ckan.api import CKANPortalAPI
 import json

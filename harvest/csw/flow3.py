@@ -8,7 +8,7 @@ import json
 import os
 from dataflows import Flow, load
 
-from harvester import config
+from harvesters import config
 from functions3 import (write_results_to_ckan,
                         build_validation_error_email
                         )

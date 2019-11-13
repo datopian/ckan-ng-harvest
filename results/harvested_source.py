@@ -1,4 +1,4 @@
-from harvester import config
+from harvesters import config
 from jinja2 import Template
 import os
 from harvesters.logs import logger

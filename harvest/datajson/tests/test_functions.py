@@ -77,7 +77,7 @@ class FunctionsTestClass(TestCase):
 
         mock_req.assert_called_once()
         print(str(context.exception))
-        self.assertTrue('Error validating JSON' in str(context.exception))
+        self.assertTrue('ERROR parsing JSON' in str(context.exception))
 
     @mock.patch("functions3.send_validation_error_email")
     @mock.patch("functions3.build_validation_error_email")
@@ -112,7 +112,7 @@ class FunctionsTestClass(TestCase):
     def test_limit(self, mock_req):
         url = 'https://some-source.com/healthdata.gov.data.json'
         total = 0
-        from harvester import config
+        from harvesters import config
         config.LIMIT_DATASETS = 15
 
         # with self.assertRaises(Exception) as context:

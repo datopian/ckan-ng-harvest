@@ -5,7 +5,7 @@ import requests
 from harvesters.csw.harvester import CSWSource
 from datapackage import Package, Resource
 from slugify import slugify
-from harvester import config
+from harvesters import config
 import base64
 
 

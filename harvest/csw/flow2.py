@@ -11,7 +11,7 @@ from dataflows import (Flow, dump_to_path, load, printer,
                        duplicate, add_field
                        )
 
-from harvester import config
+from harvesters import config
 from functions2 import (get_current_ckan_resources_from_api,
                         compare_resources
                         )

@@ -3,7 +3,7 @@ analyze some CSW sources for test CSW library
 """
 
 from slugify import slugify
-from harvester import config
+from harvesters import config
 from harvesters.csw.harvester import CSWSource
 from harvesters.csw.ckan.dataset import CSWDataset
 from harvesters.logs import logger
