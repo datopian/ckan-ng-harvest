@@ -9,6 +9,7 @@ datapackages/
 local_settings.py
 .~lock*
 *~
+*.egg-info
 .pytest_cache
 # environment variables
 env.airflow
