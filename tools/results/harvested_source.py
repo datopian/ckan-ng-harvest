@@ -1,8 +1,8 @@
-from harvesters import config
-from jinja2 import Template
 import os
-from harvesters.logs import logger
 import pkg_resources
+from jinja2 import Template
+from harvesters import config
+from harvesters.logs import logger
 
 
 class HarvestedSource:

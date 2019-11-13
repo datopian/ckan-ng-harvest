@@ -72,7 +72,7 @@ python3 read_harvest_sources.py --base_url http://ckan:5000 --source_type datajs
 Creates a CSV file with all the harvest sources. Analyze each one to validate it, count datastets and resources.
 
 ```
-python3 analyze_harvest_sources.py 
+python tools/analyze_harvest_sources.py 
 
 Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest)'}
 977 results
@@ -90,7 +90,7 @@ Validation error (truncated): Error validating JsonSchema: 'bureauCode' is a req
 
 CSV results
 
-![source_analysis](imgs/source_analysis.png)
+![source_analysis](docs/imgs/source_analysis.png)
 
 ### Harvest one source
 
@@ -176,8 +176,8 @@ COMD OK: python3 flow3.py --name rrb --ckan_owner_org_id rrb-gov --catalog_url h
 
 You can see the harvested datasets at you CKAN instance
 
-![h0](imgs/harvested00.png)
-![h0](imgs/harvested01.png)
+![h0](docs/imgs/harvested00.png)
+![h0](docs/imgs/harvested01.png)
 
 ## Harvest ALL sources
 

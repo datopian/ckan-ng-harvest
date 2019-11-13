@@ -27,7 +27,7 @@ python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --s
 You can count and analyze al harvest sources:
 
 ```
-python3 analyze_harvest_sources.py 
+python tools/analyze_harvest_sources.py 
 ```
 This creates a CSV file with all the harvest sources.
 
@@ -35,8 +35,8 @@ This creates a CSV file with all the harvest sources.
 To start process you need a queue with all the harvesters. This will be done with the _harvest_with_airflow.py_ [script](/automate-tasks/airflow/harvest_with_airflow.py) at automate-tasks/airflow folder.  
 This file need to live at the Airflow [DAG](https://airflow.apache.org/concepts.html#dags) folder (or maybe just a link to this file).  
 
-![af01](/imgs/airflow01.png)
-![af02](/imgs/airflow02.png)
+![af01](/docs/imgs/airflow01.png)
+![af02](/docs/imgs/airflow02.png)
 
 #### About Airflow
 Airflow is a Python/Flask app.  

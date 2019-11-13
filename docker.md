@@ -31,6 +31,6 @@ docker build -t viderum/ckan-harvest-ng:latest .
 Run commands inside docker
 
 ```
-docker run -it --rm havesrter_ng:latest python analyze_harvest_sources.py
+docker run -it --rm havesrter_ng:latest python tools/analyze_harvest_sources.py
 ```
 
