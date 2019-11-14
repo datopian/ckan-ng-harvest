@@ -2,7 +2,10 @@
 
 ## Define environment variables
 
-Set you values at the _environment_ section at the _docker-compose.yaml_ file.  
+Set you values at the _environment_ section at the _docker-compose.yaml_ file.
+
+At _services.webserver.environment_ you should define CKAN_API_KEY and CKAN_BASE_URL.  
+This points to the CKAN instance you need to harvest to.  
 
 ## Run Airflow + Harvester
 
