@@ -85,9 +85,10 @@ class HarvestedSource:
     def render_template(self, save=True):
         # redenr through harvest-report.html
         context = self.get_json_data()
-        # fails (?) template_txt = pkg_resources.resource_string('harvester', 'templates/harvest-report.html')
+        # fails (?)
+        # template_txt = pkg_resources.resource_string('harvester', 'templates/harvest-report.html')
         # https://stackoverflow.com/questions/6028000/how-to-read-a-static-file-from-inside-a-python-package
-        template_path = pkg_resources.resource_filename('harvester', 'templates/harvest-report.html')
+        template_path = pkg_resources.resource_filename('templates', 'templates/harvest-report.html')
         f = open(template_path, 'r')
         template = Template(f.read())
         f.close()
