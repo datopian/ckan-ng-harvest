@@ -1,0 +1,6 @@
+version: '3.2'
+services:
+    webserver:
+        environment:
+            - CKAN_API_KEY=YOUR-REAL-CKAN-API
+            - CKAN_BASE_URL=YOU-REAL-CKAN-URL
