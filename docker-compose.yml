@@ -20,7 +20,7 @@ services:
             - POSTGRES_PASSWORD=airflow
             - POSTGRES_DB=airflow
             # CKAN instance to write harvested packages
-            - CKAN_API_KEY=625bafb3-42da-48a5-b9c2-c35c0e6085e1
+            - CKAN_API_KEY=XXXXXXXX
             - CKAN_BASE_URL=http://nginx:8080
             - CKAN_VALID_USER_ID=admin
             - HARVESTER_APP_PATH=/app

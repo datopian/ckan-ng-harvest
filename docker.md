@@ -7,6 +7,8 @@ Set you values at the _environment_ section at the _docker-compose.yaml_ file.
 At _services.webserver.environment_ you should define CKAN_API_KEY and CKAN_BASE_URL.  
 This points to the CKAN instance you need to harvest to.  
 
+At [CKAN Cloud Docker](https://github.com/avdata99/ckan-cloud-docker/blob/7aac946ee7a732379a9c6b7a933ebf5f90b358c7/.docker-compose-harvester_ng.yaml#L41) we use `CKAN_API_KEY=READ_FROM_DB` to read credentials directly from database. Here we need to difine this.  
+
 ## Run Airflow + Harvester
 
 To start Airflow and load automatically all the harvester jobs just do:
