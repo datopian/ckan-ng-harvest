@@ -5,6 +5,7 @@ __pycache__
 *.log
 .coverage
 data/
+dist/
 datapackages/
 local_settings.py
 .~lock*
