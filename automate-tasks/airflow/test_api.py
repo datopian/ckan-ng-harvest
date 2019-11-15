@@ -22,7 +22,6 @@ Sample results:
 """
 
 import requests
-
 report = {
     'total_latest_runs': 0,
     'total_runs': 0,
