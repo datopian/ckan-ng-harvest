@@ -56,7 +56,7 @@ class FunctionsTestClass(TestCase):
 
         url = 'https://some-source.com/DO-NOT-EXISTS.json'
         with self.assertRaises(Exception) as context:
-            for dataset in get_data_json_from_url(url=url):
+            for dataset in get_data_json_from_url(url=url, validator_schema='federal-v1.1'):
                 pass
         mock_req.assert_called_once()
         print(str(context.exception))
@@ -72,7 +72,7 @@ class FunctionsTestClass(TestCase):
 
         url = 'https://some-source.com/BAD.json'
         with self.assertRaises(Exception) as context:
-            for dataset in get_data_json_from_url(url=url):
+            for dataset in get_data_json_from_url(url=url, validator_schema='federal-v1.1'):
                 pass
 
         mock_req.assert_called_once()
@@ -89,11 +89,11 @@ class FunctionsTestClass(TestCase):
 
         url = 'https://some-source.com/usda.gov.data.json'
         total = 0
-        for dataset in get_data_json_from_url(url=url):
+        for dataset in get_data_json_from_url(url=url, validator_schema='federal-v1.1'):
             self.assertIsInstance(dataset, dict)
             total += 1
 
-        self.assertEqual(len(mock_req.call_args_list), 3)
+        self.assertEqual(len(mock_req.call_args_list), 1)
         self.assertEqual(total, 1580)
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -101,29 +101,25 @@ class FunctionsTestClass(TestCase):
 
         url = 'https://some-source.com/healthdata.gov.data.json'
         total = 0
-        for dataset in get_data_json_from_url(url=url):
+        for dataset in get_data_json_from_url(url=url, validator_schema='federal-v1.1'):
             self.assertIsInstance(dataset, dict)
             total += 1
 
-        self.assertEqual(len(mock_req.call_args_list), 3)
+        self.assertEqual(len(mock_req.call_args_list), 1)
         self.assertEqual(total, 1762)
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_limit(self, mock_req):
-        url = 'https://some-source.com/healthdata.gov.data.json'
-        total = 0
         from harvesters import config
         config.LIMIT_DATASETS = 15
+        url = 'https://some-source.com/healthdata.gov.data.json'
 
-        # with self.assertRaises(Exception) as context:
-        # for dataset in get_data_json_from_url(url=url):
-        #     pass
-
-        for dataset in get_data_json_from_url(url=url):
+        total = 0
+        for dataset in get_data_json_from_url(url=url, validator_schema='federal-v1.1'):
             self.assertIsInstance(dataset, dict)
             total += 1
 
-        self.assertEqual(len(mock_req.call_args_list), 3)
+        self.assertEqual(len(mock_req.call_args_list), 1)
         self.assertEqual(total, 15)
 
     def test_clean_duplicated_identifiers_bad_field(self):

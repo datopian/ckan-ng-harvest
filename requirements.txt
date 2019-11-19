@@ -19,7 +19,7 @@ cachetools==3.1.1         # via kvfile
 cchardet==2.1.4           # via datapackage, tabulator
 certifi==2019.9.11        # via requests
 chardet==3.0.4            # via requests
-ckan-harvesters==0.118
+ckan-harvesters==0.122
 click==7.0                # via dataflows, datapackage, flask, flask-appbuilder, tableschema, tabulator
 colorama==0.4.1           # via flask-appbuilder
 colorlog==4.0.2           # via apache-airflow
@@ -60,7 +60,7 @@ jmespath==0.9.4           # via boto3, botocore
 json-merge-patch==0.2     # via apache-airflow
 jsonlines==1.2.0          # via tabulator
 jsonpointer==2.0          # via datapackage
-jsonschema==3.1.1         # via ckan-harvester, datapackage, flask-appbuilder, tableschema
+jsonschema==3.2.0         # via ckan-harvester, datapackage, flask-appbuilder, tableschema
 kvfile==0.0.7             # via dataflows
 lazy-object-proxy==1.4.2  # via apache-airflow
 linear-tsv==1.1.0         # via tabulator

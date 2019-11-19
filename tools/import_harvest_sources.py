@@ -1,13 +1,19 @@
+import os
 import argparse
 from harvester_adapters.ckan.api import CKANPortalAPI
 from harvesters.logs import logger
+
+# add settings
+import sys
+APP_PATH = os.path.abspath('..')
+sys.path.append(APP_PATH)
 from settings import CKAN_BASE_URL, CKAN_API_KEY
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--import_from_url", type=str, help="CKAN instance URL to imprt from")
+parser.add_argument("--import_from_url", type=str, help="CKAN instance URL to import from")
 parser.add_argument("--harvest_type", type=str, default='harvest', help="Dataset type for harvest is 'harvest'")
-parser.add_argument("--source_type", type=str, default='datajson', help="Tipe of harvest source: datajson|csw|waf etc")
+parser.add_argument("--source_type", type=str, default='datajson', help="Type of harvest source: datajson|csw|waf etc")
 parser.add_argument("--method", type=str, default='GET', help="POST fails on CKAN 2.3, now is working")
 
 args = parser.parse_args()

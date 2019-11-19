@@ -10,19 +10,7 @@ from functions3 import build_validation_error_email
 from harvesters import config
 
 
-def validate_data_json(row):
-    # Taken from https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
-    errors = []
-    try:
-        data_validator = DataJSONDataset()
-        errors = data_validator.validate_dataset(row)
-    except Exception as e:
-        # errors.append(("Internal Error", ["Something bad happened: " + str(e)]))
-        errors.append({'Internal Error': [f'Something bad happened: {e}']})
-    return errors
-
-
-def get_data_json_from_url(url):
+def get_data_json_from_url(url, validator_schema):
     logger.info(f'Geting data.json from {url}')
 
     datajson = DataJSON()
@@ -40,7 +28,7 @@ def get_data_json_from_url(url):
         raise Exception(error)
     logger.info('Downloaded OK')
 
-    ret = datajson.validate()
+    ret = datajson.validate(validator_schema=validator_schema)
     if not ret:
         error = 'Error validating data: {}'.format(datajson.errors)
         logger.error(error)
@@ -63,6 +51,7 @@ def get_data_json_from_url(url):
     for dataset in datajson.datasets:
         # add headers (previously called catalog_values)
         dataset['headers'] = datajson.headers
+        dataset['validator_schema'] = validator_schema
         yield(dataset)
 
 
@@ -95,8 +84,10 @@ def clean_duplicated_identifiers(rows):
 
 def validate_datasets(row):
     """ validate dataset row by row """
-    errors = validate_data_json(row)
-    row['validation_errors'] = errors
+    data_validator = DataJSONDataset(row)
+    data_validator.validate(validator_schema=row['validator_schema'])
+    row['validation_errors'] = data_validator.errors
+
 
 # we need a way to save as file using an unique identifier
 # TODO check if base64 is the best idea
