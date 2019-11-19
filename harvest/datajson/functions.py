@@ -17,7 +17,7 @@ def validate_data_json(row):
     return data_validator.errors
 
 
-def get_data_json_from_url(url):
+def get_data_json_from_url(url, validator_schema=None):
     logger.info(f'Geting data.json from {url}')
 
     datajson = DataJSON()
@@ -35,7 +35,9 @@ def get_data_json_from_url(url):
         raise Exception(error)
     logger.info('Downloaded OK')
 
-    ret = datajson.validate()
+    if validator_schema is None:
+        raise Exception('Unknown validator_schema')
+    ret = datajson.validate(validator_schema=validator_schema)
     if not ret:
         error = 'Error validating data: {}'.format(datajson.errors)
         logger.error(error)

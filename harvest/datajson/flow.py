@@ -35,7 +35,7 @@ config.LIMIT_DATASETS = args.limit_dataset
 res = Flow(
     # get data.json and yield all datasets
     # validate headers and save the validation errors
-    get_data_json_from_url(url=config.SOURCE_URL),
+    get_data_json_from_url(url=config.SOURCE_URL, validator_schema=''),
     update_resource('res_1', name='datajson', path='datajson.csv'),
 
     # remove duplicates

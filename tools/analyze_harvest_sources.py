@@ -12,16 +12,14 @@ cpa = CKANPortalAPI(base_url='https://catalog.data.gov')
 # write results as CSV
 csvfile = open('harvest_datasets_datagov_analysis.csv', 'w')
 fieldnames = ['url', 'title', 'error', 'source_type', 'frequency',
-              'collections', 'child_datasets',
-              'download_ok',
-              'parsed_ok',
-              'validate_ok',
+              'validator_schema', 'config', 'collections', 'child_datasets',
+              'download_ok', 'parsed_ok', 'validate_ok',
               'schema_version', 'total_dataset',
               'total_resources', 'dataset_types', 'resource_types']
 
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
-results = []
+final_results = []
 colections_ids = set()
 c = 0
 urls = []
@@ -61,19 +59,28 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
         defaults = configs.get('defaults', None)
         if defaults is not None:
             with_config_defaults += 1
+        # default is federal v 1.1
+        validator_schema = configs.get('validator_schema', None)
+        if validator_schema is None:
+            validator_schema = local_harvest_source.get('validator_schema', None)
 
         title = local_harvest_source['title']
         source_type = local_harvest_source['source_type']
         frequency = local_harvest_source.get('frequency', None)
 
-        # for final results
+        # for final_results
         result = {'url': url,
                   'title': title,
+                  'validator_schema': validator_schema,
+                  'config': configs,
                   'source_type': source_type,
                   'frequency': frequency,
                   'error': '',
                   'child_datasets': 0,
                   'collections': 0}
+
+        if validator_schema is None:
+            validator_schema = 'federal-v1.1'
 
         logger.info(f' +++ [[{source_type}]] Reading source {title} ({c}) from {url}')
 
@@ -96,19 +103,21 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
 
             result['download_ok'] = ret
             if not ret:
-                result['error'] = 'Download error (truncated): {} ...'.format(error[:70])
+                min_error = dj.errors[0][:70]
+                result['error'] = 'Download error (truncated): {} ...'.format(min_error)
                 logger.error(' +++++++++++ ERROR')
                 logger.error(result['error'])
                 writer.writerow(result)
                 continue
 
-            ret = dj.validate()
+            ret = dj.validate(validator_schema=validator_schema)
             result['validate_ok'] = ret
             if not ret:
-                result['error'] = 'Validation error (truncated): {} ...'.format(js.errors[0][:70])
+                min_error = dj.errors[0][:70]
+                result['error'] = 'Validation error (truncated): {} ...'.format(min_error)
                 logger.error(' +++++++++++ ERROR')
                 logger.error(result['error'])
-                # some resources could be harvested with validation errors, continue by now
+                continue
 
             dj.post_fetch()
             result['schema_version'] = dj.schema_version
@@ -154,15 +163,22 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
             logger.info('*******************************')
             logger.info(f'RESULT: {result}')
             logger.info('*******************************')
-        results.append(result)
+        final_results.append(result)
 
         writer.writerow(result)
 
 csvfile.close()
 
+schemas = {}
+for result in final_results:
+    if result['validator_schema'] not in  schemas:
+        schemas[result['validator_schema']] = 0
+    schemas[result['validator_schema']] += 1
+
 print('----------------------------------------------')
-print('Finish {} sources'.format(len(results)))
+print('Finish {} sources'.format(len(final_results)))
 print(f' - whit config: {with_configs}')
 print(f'   - whit config filters: {with_config_filters}')
 print(f'   - whit config defaults: {with_config_defaults}')
+print(f'   - schemas: {schemas}')
 print('----------------------------------------------')
