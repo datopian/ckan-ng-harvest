@@ -1,6 +1,12 @@
+import os
 import argparse
 from harvester_adapters.ckan.api import CKANPortalAPI
 from harvesters.logs import logger
+
+# add settings
+import sys
+APP_PATH = os.path.abspath('..')
+sys.path.append(APP_PATH)
 from settings import CKAN_BASE_URL, CKAN_API_KEY
 
 

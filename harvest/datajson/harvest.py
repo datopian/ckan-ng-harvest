@@ -1,9 +1,12 @@
 """
 Full harvest process. Include task in flow, flow2 and flow3
 """
+import json
 import subprocess
 import argparse
 from harvesters.logs import logger
+
+DEFAULT_VALIDATION_SCHEMA = 'federal-v1.1'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", type=str, help="URL of the data.json", required=True)
@@ -13,8 +16,14 @@ parser.add_argument("--ckan_owner_org_id", type=str, help="CKAN ORG ID", require
 parser.add_argument("--catalog_url", type=str, help="URL for write CKAN API", required=True)
 parser.add_argument("--ckan_api_key", type=str, help="API KEY working at CKAN instance", required=True)
 parser.add_argument("--limit_dataset", type=int, default=200, help="Limit datasets to harvest on each source. Defualt=0 => no limit")
+parser.add_argument("--config", type=str, help="Configuration of source, str-dict (validation_schema, default_groups, etc)")
 
 args = parser.parse_args()
+harverst_source_config = json.loads(args.config)
+validator_schema = harverst_source_config.get('validator_schema', None)
+if validator_schema is None:
+    harverst_source_config['validator_schema'] = DEFAULT_VALIDATION_SCHEMA
+
 
 def write_final_report(name):
     cmd = ['python3', 'create_report.py', '--name', name]
@@ -25,9 +34,11 @@ def write_final_report(name):
 
 logger.info('Starting full harvest process')
 
-commands = [['python3', 'flow.py', '--name', args.name, '--url', args.url, '--limit_dataset', str(args.limit_dataset)],
-            ['python3', 'flow2.py', '--name', args.name, '--harvest_source_id', args.harvest_source_id, '--catalog_url', args.catalog_url],
-            ['python3', 'flow3.py', '--name', args.name, '--ckan_owner_org_id', args.ckan_owner_org_id, '--catalog_url', args.catalog_url, '--ckan_api_key', args.ckan_api_key]]
+commands = [
+    ['python3', 'flow.py', '--name', args.name, '--url', args.url, '--limit_dataset', str(args.limit_dataset), '--config', str(harverst_source_config)],
+    ['python3', 'flow2.py', '--name', args.name, '--harvest_source_id', args.harvest_source_id, '--catalog_url', args.catalog_url],
+    ['python3', 'flow3.py', '--name', args.name, '--ckan_owner_org_id', args.ckan_owner_org_id, '--catalog_url', args.catalog_url, '--ckan_api_key', args.ckan_api_key]
+]
 
 for cmd in commands:
     logger.info(f'**************\nExecute: {" ".join(cmd)}\n**************')
@@ -41,4 +52,3 @@ for cmd in commands:
         raise Exception(f'Error executing {" ".join(cmd)} -- return code {res}')
 
 write_final_report(args.name)
-

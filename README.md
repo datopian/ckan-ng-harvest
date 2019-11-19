@@ -21,6 +21,7 @@ We can import all the harvest sources from a productive CKAN instance with the c
 
 For example import all CSW harvest sources from _data.gov_.  
 ```
+cd tools
 python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
 
 Getting external harvest sources for https://catalog.data.gov
@@ -187,6 +188,11 @@ We create [a script](https://gitlab.com/datopian/ckan-ng-harvest/blob/develop/au
 ## Generate harvest commands list
 
 If you want to check or analize the harvest commands you can run the script `generate_commands_list.py`.  
+
+```
+cd tools
+python generate_commands_list.py
+```
 This script will list all the valid commands to harvest each source.
 
 ### Tests

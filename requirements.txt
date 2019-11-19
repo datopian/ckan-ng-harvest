@@ -19,7 +19,7 @@ cachetools==3.1.1         # via kvfile
 cchardet==2.1.4           # via datapackage, tabulator
 certifi==2019.9.11        # via requests
 chardet==3.0.4            # via requests
-ckan-harvesters==0.121
+ckan-harvesters==0.122
 click==7.0                # via dataflows, datapackage, flask, flask-appbuilder, tableschema, tabulator
 colorama==0.4.1           # via flask-appbuilder
 colorlog==4.0.2           # via apache-airflow

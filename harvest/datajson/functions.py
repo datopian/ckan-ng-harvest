@@ -14,10 +14,11 @@ def validate_data_json(row):
     # Taken from https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
 
     data_validator = DataJSONDataset(row)
+    data_validator.validate()
     return data_validator.errors
 
 
-def get_data_json_from_url(url, validator_schema=None):
+def get_data_json_from_url(url, validator_schema):
     logger.info(f'Geting data.json from {url}')
 
     datajson = DataJSON()
@@ -35,8 +36,6 @@ def get_data_json_from_url(url, validator_schema=None):
         raise Exception(error)
     logger.info('Downloaded OK')
 
-    if validator_schema is None:
-        raise Exception('Unknown validator_schema')
     ret = datajson.validate(validator_schema=validator_schema)
     if not ret:
         error = 'Error validating data: {}'.format(datajson.errors)
