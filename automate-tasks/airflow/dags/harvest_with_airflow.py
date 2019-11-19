@@ -131,7 +131,7 @@ for source_type in source_types:
             # http://airflow.apache.org/faq.html#how-can-i-create-dags-dynamically
             globals()[dag_id] = new_dag
             task = BashOperator(
-                task_id=f'harvest-{source_type}-{name}',
+                task_id=dag_id,  # f'harvest-{source_type}-{name}',
                 bash_command=templated_harvest_command,
                 params=params,
                 dag=new_dag

@@ -9,7 +9,9 @@ RUN echo "************** Installing dependencies ... **************" && \
         libxml2 \
         libxml2-dev \
         libxslt-dev \
-        python-dev
+        python-dev \
+        unzip \
+        wget
 
 
 WORKDIR /app
@@ -21,3 +23,14 @@ RUN pip install --upgrade pip && \
     pip install SQLAlchemy
 
 ADD . .
+
+# install rest api plugin
+ARG AIRFLOW_HOME=/usr/local/airflow
+RUN wget https://github.com/teamclairvoyant/airflow-rest-api-plugin/archive/v1.0.8.zip && \
+    pwd && ls -la && unzip v1.0.8.zip && \
+    mkdir -p ${AIRFLOW_HOME}/plugins && \
+    cp -r ./airflow-rest-api-plugin-1.0.8/plugins/* ${AIRFLOW_HOME}/plugins
+
+RUN echo ${AIRFLOW_HOME}/plugins && ls -la ${AIRFLOW_HOME}/plugins
+
+
