@@ -18,7 +18,7 @@ class Functions2TestClass(unittest.TestCase):
         total = 0
 
         config.LIMIT_DATASETS = 0
-        for dataset in get_data_json_from_url(url=url):
+        for dataset in get_data_json_from_url(url=url, validator_schema='federal-v1.1'):
             self.assertIsInstance(dataset, dict)
             total += 1
             save_as_data_packages(dataset)

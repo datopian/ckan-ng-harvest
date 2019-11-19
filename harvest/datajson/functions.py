@@ -10,14 +10,6 @@ from functions3 import build_validation_error_email
 from harvesters import config
 
 
-def validate_data_json(row):
-    # Taken from https://github.com/GSA/ckanext-datajson/blob/datagov/ckanext/datajson/datajsonvalidator.py
-
-    data_validator = DataJSONDataset(row)
-    data_validator.validate()
-    return data_validator.errors
-
-
 def get_data_json_from_url(url, validator_schema):
     logger.info(f'Geting data.json from {url}')
 
@@ -59,6 +51,7 @@ def get_data_json_from_url(url, validator_schema):
     for dataset in datajson.datasets:
         # add headers (previously called catalog_values)
         dataset['headers'] = datajson.headers
+        dataset['validator_schema'] = validator_schema
         yield(dataset)
 
 
@@ -91,8 +84,10 @@ def clean_duplicated_identifiers(rows):
 
 def validate_datasets(row):
     """ validate dataset row by row """
-    errors = validate_data_json(row)
-    row['validation_errors'] = errors
+    data_validator = DataJSONDataset(row)
+    data_validator.validate(validator_schema=row['validator_schema'])
+    row['validation_errors'] = data_validator.errors
+
 
 # we need a way to save as file using an unique identifier
 # TODO check if base64 is the best idea
