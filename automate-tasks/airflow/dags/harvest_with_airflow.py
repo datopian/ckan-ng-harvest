@@ -3,6 +3,7 @@ Harvester DAGs
  This file must live at the airflow dags folder
 """
 import os
+import json
 import sys
 import shlex
 from airflow import DAG
@@ -125,7 +126,7 @@ for source_type in source_types:
                 'ckan_org_id': ckan_org_id,
                 'catalog_url': shlex.quote(catalog_url),
                 'ckan_api_key': catalog_api_key,
-                'harverst_source_config': str(harverst_source_config)
+                'harverst_source_config': json.dumps(harverst_source_config)
                 }
 
             interval = valid_frequencies[frequency]['interval']

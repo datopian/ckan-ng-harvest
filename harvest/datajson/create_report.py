@@ -1,9 +1,14 @@
 """
 Read ALL results files about the harvest process and write a report
 """
+import os
 import json
 import argparse
 from harvesters import config
+# TODO improve import #63
+import sys
+APP_PATH = os.path.abspath('../..')
+sys.path.append(APP_PATH)
 from tools.results.harvested_source import HarvestedSource
 
 
