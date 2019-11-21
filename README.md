@@ -197,7 +197,7 @@ This script will list all the valid commands to harvest each source.
 
 ### Tests
 
-Check the [tests.md](tests.md) file.  
+Check the [tests.md](tests/tests.md) file.  
 
 ### Docker usage
 

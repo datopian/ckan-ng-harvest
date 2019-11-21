@@ -1,16 +1,17 @@
-from harvesters.logs import logger
 import os
-import requests
-from harvester_adapters.ckan.api import CKANPortalAPI
-from harvesters.csw.harvester import CSWSource
-from datapackage import Package, Resource
-from slugify import slugify
-from harvesters import config
-import base64
-from dateutil.parser import parse
 import glob
-from functions import encode_identifier
 import pytz
+import base64
+import requests
+from slugify import slugify
+from dateutil.parser import parse
+from datapackage import Package, Resource
+
+from harvesters.logs import logger
+from harvesters import config
+from harvesters.csw.harvester import CSWSource
+from harvester_adapters.ckan.api import CKANPortalAPI
+from functions import encode_identifier
 
 
 def get_current_ckan_resources_from_api(harvest_source_id):

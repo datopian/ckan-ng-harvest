@@ -3,13 +3,10 @@
 We have many tests: 
  - One for the data.json harvester
  - One for the CSW harvester
- - One for the python package
- - Several tests that requires a local instance of CKAN running.
+ - Several (optional) tests that requires a local instance of CKAN running.
 
-The script _test.sh_ tests the first three:
 
 ```
-./test.sh 
 ***************************
 Test data.json
 ======================== test session starts ========================
