@@ -86,7 +86,8 @@ templated_harvest_command = """
                 --harvest_source_id {{ params.harvest_source_id }} \
                 --ckan_owner_org_id {{ params.ckan_org_id }} \
                 --catalog_url {{ params.catalog_url }} \
-                --ckan_api_key {{ params.ckan_api_key }}
+                --ckan_api_key {{ params.ckan_api_key }} \
+                --config {{ params.harverst_source_config }}
             """
 
 for source_type in source_types:
@@ -112,6 +113,9 @@ for source_type in source_types:
             # this is the ID of the organization at the external source
             # we need to get our local organizaion ID
             ckan_org_id = harvest_source['owner_org']
+
+            harverst_source_config = harvest_source.get('config', {})
+
             params = {
                 'app_path': app_path,
                 'name': name,
@@ -120,7 +124,8 @@ for source_type in source_types:
                 'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID
                 'ckan_org_id': ckan_org_id,
                 'catalog_url': shlex.quote(catalog_url),
-                'ckan_api_key': catalog_api_key
+                'ckan_api_key': catalog_api_key,
+                'harverst_source_config': str(harverst_source_config)
                 }
 
             interval = valid_frequencies[frequency]['interval']

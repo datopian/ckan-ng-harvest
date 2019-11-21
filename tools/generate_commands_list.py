@@ -55,8 +55,7 @@ for datasets in results:
         # we need to get our local organizaion ID
         ckan_org_id = harvest_source['owner_org']
         harverst_source_config = harvest_source.get('config', {})
-        if harverst_source_config != {}:
-            raise Exception(harverst_source_config)
+
         context = {
             'env_path': PYTHON_ENV_PATH,
             'app_path': APP_PATH,
