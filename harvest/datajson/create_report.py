@@ -4,7 +4,8 @@ Read ALL results files about the harvest process and write a report
 import json
 import argparse
 from harvesters import config
-from harvesters.harvested_source import HarvestedSource
+from tools.results.harvested_source import HarvestedSource
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="Name of the resource (for generating the containing folder)")
