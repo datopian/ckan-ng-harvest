@@ -3,7 +3,6 @@ Tests all functions used in flow file
 """
 from unittest import TestCase, mock
 from functions import clean_duplicated_identifiers, get_data_json_from_url
-from functions3 import build_validation_error_email, send_validation_error_email
 from harvesters.datajson.harvester import DataJSON
 
 
@@ -62,13 +61,9 @@ class FunctionsTestClass(TestCase):
         print(str(context.exception))
         self.assertTrue('Error getting data' in str(context.exception))
 
-    @mock.patch("functions3.send_validation_error_email")
-    @mock.patch("functions3.build_validation_error_email")
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_bad_get_data_json(self,
-                               mock_req,
-                               build_validation_mock,
-                               send_validation_mock):
+                               mock_req):
 
         url = 'https://some-source.com/BAD.json'
         with self.assertRaises(Exception) as context:
@@ -79,13 +74,9 @@ class FunctionsTestClass(TestCase):
         print(str(context.exception))
         self.assertTrue('ERROR parsing JSON' in str(context.exception))
 
-    @mock.patch("functions3.send_validation_error_email")
-    @mock.patch("functions3.build_validation_error_email")
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_good_get_data_json(self,
-                                mock_req,
-                                build_validation_mock,
-                                send_validation_mock):
+                                mock_req):
 
         url = 'https://some-source.com/usda.gov.data.json'
         total = 0

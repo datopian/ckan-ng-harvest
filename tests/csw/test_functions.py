@@ -3,7 +3,7 @@ Tests all functions used in flow file
 """
 import json
 from unittest import TestCase, mock
-from harvest.csw.functions import clean_duplicated_identifiers, get_csw_from_url
+from harvester_ng.csw.functions import clean_duplicated_identifiers, get_csw_from_url
 from tests.csw.mock_csw import MockCatalogueServiceWeb
 
 

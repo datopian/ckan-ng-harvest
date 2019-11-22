@@ -5,8 +5,8 @@ from unittest import TestCase, mock
 from harvesters import config
 from harvesters.logs import logger
 from tests.csw.mock_csw import MockCatalogueServiceWeb
-from harvest.csw.functions import get_csw_from_url, save_as_data_packages
-from harvest.csw.functions2 import get_current_ckan_resources_from_api, compare_resources
+from harvester_ng.csw.functions import get_csw_from_url, save_as_data_packages
+from harvester_ng.csw.functions2 import get_current_ckan_resources_from_api, compare_resources
 
 
 class TestFunctions2(TestCase):

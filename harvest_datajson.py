@@ -1,12 +1,8 @@
 """
-Full harvest process. Include task in flow, flow2 and flow3
+Full harvest a data.json source
 """
-import json
-import subprocess
 import argparse
-from harvesters.logs import logger
-
-DEFAULT_VALIDATION_SCHEMA = 'federal-v1.1'
+from harvester_ng.source_datajson import HarvestDataJSON
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", type=str, help="URL of the data.json", required=True)
@@ -20,36 +16,31 @@ parser.add_argument("--config", type=str, help="Configuration of source, str-dic
 
 # get Harvest Source config and set default schema for validation
 args = parser.parse_args()
-harverst_source_config = json.loads(args.config)
-validator_schema = harverst_source_config.get('validator_schema', None)
-if validator_schema is None or 'validator_schema' not in harverst_source_config:
-    harverst_source_config['validator_schema'] = DEFAULT_VALIDATION_SCHEMA
 
 
-def write_final_report(name):
-    cmd = ['python3', 'create_report.py', '--name', name]
-    completed = subprocess.run(cmd, shell=False)
-    res = completed.returncode
-    if res:
-        logger.warn(f'write_final_report {" ".join(cmd)} returned exit code {res}')
+hdj = HarvestDataJSON(name=args.name, url=args.url)
+res = hdj.download()
+hdj.save_download_results(flow_results=res)
+res = hdj.compare()
+hdj.save_compare_results(flow_results=res)
+res = hdj.write_destination()
+hdj.save_write_results(flow_results=res)
+hdj.write_final_report()
 
-logger.info('Starting full harvest process')
+"""
+sample
+python harvester_ng/datajson/harvest.py \
+    --name dol-json \
+    --url http://www.dol.gov/data.json \
+    --harvest_source_id 59f68f20-9d44-4a3e-958e-46a5935ef591 \
+    --ckan_owner_org_id 762a7be2-c2ed-4d10-bbac-05faca90b9e7 \
+    --catalog_url http://nginx:8080 \
+    --ckan_api_key 21bbafcf-f0d7-475c-8c98-e1baf25ba13e \
+    --config {}
 
 commands = [
     ['python3', 'flow.py', '--name', args.name, '--url', args.url, '--limit_dataset', str(args.limit_dataset), '--config', json.dumps(harverst_source_config)],
     ['python3', 'flow2.py', '--name', args.name, '--harvest_source_id', args.harvest_source_id, '--catalog_url', args.catalog_url],
     ['python3', 'flow3.py', '--name', args.name, '--ckan_owner_org_id', args.ckan_owner_org_id, '--catalog_url', args.catalog_url, '--ckan_api_key', args.ckan_api_key]
 ]
-
-for cmd in commands:
-    logger.info(f'**************\nExecute: {" ".join(cmd)}\n**************')
-    completed = subprocess.run(cmd)
-    res = completed.returncode
-    if res == 0:
-        logger.info(f'**************\nCOMD OK: {" ".join(cmd)}\n**************')
-    else:
-        # create final report
-        write_final_report(args.name)
-        raise Exception(f'Error executing {" ".join(cmd)} -- return code {res}')
-
-write_final_report(args.name)
+"""
