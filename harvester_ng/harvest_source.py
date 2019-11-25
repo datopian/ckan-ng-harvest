@@ -10,8 +10,13 @@ from slugify import slugify
 
 class HarvestSource(ABC):
     """ main harvester class to inherit """
-    def __init__(self, name, *args, **kwargs):
+    def __init__(self, name, destination, *args, **kwargs):
+        """
+            name: custom name for the resource that is harvested
+            destination: Object where to get dataset to compare and write results 
+        """
         self.name = name  # name of the harvest source
+        self.destination = destination
         self.url = kwargs.get('url', None)  # url to harvest from
         config = kwargs.get('config', {})  # configuration (e.g validation_schema)
         if type(config) == str:
@@ -115,6 +120,10 @@ class HarvestSource(ABC):
     def get_data_package_result_path(self, create=True):
         """ local path for flow1 file """
         return self.get_file(resource='data-package-result.json', create=create)
+    
+    def get_ckan_results_cache_path(self, create=True):
+        """ local path for ckan results file """
+        return self.get_file(resource='ckan-results.json', create=create)
 
     '''
     def get_data_cache_path(create=True):
@@ -137,22 +146,12 @@ class HarvestSource(ABC):
             open(path, 'w').close()
         return path
 
-
     def get_errors_path(create=True):
         """ local path for errors """
         path =  os.path.join(get_base_path(), 'errors.json')
         if not os.path.isfile(path):
             open(path, 'w').close()
         return path
-
-
-    def get_ckan_results_cache_path(create=True):
-        """ local path for ckan results file """
-        path = os.path.join(get_base_path(), 'ckan-results.json')
-        if not os.path.isfile(path):
-            open(path, 'w').close()
-        return path
-
 
     def get_comparison_results_path(create=True):
         """ local path for comparison results file """

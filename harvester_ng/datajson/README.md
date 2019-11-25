@@ -18,10 +18,10 @@ This process is using:
 python harvest_datajson.py \
   --name rrb \
   --url https://secure.rrb.gov/data.json \
-  --harvest_source_id e058dafa-75db-4480-a90a-c1026e3005e2 \
+  --harvest_source_id rrb-json \
   --ckan_owner_org_id rrb-gov \
-  --catalog_url http://ckan:5000 \
-  --ckan_api_key 5ce77b38-3556-4a2c-9e44-5a18f53f9862 \
+  --catalog_url http://nginx:8080 \
+  --ckan_api_key xxxxxxxxxxxxxxxxxxxxxx \
   --config '{"validator_schema" "federal-v1.1"}'
 ```
 

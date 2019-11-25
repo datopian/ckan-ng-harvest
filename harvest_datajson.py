@@ -3,6 +3,7 @@ Full harvest a data.json source
 """
 import argparse
 from harvester_ng.source_datajson import HarvestDataJSON
+from harvester_ng.harvest_destination import CKANHarvestDestination
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", type=str, help="URL of the data.json", required=True)
@@ -17,8 +18,13 @@ parser.add_argument("--config", type=str, help="Configuration of source, str-dic
 # get Harvest Source config and set default schema for validation
 args = parser.parse_args()
 
+destination = CKANHarvestDestination(catalog_url=args.catalog_url,
+                                     api_key=args.ckan_api_key,
+                                     organization_id=args.ckan_owner_org_id)
 
-hdj = HarvestDataJSON(name=args.name, url=args.url)
+hdj = HarvestDataJSON(name=args.name,
+                      url=args.url,
+                      destination=destination)
 res = hdj.download()
 hdj.save_download_results(flow_results=res)
 res = hdj.compare()

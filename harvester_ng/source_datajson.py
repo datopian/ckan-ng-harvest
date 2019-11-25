@@ -8,7 +8,6 @@ import requests
 from datetime import datetime
 from dataflows import Flow, add_field, load, update_resource
 
-from harvester_adapters.ckan.api import CKANPortalAPI
 from harvesters.datajson.harvester import DataJSON
 from harvesters.datajson.ckan.dataset import DataJSONSchema1_1
 from harvesters import config
@@ -130,20 +129,6 @@ class HarvestDataJSON(HarvestSource):
             yield(dataset)
 
     def get_current_ckan_resources_from_api(self, harvest_source_id):
-        results_json_path = config.get_ckan_results_cache_path()
-        logger.info(f'Extracting from harvest source id: {harvest_source_id}')
-        cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL)
-        resources = 0
-
-        page = 0
-        for datasets in cpa.search_harvest_packages(harvest_source_id=harvest_source_id):
-            # getting resources in pages of packages
-            page += 1
-            logger.info('PAGE {} from harvest source id: {}'.format(page, harvest_source_id))
-            for dataset in datasets:
-                pkg_resources = len(dataset['resources'])
-                resources += pkg_resources
-                yield(dataset)
-
-        logger.info('{} total resources in harvest source id: {}'.format(resources, harvest_source_id))
-        cpa.save_packages_list(path=results_json_path)
+        save_results_json_path = self.get_ckan_results_cache_path()
+        for dataset in self.destination.yield_datasets(harvest_source_id=harvest_source_id, save_results_json_path=save_results_json_path):
+            yield dataset

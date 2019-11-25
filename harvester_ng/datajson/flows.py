@@ -79,7 +79,7 @@ def compare_resources(rows):
     res_name = rows.res.name if hasattr(rows, 'res') else 'Fake res testing'
     logger.info(f'Rows from resource {res_name}')
 
-    data_packages_path = helpers.get_data_packages_folder_path()
+    data_packages_path = self.get_data_packages_folder_path()
     default_tzinfo_for_naives_dates = pytz.UTC
 
     # Calculate minimum statistics
