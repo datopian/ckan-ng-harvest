@@ -47,9 +47,9 @@ logger.info('Continue to next step with: python3 flow2.py')
 
 # save results (data package and final datasets results)
 dmp = json.dumps(res[0][0], indent=2)
-f = open(config.get_flow1_datasets_result_path(), 'w')
+f = open(config.get_download_result_path(), 'w')
 f.write(dmp)
 f.close()
 
 pkg = res[1]  # package returned
-pkg.save(config.get_flow1_data_package_result_path())
+pkg.save(config.get_data_package_result_path())

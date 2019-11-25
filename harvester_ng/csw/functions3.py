@@ -185,7 +185,7 @@ def build_validation_error_email(error_items=[]):
             errors['dataset_errors'].append(new_data['validation_errors'])
 
     #duplicate errors
-    flow_1_results_path = config.get_flow1_datasets_result_path()
+    flow_1_results_path = config.get_download_result_path()
     f = open(flow_1_results_path, "r")
     flow_1_results = f.read()
     if flow_1_results:

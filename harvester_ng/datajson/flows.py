@@ -46,29 +46,30 @@ def validate_datasets(row):
     row['validation_errors'] = data_validator.errors
 
 
-def save_as_data_packages(row):
+def save_as_data_packages(path):
     """ save dataset from data.json as data package
         We will use this files as a queue to process later """
 
-    package = Package()
+    def f(row):
+        package = Package()
 
-    # TODO check this, I'm learning datapackages.
-    resource = Resource({'data': row})
-    resource.infer()  # adds "name": "inline"
-    if not resource.valid:
-        raise Exception('Invalid resource')
+        # TODO check this, I'm learning datapackages.
+        resource = Resource({'data': row})
+        resource.infer()  # adds "name": "inline"
+        if not resource.valid:
+            raise Exception('Invalid resource')
 
-    encoded_identifier = helpers.encode_identifier(identifier=row['identifier'])
+        encoded_identifier = helpers.encode_identifier(identifier=row['identifier'])
 
-    package.add_resource(descriptor=resource.descriptor)
-    folder = helpers.get_data_packages_folder_path()
-    filename = f'data-json-{encoded_identifier}.json'
-    package_path = os.path.join(folder, filename)
+        package.add_resource(descriptor=resource.descriptor)
+        filename = f'data-json-{encoded_identifier}.json'
+        package_path = os.path.join(path, filename)
 
-    # no not rewrite if exists
-    if not os.path.isfile(package_path):
-        package.save(target=package_path)
+        # no not rewrite if exists
+        if not os.path.isfile(package_path):
+            package.save(target=package_path)
 
+    return f
 
 def compare_resources(rows):
     """ read the previous resource (CKAN API results)

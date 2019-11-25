@@ -28,12 +28,12 @@ class HarvestSource(ABC):
     def save_download_results(self, flow_results):
         # save results (data package and final datasets results)
         dmp = json.dumps(flow_results[0][0], indent=2)
-        f = open(helpers.get_flow1_datasets_result_path(), 'w')
+        f = open(self.get_download_result_path(), 'w')
         f.write(dmp)
         f.close()
 
         pkg = flow_results[1]  # package returned
-        pkg.save(helpers.get_flow1_data_package_result_path())
+        pkg.save(self.get_data_package_result_path())
 
     @abstractmethod
     def compare(self):
@@ -75,7 +75,7 @@ class HarvestSource(ABC):
 
         hs.render_template(save=True)
 
-    def hash_dataset(dataset):
+    def hash_dataset(self, dataset):
         # hash the dataset.
         dmp_dataset = json.dumps(dataset, sort_keys=True)
         str_to_hash = dmp_dataset.encode('utf-8')
@@ -99,6 +99,22 @@ class HarvestSource(ABC):
         if create and not os.path.isfile(path):
             open(path, 'w').close()
         return path
+    
+    def get_data_packages_folder_path(self):
+        """ local path for datapackages """
+        data_packages_folder_path = os.path.join(self.get_base_path(), 'data-packages')
+        if not os.path.isdir(data_packages_folder_path):
+            os.makedirs(data_packages_folder_path)
+
+        return data_packages_folder_path
+    
+    def get_download_result_path(self, create=True):
+        """ local path for flow1 results file """
+        return self.get_file(resource='download-results.json', create=create)
+
+    def get_data_package_result_path(self, create=True):
+        """ local path for flow1 file """
+        return self.get_file(resource='data-package-result.json', create=create)
 
     '''
     def get_data_cache_path(create=True):
@@ -108,30 +124,12 @@ class HarvestSource(ABC):
             open(path, 'w').close()
         return path
 
-
-    def get_flow1_data_package_result_path(create=True):
-        """ local path for flow1 file """
-        path =  os.path.join(get_base_path(), 'flow1-data-package-result.json')
-        if not os.path.isfile(path):
-            open(path, 'w').close()
-        return path
-
-
     def get_flow2_data_package_result_path(create=True):
         """ local path for flow2 data packages results file """
         path = os.path.join(get_base_path(), 'flow2-data-package-result.json')
         if not os.path.isfile(path):
             open(path, 'w').close()
         return path
-
-
-    def get_flow1_datasets_result_path(create=True):
-        """ local path for flow1 results file """
-        path = os.path.join(get_base_path(), 'flow1-datasets-results.json')
-        if not os.path.isfile(path):
-            open(path, 'w').close()
-        return path
-
 
     def get_flow2_datasets_result_path(create=True):
         path = os.path.join(get_base_path(), 'flow2-datasets-results.json')
@@ -162,15 +160,6 @@ class HarvestSource(ABC):
         if not os.path.isfile(path):
             open(path, 'w').close()
         return path
-
-
-    def get_data_packages_folder_path():
-        """ local path for datapackages """
-        data_packages_folder_path = os.path.join(get_base_path(), 'data-packages')
-        if not os.path.isdir(data_packages_folder_path):
-            os.makedirs(data_packages_folder_path)
-
-        return data_packages_folder_path
 
 
     def get_flow2_data_package_folder_path():

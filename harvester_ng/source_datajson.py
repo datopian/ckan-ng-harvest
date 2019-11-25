@@ -34,6 +34,7 @@ class HarvestDataJSON(HarvestSource):
 
     def download(self):
         # donwload, validate and save as data packages
+        save_to = self.get_data_packages_folder_path()
         res = Flow(
             # get data.json and yield all datasets
             # validate headers and save the validation errors
@@ -47,7 +48,7 @@ class HarvestDataJSON(HarvestSource):
             validate_datasets,
 
             # save each dataset as data package
-            save_as_data_packages,
+            save_as_data_packages(path=save_to),
         ).results()
 
         return res
@@ -128,7 +129,7 @@ class HarvestDataJSON(HarvestSource):
             dataset['validator_schema'] = validator_schema
             yield(dataset)
 
-    def get_current_ckan_resources_from_api(harvest_source_id):
+    def get_current_ckan_resources_from_api(self, harvest_source_id):
         results_json_path = config.get_ckan_results_cache_path()
         logger.info(f'Extracting from harvest source id: {harvest_source_id}')
         cpa = CKANPortalAPI(base_url=config.CKAN_CATALOG_URL)
