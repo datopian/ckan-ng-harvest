@@ -4,11 +4,11 @@ This project is about harvesting from external sources to a CKAN (local or remot
 
 ## data.json files
 
-[More info](harvest/datajson/README.md)
+[More info](harvester_ng/datajson/README.md)
 
 ## CSW
 
-[More info](harvest/csw/README.md)
+[More info](harvester_ng/csw/README.md)
 
 ## Settings
 

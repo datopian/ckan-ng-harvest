@@ -1,5 +1,4 @@
 import base64
-import hashlib
 import json
 import os
 from abc import ABC, abstractmethod
@@ -17,6 +16,7 @@ class HarvestSource(ABC):
         """
         self.name = name  # name of the harvest source
         self.destination = destination
+        self.destination.source = self
         self.url = kwargs.get('url', None)  # url to harvest from
         config = kwargs.get('config', {})  # configuration (e.g validation_schema)
         if type(config) == str:
@@ -47,12 +47,12 @@ class HarvestSource(ABC):
 
     def save_compare_results(self, flow_results):
         dmp = json.dumps(flow_results[0][0], indent=2)
-        f = open(helpers.get_flow2_datasets_result_path(), 'w')
+        f = open(self.get_comparison_result_path(), 'w')
         f.write(dmp)
         f.close()
 
         pkg = flow_results[1]  # package returned
-        pkg.save(helpers.get_flow2_data_package_result_path())
+        pkg.save(self.get_comparison_data_package_result_path())
 
     @abstractmethod
     def write_destination(self):
@@ -62,7 +62,7 @@ class HarvestSource(ABC):
     def save_write_results(self, flow_results):
         # save results
         dmp = json.dumps(flow_results[0][0], indent=2)
-        f = open(helpers.get_flow2_datasets_result_path(), 'w')
+        f = open(self.get_comparison_result_path(), 'w')
         f.write(dmp)
         f.close()
 
@@ -79,12 +79,6 @@ class HarvestSource(ABC):
         f.close()
 
         hs.render_template(save=True)
-
-    def hash_dataset(self, dataset):
-        # hash the dataset.
-        dmp_dataset = json.dumps(dataset, sort_keys=True)
-        str_to_hash = dmp_dataset.encode('utf-8')
-        return hashlib.sha256(str_to_hash).hexdigest()
 
     def get_base_path(self):
         # get path for some resource (described as string)
@@ -124,35 +118,23 @@ class HarvestSource(ABC):
     def get_ckan_results_cache_path(self, create=True):
         """ local path for ckan results file """
         return self.get_file(resource='ckan-results.json', create=create)
-
-    '''
-    def get_data_cache_path(create=True):
-        """ local path for data.json source file """
-        path = os.path.join(get_base_path(), 'data.json')
-        if not os.path.isfile(path):
-            open(path, 'w').close()
-        return path
-
-    def get_flow2_data_package_result_path(create=True):
-        """ local path for flow2 data packages results file """
-        path = os.path.join(get_base_path(), 'flow2-data-package-result.json')
-        if not os.path.isfile(path):
-            open(path, 'w').close()
-        return path
-
-    def get_flow2_datasets_result_path(create=True):
-        path = os.path.join(get_base_path(), 'flow2-datasets-results.json')
-        if not os.path.isfile(path):
-            open(path, 'w').close()
-        return path
-
-    def get_errors_path(create=True):
+    
+    def get_comparison_result_path(self, create=True):
+        return self.get_file(resource='compare-datasets-results.json', create=create)
+    
+    def get_comparison_data_package_result_path(self, create=True):
+        """ local path for data packages comparison results file """
+        return self.get_file(resource='comparison-data-package-result.json', create=create)
+        
+    def get_data_cache_path(self, create=True):
+        """ local path for json source file """
+        return self.get_file(resource='data.json', create=create)
+        
+    def get_errors_path(self, create=True):
         """ local path for errors """
-        path =  os.path.join(get_base_path(), 'errors.json')
-        if not os.path.isfile(path):
-            open(path, 'w').close()
-        return path
-
+        return self.get_file(resource='errors.json', create=create)
+        
+    '''
     def get_comparison_results_path(create=True):
         """ local path for comparison results file """
         path = os.path.join(get_base_path(), 'compare-results.csv')
@@ -212,7 +194,7 @@ class HarvestSource(ABC):
     def get_report_files():
         # collect important files to write a final report
         data_file = get_data_cache_path(create=False)
-        results_file = get_flow2_datasets_result_path(create=False)
+        results_file = self.get_comparison_result_path(create=False)
         errors_file = get_errors_path(create=False)
 
         return {'data': get_json_data_or_none(data_file),

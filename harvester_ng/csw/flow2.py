@@ -46,12 +46,12 @@ res = Flow(
 # save results
 # comparison results
 dmp = json.dumps(res[0][0], indent=2)
-f = open(config.get_flow2_datasets_result_path(), 'w')
+f = open(config.get_comparison_result_path(), 'w')
 f.write(dmp)
 f.close()
 
 pkg = res[1]  # package returned
-pkg.save(config.get_flow2_data_package_result_path())
+pkg.save(config.get_comparison_data_package_result_path())
 
 logger.info('Continue to next step with: python3 flow3.py '
             f'--name {config.SOURCE_NAME} '

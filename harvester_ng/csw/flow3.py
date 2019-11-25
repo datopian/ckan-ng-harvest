@@ -29,7 +29,7 @@ config.CKAN_API_KEY = args.ckan_api_key
 config.SOURCE_ID = args.harvest_source_id
 
 res = Flow(
-    load(load_source=config.get_flow2_datasets_result_path()),
+    load(load_source=config.get_comparison_result_path()),
     write_results_to_ckan,
 ).results()
 
@@ -38,6 +38,6 @@ build_validation_error_email(res[0][0])
 # save results
 # TODO in res[0][0] is an exception wi will fail here
 dmp = json.dumps(res[0][0], indent=2)
-f = open(config.get_flow2_datasets_result_path(), 'w')
+f = open(config.get_comparison_result_path(), 'w')
 f.write(dmp)
 f.close()

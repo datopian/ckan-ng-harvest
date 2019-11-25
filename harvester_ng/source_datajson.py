@@ -9,16 +9,13 @@ from datetime import datetime
 from dataflows import Flow, add_field, load, update_resource
 
 from harvesters.datajson.harvester import DataJSON
-from harvesters.datajson.ckan.dataset import DataJSONSchema1_1
 from harvesters import config
 
 from harvester_ng.harvest_source import HarvestSource
 from harvester_ng.datajson.flows import (clean_duplicated_identifiers,
                                     validate_datasets,
                                     save_as_data_packages,
-                                    compare_resources,
-                                    write_results_to_ckan,
-                                    assing_collection_pkg_id)
+                                    compare_resources)
 
 logger = logging.getLogger(__name__)
 DEFAULT_VALIDATOR_SCHEMA = 'federal-v1.1'
@@ -54,6 +51,7 @@ class HarvestDataJSON(HarvestSource):
 
     def compare(self):
         # compare new vs previous resources
+        data_packages_path = self.get_data_packages_folder_path()
         res = Flow(
             # add other resource to this process. The packages list from data.gov
             self.get_current_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID),
@@ -66,16 +64,16 @@ class HarvestDataJSON(HarvestSource):
             # Compare both resources
             # In data.json the datasets have the identifier field: "identifier": "USDA-ERS-00071"
             # In CKAN API results the datasets have the same identifier at "extras" list: {"key": "identifier", "value": "USDA-ERS-00071"}
-            compare_resources,
+            compare_resources(data_packages_path=data_packages_path),
         ).results()
 
         return res
 
     def write_destination(self):
         res = Flow(
-            load(load_source=config.get_flow2_datasets_result_path()),
-            write_results_to_ckan,
-            assing_collection_pkg_id,
+            load(load_source=self.get_comparison_result_path()),
+            self.destination.write_results,
+            self.destination.assing_collection_pkg_id,
         ).results()
     
         return res
@@ -97,7 +95,7 @@ class HarvestDataJSON(HarvestSource):
             ret = False
         if not ret:
             error = 'Error getting data: {}'.format(datajson.errors)
-            datajson.save_errors(path=config.get_errors_path())
+            datajson.save_errors(path=self.get_errors_path())
             logger.error(error)
             raise Exception(error)
         logger.info('Downloaded OK')
@@ -114,9 +112,9 @@ class HarvestDataJSON(HarvestSource):
         logger.info('{} datasets found'.format(len(datajson.datasets)))
 
         # save data.json
-        datajson.save_json(path=config.get_data_cache_path())
+        datajson.save_json(path=self.get_data_cache_path())
         # save headers errors
-        datajson.save_errors(path=config.get_errors_path())
+        datajson.save_errors(path=self.get_errors_path())
 
         # the real dataset list
 

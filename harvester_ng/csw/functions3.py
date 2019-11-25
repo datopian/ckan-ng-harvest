@@ -9,13 +9,6 @@ import hashlib
 import os.path
 
 
-def hash_dataset(datasetdict):
-    # hash the dataset.
-    dmp_dataset = json.dumps(datasetdict, sort_keys=True)
-    str_to_hash = dmp_dataset.encode('utf-8')
-    return hashlib.sha256(str_to_hash).hexdigest()
-
-
 def write_results_to_ckan(rows):
     """ each row it's a dataset to delete/update/create """
 

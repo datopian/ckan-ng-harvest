@@ -20,7 +20,8 @@ args = parser.parse_args()
 
 destination = CKANHarvestDestination(catalog_url=args.catalog_url,
                                      api_key=args.ckan_api_key,
-                                     organization_id=args.ckan_owner_org_id)
+                                     organization_id=args.ckan_owner_org_id,
+                                     harvest_source_id=args.harvest_source_id)
 
 hdj = HarvestDataJSON(name=args.name,
                       url=args.url,
