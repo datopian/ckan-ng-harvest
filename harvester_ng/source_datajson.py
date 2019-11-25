@@ -22,7 +22,7 @@ from harvester_ng.datajson.flows import (clean_duplicated_identifiers,
                                     assing_collection_pkg_id)
 
 logger = logging.getLogger(__name__)
-DEFAULT_VALIDATION_SCHEMA = 'federal-v1.1'
+DEFAULT_VALIDATOR_SCHEMA = 'federal-v1.1'
 
 
 class HarvestDataJSON(HarvestSource):
@@ -30,7 +30,7 @@ class HarvestDataJSON(HarvestSource):
 
     def __init__(self, name, *args, **kwargs):
         super().__init__(name, *args, **kwargs)
-        self.validator_schema = self.config.get('validator_schema', DEFAULT_VALIDATION_SCHEMA)
+        self.validator_schema = self.config.get('validator_schema', DEFAULT_VALIDATOR_SCHEMA)
 
     def download(self):
         # donwload, validate and save as data packages
@@ -69,12 +69,16 @@ class HarvestDataJSON(HarvestSource):
             compare_resources,
         ).results()
 
+        return res
+
     def write_destination(self):
         res = Flow(
             load(load_source=config.get_flow2_datasets_result_path()),
             write_results_to_ckan,
             assing_collection_pkg_id,
         ).results()
+    
+        return res
 
     def write_final_report(self):
         # write final process result as JSON
