@@ -1,5 +1,4 @@
 import os
-import pkg_resources
 from jinja2 import Template
 from harvesters import config
 from harvesters.logs import logger
@@ -86,7 +85,8 @@ class HarvestedSource:
         # redenr through harvest-report.html
         context = self.get_json_data()
         path = 'templates/harvest-report.html'
-        template_path = pkg_resources.resource_filename(__name__, path)
+        template_path = os.path.join(os.path.dirname(__file__), path)
+        # template_path = pkg_resources.resource_filename(__name__, path)
         f = open(template_path, 'r')
         template = Template(f.read())
         f.close()
