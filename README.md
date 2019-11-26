@@ -1,6 +1,7 @@
 # Harvesting 
 
-This project is about harvesting from external sources to a CKAN (local or remote) instance. For the core harvester package go to [ckan-harvest package](https://pypi.org/project/ckan-harvester/).  
+This project is about harvesting from external sources to a CKAN (local or remote) instance.  
+This project uses a custom Python library ([ckan-harvesters](https://pypi.org/project/ckan-harvesters/))in order to read and validate different types of data sources.  
 
 ## data.json files
 
