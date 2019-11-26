@@ -6,19 +6,6 @@ from subprocess import call, check_output, Popen, PIPE
 from harvesters.logs import logger
 from harvester_adapters.ckan.api import CKANPortalAPI
 
-from pathlib import Path
-FULL_BASE_PROJECT_PATH = str(Path().cwd().parent.parent.absolute())
-print('IMPORT: ' + FULL_BASE_PROJECT_PATH)
-
-sys.path.append(FULL_BASE_PROJECT_PATH)
-
-from settings import (HARVEST_SOURCE_ID,
-                       CKAN_API_KEY,
-                       CKAN_BASE_URL,
-                       CKAN_ORG_ID,
-                       CKAN_VALID_USER_ID
-                      )
-
 
 class HarvestTestClass(unittest.TestCase):
 

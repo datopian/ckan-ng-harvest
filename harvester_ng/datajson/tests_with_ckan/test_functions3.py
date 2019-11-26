@@ -8,20 +8,6 @@ from harvester_adapters.ckan.api import CKANPortalAPI
 from functions3 import assing_collection_pkg_id, write_results_to_ckan
 from harvesters.logs import logger
 
-import sys
-from pathlib import Path
-FULL_BASE_PROJECT_PATH = str(Path().cwd().parent.parent.absolute())
-print('IMPORT: ' + FULL_BASE_PROJECT_PATH)
-
-sys.path.append(FULL_BASE_PROJECT_PATH)
-
-from settings import (HARVEST_SOURCE_ID,
-                       CKAN_API_KEY,
-                       CKAN_BASE_URL,
-                       CKAN_ORG_ID,
-                       CKAN_VALID_USER_ID
-                      )
-
 
 class Functions3TestClass(unittest.TestCase):
 

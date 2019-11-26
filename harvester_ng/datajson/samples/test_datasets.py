@@ -1,5 +1,3 @@
-from settings import CKAN_ORG_ID
-
 r1 = {
     'comparison_results': {
         'action': 'create',
