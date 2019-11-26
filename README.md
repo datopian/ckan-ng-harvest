@@ -10,10 +10,6 @@ This project is about harvesting from external sources to a CKAN (local or remot
 
 [More info](harvester_ng/csw/README.md)
 
-## Settings
-
-The files _settings.py_ (empty) and _local_settings.py_ (ignored from repo) are to define your local configuration (url, api key, etc).  
-
 ## Harvest sources
 
 The _data.json_, _csw_ or other harvest sources are CKAN packages with an URL to the some resource.  
@@ -48,7 +44,11 @@ You can search via CKAN API the list of packages/harvest sources.
 
 Get CSW harvest sources at _data.gov_
 ```
-python3 read_harvest_sources.py --base_url https://catalog.data.gov --source_type csw --method GET  
+cd tools
+
+python read_harvest_sources.py --base_url=http://nginx:8080
+
+python read_harvest_sources.py --base_url https://catalog.data.gov --source_type csw --method GET  
 # CKAN 2.3 fail with POST, current versions works fine with POST
 
 Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest source_type:csw)'}
