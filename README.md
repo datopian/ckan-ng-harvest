@@ -18,7 +18,15 @@ We can import all the harvest sources from a productive CKAN instance with the c
 For example import all CSW harvest sources from _data.gov_.  
 ```
 cd tools
-python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
+
+# for example import all CSW harvest sources from data.gov
+python import_harvest_sources.py \
+    --import_from_url https://catalog.data.gov \
+    --source_type csw \
+    --method GET \
+    --destination_url http://nginx:8080 \
+    --destination_api_key d0ff7be9-4edf-41e8-87a8-ff80fb6b5dbc \
+    --method GET
 
 Getting external harvest sources for https://catalog.data.gov
 Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest source_type:csw)'}
