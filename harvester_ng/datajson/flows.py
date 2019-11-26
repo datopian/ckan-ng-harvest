@@ -1,5 +1,6 @@
 import glob
 import json
+import logging
 import os
 import pytz
 
@@ -8,6 +9,9 @@ from dateutil.parser import parse
 from harvesters.datajson.harvester import DataJSONDataset
 from harvester_ng import helpers
 from harvester_ng.logs import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def clean_duplicated_identifiers(rows):
@@ -48,9 +52,10 @@ def save_as_data_packages(path):
     """ save dataset from data.json as data package
         We will use this files as a queue to process later """
 
+    logger.info('Saving as data packages')
     def f(row):
         package = Package()
-
+        logger.debug(f'Resource {row}')
         # TODO check this, I'm learning datapackages.
         resource = Resource({'data': row})
         resource.infer()  # adds "name": "inline"
@@ -73,8 +78,10 @@ def compare_resources(data_packages_path):
     """ read the previous resource (CKAN API results)
         Yield any comparison result
         """
+    logger.info('Comparing resources')
 
     def f(rows):
+        # logger = logging.getLogger('harvester_ng.extra')
         res_name = rows.res.name if hasattr(rows, 'res') else 'Fake res testing'
         logger.info(f'Rows from resource {res_name}')
 

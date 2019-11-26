@@ -1,11 +1,12 @@
 import os
 import hashlib
 import json
+import logging
 import pytz
 import requests
 
 from datetime import datetime
-from dataflows import Flow, add_field, load, update_resource
+from dataflows import Flow, add_field, load, update_resource, printer
 
 from harvesters.datajson.harvester import DataJSON
 from harvesters import config
@@ -16,8 +17,11 @@ from harvester_ng.datajson.flows import (clean_duplicated_identifiers,
                                     validate_datasets,
                                     save_as_data_packages,
                                     compare_resources)
+from harvester_ng.datajson.flows_ckan import (write_results,
+                                              assing_collection_pkg_id)
 
 
+logger = logging.getLogger(__name__)
 DEFAULT_VALIDATOR_SCHEMA = 'federal-v1.1'
 
 
@@ -77,14 +81,19 @@ class HarvestDataJSON(HarvestSource):
         
         res = Flow(
             load(load_source=source),
-            self.destination.write_results,
-            self.destination.assing_collection_pkg_id,
+            # fails self.destination.write_results,
+            write_results(self.destination),
+
+            # fails self.destination.assing_collection_pkg_id,
+            assing_collection_pkg_id(self.destination),
+
         ).results()
     
         return res
 
     def write_final_report(self):
         # write final process result as JSON
+        logger.info('Generating final report')
         pass
 
     def get_data_json_from_url(self, validator_schema):

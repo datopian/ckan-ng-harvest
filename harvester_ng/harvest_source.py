@@ -1,11 +1,15 @@
 import base64
 import json
+import logging
 import os
 from abc import ABC, abstractmethod
 from harvester_ng import helpers
 from harvester_ng.logs import logger
 from tools.results.harvested_source import HarvestedSource
 from slugify import slugify
+
+
+logger = logging.getLogger(__name__)
 
 
 class HarvestSource(ABC):
@@ -65,8 +69,10 @@ class HarvestSource(ABC):
 
     def save_write_results(self, flow_results):
         # save results
+        path = self.get_comparison_result_path()
+        logger.info(f'Saving write results to {path}')
         dmp = json.dumps(flow_results[0][0], indent=2)
-        f = open(self.get_comparison_result_path(), 'w')
+        f = open(path, 'w')
         f.write(dmp)
         f.close()
 

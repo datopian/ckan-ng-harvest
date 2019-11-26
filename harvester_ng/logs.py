@@ -7,11 +7,11 @@ d = {
     'formatters': {
         'detailed': {
             'class': 'logging.Formatter',
-            'format': '%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s'
+            'format': '%(asctime)s %(name)-15s %(funcName)-15s %(levelname)-8s %(message)s'
         },
         'console': {
             'class': 'logging.Formatter',
-            'format': '%(asctime)s %(name)-15s %(levelname)-8s %(message)s',
+            'format': '%(asctime)s %(name)-15s %(funcName)-15s %(levelname)-8s %(message)s',
             'datefmt': '%H:%M:%S'
         }
     },
@@ -25,6 +25,7 @@ d = {
             'class': 'logging.FileHandler',
             'filename': 'harvester_ng.log',
             'mode': 'w',
+            'level': 'DEBUG',
             'formatter': 'detailed',
         },
     },
@@ -34,9 +35,24 @@ d = {
             'handlers': ['file', 'console'],
             'propagate': False,
         },
+        'harvesters': {
+            'level': 'INFO',
+            'handlers': ['file', 'console'],
+            'propagate': False
+        },
+        'harvester_adapters': {
+            'level': 'INFO',
+            'handlers': ['file', 'console'],
+            'propagate': False
+        },
+        'dataflows': {
+            'level': 'INFO',
+            'handlers': ['file', 'console'],
+            'propagate': False
+        },
         '': {
             'level': 'INFO',
-            'handlers': ['file', 'console']
+            'handlers': ['file', 'console'],
         },
     }
 }
