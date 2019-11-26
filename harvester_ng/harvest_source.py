@@ -3,6 +3,7 @@ import json
 import os
 from abc import ABC, abstractmethod
 from harvester_ng import helpers
+from harvester_ng.logs import logger
 from tools.results.harvested_source import HarvestedSource
 from slugify import slugify
 
@@ -23,7 +24,10 @@ class HarvestSource(ABC):
             self.config = json.loads(config)
         else:
             self.config = config
-
+        
+        # limit the number of resources to harvest
+        self.limit_datasets = 0
+    
     @abstractmethod
     def download(self):
         # donwload, validate and save as data packages

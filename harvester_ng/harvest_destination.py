@@ -1,15 +1,12 @@
 import base64
 import json
-import logging
 import pytz
 from abc import ABC, abstractmethod
 from datetime import datetime
 from harvester_adapters.ckan.api import CKANPortalAPI
 from harvesters.datajson.ckan.dataset import DataJSONSchema1_1
 from harvester_ng import helpers
-
-
-logger = logging.getLogger(__name__)
+from harvester_ng.logs import logger
 
 
 class HarvestDestination(ABC):
@@ -31,6 +28,15 @@ class HarvestDestination(ABC):
         """ save final dataset to destination """
         pass
 
+    @abstractmethod
+    def destination_type(self):
+        """ class name """
+        pass
+
+    def __str__(self):
+        return self.destination_type()
+
+
 
 class CKANHarvestDestination(HarvestDestination):
     """ CKAN destination for harvested data """
@@ -40,6 +46,10 @@ class CKANHarvestDestination(HarvestDestination):
         self.api_key = api_key
         self.organization_id = organization_id
         self.harvest_source_id = harvest_source_id
+        logger.info(f'Harvest destination set: {catalog_url}')
+    
+    def destination_type(self):
+        return "CKAN"
 
     def yield_datasets(self, harvest_source_id, save_results_json_path=None):
         
@@ -63,13 +73,14 @@ class CKANHarvestDestination(HarvestDestination):
 
     def write_results(self):
         """ save results to destination. Yield results to continue flow process """
-
+        logger.info('Writting results')
         def f(rows):
             actions = {}
             c = 0
             for row in results:
                 c += 1
                 if 'is_duplicate' in row:
+                    logger.info(f'Duplicated writting results: {row}')
                     continue
 
                 comparison_results = row['comparison_results']
@@ -94,6 +105,7 @@ class CKANHarvestDestination(HarvestDestination):
                     results['errors'].append(comparison_results['reason'])
                     actions[action]['fails'] += 1
                     yield row
+                    logger.info(f'Ignored for error: {row}')
                     continue
 
                 # if it's an update we need to merge internal resources
@@ -121,22 +133,21 @@ class CKANHarvestDestination(HarvestDestination):
                     # harvest extras
                     # check if a local harvest source is required
                     # https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/logic/action/create.py#L27
-                    datajson_dataset['harvest_ng_source_title'] = XXX
+                    datajson_dataset['harvest_ng_source_title'] = self.source.name
                     datajson_dataset['harvest_ng_source_id'] = self.harvest_source_id
 
                     # CKAN hides this extras if we not define as harvest type
                     # if https://github.com/ckan/ckanext-harvest/blob/3a72337f1e619bf9ea3221037ca86615ec22ae2f/ckanext/harvest/plugin.py#L125
-                    datajson_dataset['harvest_source_title'] = config.SOURCE_NAME
+                    datajson_dataset['harvest_source_title'] = self.source.name
                     datajson_dataset['harvest_source_id'] = self.harvest_source_id
 
                     if schema_version == '1.1':
                         djss = DataJSONSchema1_1(original_dataset=datajson_dataset)
-                        
-                        # raise Exception('We are not ready to harvest 1.0 schema datasets. Check if this kind of dataset still exists')
 
                     #  ORG is required!
                     djss.ckan_owner_org_id = self.organization_id
                     ckan_dataset = djss.transform_to_ckan_dataset(existing_resources=existing_resources)
+                    logger.info(f'Transformed to CKAN dataset: {ckan_dataset}')
 
                     # check errors
                     results['errors'] += djss.errors
@@ -227,6 +238,7 @@ class CKANHarvestDestination(HarvestDestination):
         """ detect new CKAN ids for collections.
             The IDs are at different rows so we need to iterate all rows
             """
+        logger.info('Assignment of collection identifiers')
         def f(rows):
             
             # create a list of datajson identifiers -> CKAN indetifiers

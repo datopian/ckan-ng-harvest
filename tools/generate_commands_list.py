@@ -30,7 +30,7 @@ urls = []
 templated_harvest_command = """
     source {{ env_path }}/bin/activate
     cd {{ app_path }}
-    python harvest.py \
+    python harvest_datajson.py \
         --name {{ name }} \
         --url {{ data_json_url }} \
         --harvest_source_id {{ harvest_source_id }} \

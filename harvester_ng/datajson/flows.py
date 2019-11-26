@@ -1,6 +1,5 @@
 import glob
 import json
-import logging
 import os
 import pytz
 
@@ -8,9 +7,7 @@ from datapackage import Package, Resource
 from dateutil.parser import parse
 from harvesters.datajson.harvester import DataJSONDataset
 from harvester_ng import helpers
-
-
-logger = logging.getLogger(__name__)
+from harvester_ng.logs import logger
 
 
 def clean_duplicated_identifiers(rows):

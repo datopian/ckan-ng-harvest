@@ -12,7 +12,7 @@ parser.add_argument("--harvest_source_id", type=str, help="Source ID for filter 
 parser.add_argument("--ckan_owner_org_id", type=str, help="CKAN ORG ID", required=True)
 parser.add_argument("--catalog_url", type=str, help="URL for write CKAN API", required=True)
 parser.add_argument("--ckan_api_key", type=str, help="API KEY working at CKAN instance", required=True)
-parser.add_argument("--limit_dataset", type=int, default=200, help="Limit datasets to harvest on each source. Defualt=0 => no limit")
+parser.add_argument("--limit_datasets", type=int, default=0, help="Limit datasets to harvest on each source. Defualt=0 => no limit")
 parser.add_argument("--config", type=str, help="Configuration of source, str-dict (validation_schema, default_groups, etc)")
 
 # get Harvest Source config and set default schema for validation
@@ -26,6 +26,7 @@ destination = CKANHarvestDestination(catalog_url=args.catalog_url,
 hdj = HarvestDataJSON(name=args.name,
                       url=args.url,
                       destination=destination)
+hdj.limit_datasets = args.limit_datasets
 res = hdj.download()
 hdj.save_download_results(flow_results=res)
 res = hdj.compare()

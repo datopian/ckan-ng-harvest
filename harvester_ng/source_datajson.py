@@ -1,7 +1,6 @@
 import os
 import hashlib
 import json
-import logging
 import pytz
 import requests
 
@@ -11,13 +10,14 @@ from dataflows import Flow, add_field, load, update_resource
 from harvesters.datajson.harvester import DataJSON
 from harvesters import config
 
+from harvester_ng.logs import logger
 from harvester_ng.harvest_source import HarvestSource
 from harvester_ng.datajson.flows import (clean_duplicated_identifiers,
                                     validate_datasets,
                                     save_as_data_packages,
                                     compare_resources)
 
-logger = logging.getLogger(__name__)
+
 DEFAULT_VALIDATOR_SCHEMA = 'federal-v1.1'
 
 
@@ -30,6 +30,7 @@ class HarvestDataJSON(HarvestSource):
 
     def download(self):
         # donwload, validate and save as data packages
+        logger.info(f'Downloading from data.json source {self.url}')
         save_to = self.get_data_packages_folder_path()
         res = Flow(
             # get data.json and yield all datasets
@@ -51,10 +52,11 @@ class HarvestDataJSON(HarvestSource):
 
     def compare(self):
         # compare new vs previous resources
+        logger.info(f'Comparing resources')
         data_packages_path = self.get_data_packages_folder_path()
         res = Flow(
             # add other resource to this process. The packages list from data.gov
-            self.get_current_ckan_resources_from_api(harvest_source_id=config.SOURCE_ID),
+            self.get_current_ckan_resources_from_api(harvest_source_id=self.destination.harvest_source_id),
             update_resource('res_1', name='ckan_results'),
             # new field at this copy for comparasion results
             add_field(name='comparison_results',
@@ -70,8 +72,11 @@ class HarvestDataJSON(HarvestSource):
         return res
 
     def write_destination(self):
+        source = self.get_comparison_result_path()
+        logger.info(f'Writting to destination: {self.destination} data from {source}')
+        
         res = Flow(
-            load(load_source=self.get_comparison_result_path()),
+            load(load_source=source),
             self.destination.write_results,
             self.destination.assing_collection_pkg_id,
         ).results()
@@ -118,8 +123,8 @@ class HarvestDataJSON(HarvestSource):
 
         # the real dataset list
 
-        if config.LIMIT_DATASETS > 0:
-            datajson.datasets = datajson.datasets[:config.LIMIT_DATASETS]
+        if self.limit_datasets > 0:
+            datajson.datasets = datajson.datasets[:self.limit_datasets]
         for dataset in datajson.datasets:
             # add headers (previously called catalog_values)
             dataset['headers'] = datajson.headers
@@ -128,5 +133,8 @@ class HarvestDataJSON(HarvestSource):
 
     def get_current_ckan_resources_from_api(self, harvest_source_id):
         save_results_json_path = self.get_ckan_results_cache_path()
-        for dataset in self.destination.yield_datasets(harvest_source_id=harvest_source_id, save_results_json_path=save_results_json_path):
+        logger.info(f'Getting destination resources {self.url}')
+        dest = self.destination.yield_datasets(harvest_source_id=harvest_source_id, save_results_json_path=save_results_json_path)
+        for dataset in dest:
+            logger.info(f'Destination resource: {dataset}')
             yield dataset
