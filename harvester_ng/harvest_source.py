@@ -70,7 +70,7 @@ class HarvestSource(ABC):
     def save_write_results(self, flow_results):
         # save results
         path = self.get_comparison_result_path()
-        logger.info(f'Saving write results to {path}')
+        logger.info(f'Saving write results to {path}, res {flow_results[0][0]}')
         dmp = json.dumps(flow_results[0][0], indent=2)
         f = open(path, 'w')
         f.write(dmp)

@@ -93,7 +93,7 @@ def write_results(destination_obj):
                 logger.info(f'Transformed to CKAN dataset: {ckan_dataset}')
 
                 # check errors
-                results['errors'] += djss.errors
+                results['errors'] += [str(err) for err in djss.errors]
                 if ckan_dataset is None:
                     error = 'Package skipped with errors: {}'.format(results['errors'])
                     logger.error(error)
