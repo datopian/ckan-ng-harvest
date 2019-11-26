@@ -1,8 +1,12 @@
+import logging
 import os
 import pkg_resources
 from jinja2 import Template
-from harvesters import config
-from harvesters.logs import logger
+
+from harvester_ng.logs import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 class HarvestedSource:
@@ -15,10 +19,10 @@ class HarvestedSource:
     errors = None
     final_results = {}  # all files processed
 
-    def __init__(self, name):
-        config.SOURCE_NAME = name
-        self.name = name
-        data = config.get_report_files()
+    def __init__(self, harvest_source_obj):
+        self.harvest_source = harvest_source_obj
+        self.name = self.harvest_source.name
+        data = self.harvest_source.get_report_files()
         self.data = data['data']
         self.results = data['results']
         self.errors = data['errors']
@@ -92,7 +96,7 @@ class HarvestedSource:
         f.close()
         html = template.render(**context)
         if save:
-            report_path = config.get_html_report_path()
+            report_path = self.harvest_source.get_html_report_path()
             self.save_report(html=html, report_path=report_path)
             logger.info(f'Saved report to {report_path}')
 
@@ -102,59 +106,3 @@ class HarvestedSource:
         f = open(report_path, 'w')
         f.write(html)
         f.close()
-
-
-class HarvestedSources:
-    """
-    analyze ALL harvested sources. Iterate and process all
-    """
-    base_folder = None
-    all_data = []  # one row per harvest source
-    summary_data = {'harvest_sources_readed': 0,
-                    'harvest_sources_failed': 0,
-                    'total_datasets': 0,
-
-                    }
-
-    def __init__(self, base_folder=None):
-        self.base_folder = config.DATA_FOLDER_PATH if base_folder is None else base_folder
-
-    def process_all(self):
-
-        logger.info(f'Inspecting {self.base_folder} folder')
-        for subdir, dirs, files in os.walk(self.base_folder):
-            for name in dirs:
-                if name == 'harvest_sources':
-                    continue
-                logger.info(f'Processing {name} folder')
-                self.summary_data['harvest_sources_readed'] += 1
-
-                hs = HarvestedSource(name=name)
-                ret = hs.process_results()
-                if not ret:
-                    self.summary_data['harvest_sources_failed'] += 1
-                    continue
-                hs.render_template(save=True)
-
-                data = hs.get_json_data()
-                self.all_data.append(data)
-
-                if type(data['data']) == list:
-                    datasets = []
-                    logger.error(f'{name}: Data JSON Source is a list. Must be a dict')
-                if type(data['data']) == dict:
-                    datasets = data['data'].get('dataset', [])
-                if len(datasets) == 0:
-                    logger.error(f'Source with 0 datasets {name}')
-                self.summary_data['total_datasets'] += len(datasets)
-                logger.info(' - Total datasets: {}'.format(self.summary_data['total_datasets']))
-
-        harvest_sources_readed = self.summary_data['harvest_sources_readed']
-        harvest_sources_failed = self.summary_data['harvest_sources_failed']
-        total_datasets = self.summary_data['total_datasets']
-        logger.info('''**************
-                        Harvest sources readed: {}
-                        Harvest sources failed: {}
-                        Total datasets: {}'''.format(harvest_sources_readed,
-                                                     harvest_sources_failed,
-                                                     total_datasets))

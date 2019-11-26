@@ -91,11 +91,6 @@ class HarvestDataJSON(HarvestSource):
     
         return res
 
-    def write_final_report(self):
-        # write final process result as JSON
-        logger.info('Generating final report')
-        pass
-
     def get_data_json_from_url(self, validator_schema):
         logger.info(f'Geting data.json from {self.url}')
 
