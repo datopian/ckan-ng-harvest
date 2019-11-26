@@ -199,7 +199,10 @@ If you want to check or analize the harvest commands you can run the script `gen
 
 ```
 cd tools
-python generate_commands_list.py
+python generate_commands_list.py \
+  --ckan_url http://nginx:8080 \
+  --ckan_api_key xxxxxxxxxxxxx \
+  --source_type datajson
 ```
 This script will list all the valid commands to harvest each source.
 
