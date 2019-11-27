@@ -125,6 +125,10 @@ This script will list all the valid commands to harvest each source.
 
 Check the [tests.md](tests/tests.md) file.  
 
+### Logs
+
+Notes about logging at [logging.md](docs/logging.md) file.  
+
 ### Docker usage
 
 Use harvester with docker. More info [here](docker.md).  
