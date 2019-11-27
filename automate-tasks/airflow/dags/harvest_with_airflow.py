@@ -80,7 +80,7 @@ cpa = CKANPortalAPI(base_url=catalog_url, api_key=catalog_api_key)
 urls = []
 
 templated_harvest_command = """
-            cd {{ params.app_path }}/harvest/{{ params.source_type }}
+            cd {{ params.app_path }}
             python {{ params.python_command }}.py \
                 --name {{ params.name }} \
                 --url {{ params.data_json_url }} \
@@ -88,8 +88,7 @@ templated_harvest_command = """
                 --ckan_owner_org_id {{ params.ckan_org_id }} \
                 --catalog_url {{ params.catalog_url }} \
                 --ckan_api_key {{ params.ckan_api_key }} \
-                --config {{ params.harverst_source_config }} \
-                --limit_datasets 20
+                --config {{ params.harverst_source_config }}
             """
 
 for source_type in source_types:
