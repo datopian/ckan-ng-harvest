@@ -25,7 +25,7 @@ We also includes a render function in order to show results as HTML (as an examp
 
 ## Python Logger
 
-We are using python logging library in general managed by a [main log file](https://gitlab.com/datopian/ckan-ng-harvester-core/blob/master/harvesters/logs.py).  
+We are using python logging library in general managed by a [main log file](https://gitlab.com/datopian/ckan-ng-harvest/blob/64_harvest_with_config/harvester_ng/logs.py).  
 
 ## Airflow logs
 
