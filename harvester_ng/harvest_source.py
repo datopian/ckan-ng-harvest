@@ -40,8 +40,10 @@ class HarvestSource(ABC):
 
     def save_download_results(self, flow_results):
         # save results (data package and final datasets results)
+        dest = self.get_download_result_path()
+        logger.info(f'Saving downloaded results to {dest}')
         dmp = json.dumps(flow_results[0][0], indent=2)
-        f = open(self.get_download_result_path(), 'w')
+        f = open(dest, 'w')
         f.write(dmp)
         f.close()
 
@@ -54,8 +56,10 @@ class HarvestSource(ABC):
         pass
 
     def save_compare_results(self, flow_results):
+        dest = self.get_comparison_result_path()
+        logger.info(f'Saving compared results to {dest}')
         dmp = json.dumps(flow_results[0][0], indent=2)
-        f = open(self.get_comparison_result_path(), 'w')
+        f = open(dest, 'w')
         f.write(dmp)
         f.close()
 
@@ -77,14 +81,15 @@ class HarvestSource(ABC):
         f.close()
 
     def write_final_report(self):
-        logger.info('Generating final report')
+        dest = self.get_final_json_results_for_report_path()
+        logger.info(f'Generating final report to {dest}')
         # write final process result as JSON
         hs = HarvestedSource(harvest_source_obj=self)
         hs.process_results()
 
         # write results
         results = hs.get_json_data()
-        f = open(self.get_final_json_results_for_report_path(), 'w')
+        f = open(dest, 'w')
         f.write(json.dumps(results, indent=2))
         f.close()
 

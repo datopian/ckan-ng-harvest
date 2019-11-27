@@ -32,6 +32,7 @@ class HarvestDataJSON(HarvestSource):
         super().__init__(name, *args, **kwargs)
         self.validator_schema = self.config.get('validator_schema', DEFAULT_VALIDATOR_SCHEMA)
         self.source_datasets = []
+        logger.debug('New HarvestDataJSON object')
 
     def download(self):
         # donwload, validate and save as data packages

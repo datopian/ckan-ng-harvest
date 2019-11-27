@@ -88,7 +88,8 @@ templated_harvest_command = """
                 --ckan_owner_org_id {{ params.ckan_org_id }} \
                 --catalog_url {{ params.catalog_url }} \
                 --ckan_api_key {{ params.ckan_api_key }} \
-                --config {{ params.harverst_source_config }}
+                --config {{ params.harverst_source_config }} \
+                --limit_datasets 20
             """
 
 for source_type in source_types:

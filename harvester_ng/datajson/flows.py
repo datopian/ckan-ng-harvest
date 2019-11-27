@@ -45,7 +45,7 @@ def save_as_data_packages(path):
     """ save dataset from data.json as data package
         We will use this files as a queue to process later """
 
-    logger.info('Saving as data packages')
+    logger.info(f'Saving as data packages at {path}')
     def f(row):
         package = Package()
         logger.debug(f'Resource {row}')
@@ -71,7 +71,7 @@ def compare_resources(data_packages_path):
     """ read the previous resource (CKAN API results)
         and yield any comparison result with current rows
         """
-    logger.info('Comparing resources')
+    logger.info(f'Comparing resources at {data_packages_path}')
 
     def f(rows):
         default_tzinfo_for_naives_dates = pytz.UTC
