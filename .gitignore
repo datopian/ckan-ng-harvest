@@ -8,6 +8,7 @@ data/
 dist/
 datapackages/
 local_settings.py
+.pytest_cache
 .~lock*
 *~
 *.egg-info

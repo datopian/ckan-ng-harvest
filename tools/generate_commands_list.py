@@ -4,33 +4,29 @@ generate a list of the commands to harvest
 import os
 import argparse
 
-# add settings
-import sys
-APP_PATH = os.path.abspath('..')
-sys.path.append(APP_PATH)
-from settings import CKAN_BASE_URL, CKAN_API_KEY, PYTHON_ENV_PATH
-
 import shlex
 from harvester_adapters.ckan.api import CKANPortalAPI
 from harvesters.logs import logger
 from jinja2 import Template
 
 
-catalog_url = CKAN_BASE_URL
-catalog_api_key = CKAN_API_KEY
-
 parser = argparse.ArgumentParser()
+parser.add_argument("--ckan_url", type=str, help="CKAN instance URL")
+parser.add_argument("--ckan_api_key", type=str, help="Valid CKAN API KEY")
 parser.add_argument("--source_type", type=str, default='datajson', help="Tipe of harvest source: datajson|csw|waf etc")
+
 args = parser.parse_args()
+
+
+catalog_url = args.ckan_url
+catalog_api_key = args.ckan_api_key
 source_type = args.source_type
 
 cpa = CKANPortalAPI(base_url=catalog_url, api_key=catalog_api_key)
 urls = []
 
 templated_harvest_command = """
-    source {{ env_path }}/bin/activate
-    cd {{ app_path }}
-    python harvest.py \
+    python harvest_datajson.py \
         --name {{ name }} \
         --url {{ data_json_url }} \
         --harvest_source_id {{ harvest_source_id }} \
@@ -57,8 +53,6 @@ for datasets in results:
         harverst_source_config = harvest_source.get('config', {})
 
         context = {
-            'env_path': PYTHON_ENV_PATH,
-            'app_path': APP_PATH,
             'name': name,
             'data_json_url': shlex.quote(url),
             'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID

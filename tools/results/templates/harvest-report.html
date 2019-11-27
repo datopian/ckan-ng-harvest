@@ -43,14 +43,7 @@
     <p>Validation errors: {{ validation_errors|length }}</p>
     {% if validation_errors|length > 0 %}
     <ul> {% for ve in validation_errors %}
-        {% for title, errors in ve.items() %}
-        <li>{{ title }}</li>
-        <ul>{% for error in errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-            {% endfor %}
-        </ul>
-        {% endfor %}
+        <li>{{ ve }}</li>{% endfor %}
     </ul>
     {% endif %}
 </div>

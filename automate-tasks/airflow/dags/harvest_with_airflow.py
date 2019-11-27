@@ -81,7 +81,7 @@ urls = []
 
 templated_harvest_command = """
             cd {{ params.app_path }}/harvest/{{ params.source_type }}
-            python harvest.py \
+            python {{ params.python_command }}.py \
                 --name {{ params.name }} \
                 --url {{ params.data_json_url }} \
                 --harvest_source_id {{ params.harvest_source_id }} \
@@ -117,8 +117,14 @@ for source_type in source_types:
 
             harverst_source_config = harvest_source.get('config', {})
 
+            if source_type == 'datajson':
+                python_command = 'harvest_datajson'
+            elif source_type == 'csw':
+                python_command = 'harvest_csw'
+
             params = {
                 'app_path': app_path,
+                'python_command': python_command,
                 'name': name,
                 'source_type': source_type,
                 'data_json_url': shlex.quote(url),
