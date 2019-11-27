@@ -4,7 +4,7 @@ Tests all functions used in flow file
 import unittest
 
 from harvesters import config
-from functions import clean_duplicated_identifiers
+from harvester_ng.datajson.flows import clean_duplicated_identifiers
 
 
 class FunctionsDuplicatesTestClass(unittest.TestCase):

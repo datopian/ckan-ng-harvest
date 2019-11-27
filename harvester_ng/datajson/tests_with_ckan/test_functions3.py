@@ -18,7 +18,6 @@ class Functions3TestClass(unittest.TestCase):
         config.SOURCE_ID = HARVEST_SOURCE_ID
         config.SOURCE_NAME = 'Some harvest source'
 
-        # f = open('samples/test_datasets_usmetadata.json', 'r')
         f = open('samples/test_datasets.json', 'r')
         sample_js = f.read().replace('CKAN_ORG_ID', CKAN_ORG_ID)
         f.close()

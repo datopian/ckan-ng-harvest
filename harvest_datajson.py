@@ -34,21 +34,3 @@ hdj.save_compare_results(flow_results=res)
 res = hdj.write_destination()
 hdj.save_write_results(flow_results=res)
 hdj.write_final_report()
-
-"""
-sample
-python harvester_ng/datajson/harvest.py \
-    --name dol-json \
-    --url http://www.dol.gov/data.json \
-    --harvest_source_id 59f68f20-9d44-4a3e-958e-46a5935ef591 \
-    --ckan_owner_org_id 762a7be2-c2ed-4d10-bbac-05faca90b9e7 \
-    --catalog_url http://nginx:8080 \
-    --ckan_api_key 21bbafcf-f0d7-475c-8c98-e1baf25ba13e \
-    --config {}
-
-commands = [
-    ['python3', 'flow.py', '--name', args.name, '--url', args.url, '--limit_dataset', str(args.limit_dataset), '--config', json.dumps(harverst_source_config)],
-    ['python3', 'flow2.py', '--name', args.name, '--harvest_source_id', args.harvest_source_id, '--catalog_url', args.catalog_url],
-    ['python3', 'flow3.py', '--name', args.name, '--ckan_owner_org_id', args.ckan_owner_org_id, '--catalog_url', args.catalog_url, '--ckan_api_key', args.ckan_api_key]
-]
-"""

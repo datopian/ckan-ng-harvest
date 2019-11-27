@@ -19,33 +19,26 @@ def clean_duplicated_identifiers(rows):
 
     logger.info('Cleaning duplicates')
     unique_identifiers = []
-    duplicates = []
-    processed = 0
-    # resource = rows.res
-    # logger.error('Rows from resource {}'.format(resource.name))
+    
     for row in rows:
-        if row['identifier'] not in unique_identifiers:
-            processed += 1
-            unique_identifiers.append(row['identifier'])
-            logger.info('Dataset {} not duplicated: {}'.format(processed, row['identifier']))
-            yield(row)
+        idf = row['identifier']
+        logger.info(f'Analyzing {idf}')
+        if idf not in unique_identifiers:
+            unique_identifiers.append(idf)
+            yield row
         else:
-            duplicates.append(row['identifier'])
-            row['is_duplicate'] = 'True'
-            yield(row)
-            # do not log all duplicates. Sometimes they are too many.
-            if len(duplicates) < 10:
-                logger.error('Duplicated {}'.format(row['identifier']))
-            elif len(duplicates) == 10:
-                logger.error('... more duplicates not shown')
-    logger.info('{} duplicates deleted. {} OK'.format(len(duplicates), processed))
+            row['is_duplicate'] = True
+            yield row
 
 
 def validate_datasets(row):
     """ validate dataset row by row """
     data_validator = DataJSONDataset(row)
-    data_validator.validate(validator_schema=row['validator_schema'])
-    row['validation_errors'] = data_validator.errors
+    valid = data_validator.validate(validator_schema=row['validator_schema'])
+    errors = data_validator.errors
+    row['validation_errors'] = errors
+    if not valid:
+        logger.error(f'Error validating {row}: {errors}')
 
 
 def save_as_data_packages(path):
@@ -76,15 +69,11 @@ def save_as_data_packages(path):
 
 def compare_resources(data_packages_path):
     """ read the previous resource (CKAN API results)
-        Yield any comparison result
+        and yield any comparison result with current rows
         """
     logger.info('Comparing resources')
 
     def f(rows):
-        # logger = logging.getLogger('harvester_ng.extra')
-        res_name = rows.res.name if hasattr(rows, 'res') else 'Fake res testing'
-        logger.info(f'Rows from resource {res_name}')
-
         default_tzinfo_for_naives_dates = pytz.UTC
 
         # Calculate minimum statistics
@@ -140,6 +129,7 @@ def compare_resources(data_packages_path):
             encoded_identifier = helpers.encode_identifier(identifier)
             expected_filename = f'data-json-{encoded_identifier}.json'
             expected_path = os.path.join(data_packages_path, expected_filename)
+            logger.debug(f'Expected path {expected_path}')
 
             if not os.path.isfile(expected_path):
                 logger.info((f'Dataset: {ckan_id} not in DATA.JSON.'
