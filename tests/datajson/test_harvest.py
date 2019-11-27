@@ -2,10 +2,11 @@
 Tests all functions used in flow file
 """
 import json
+import shutil
 from unittest import TestCase, mock
 from harvester_ng.source_datajson import HarvestDataJSON
 from harvester_ng.harvest_destination import CKANHarvestDestination
-from harvester_ng.datajson.flows import clean_duplicated_identifiers
+from harvester_ng.datajson.flows import clean_duplicated_identifiers, compare_resources
 
 
 class FunctionsTestClass(TestCase):
