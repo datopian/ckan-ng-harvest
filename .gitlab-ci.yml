@@ -19,15 +19,11 @@ test:
     - DEVHOME=$(pwd)
     - echo '***************************'
     - echo 'Test data.json'
-    - cd "$DEVHOME/harvest/datajson/"
-    - pwd
-    - python -m pytest tests/
+    - python -m pytest tests/datajson
 
-    - echo '***************************'
-    - echo 'Test csw'
-    - cd "$DEVHOME/harvest/csw/"
-    - pwd
-    - python -m pytest tests/
+    # - echo '***************************'
+    # - echo 'Test csw'
+    # - python -m pytest tests/csw
 
     - echo '***************************'
     - echo 'Checking dependencies for vulnerabilities'

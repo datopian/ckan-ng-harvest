@@ -1,29 +1,34 @@
 """
 Tests all functions used in flow file
 """
+import shutil
 import unittest
-from harvesters import config
-from functions import get_data_json_from_url, save_as_data_packages
-from functions2 import compare_resources
-from harvesters import config
+from harvester_ng.datajson.flows import compare_resources
+from harvester_ng.source_datajson import HarvestDataJSON
+from harvester_ng.harvest_destination import CKANHarvestDestination
+
+
 base_url = 'https://datopian.gitlab.io/ckan-ng-harvest'
 
 
 class Functions2TestClass(unittest.TestCase):
 
+    def setUp(self):
+        self.destination = CKANHarvestDestination(catalog_url='http://not-in-use.com',
+                                                  api_key='xxxx',
+                                                  organization_id='xxxx',
+                                                  harvest_source_id='xxxx')
+
     def test_compare_resources(self):
-        config.SOURCE_NAME = 'usada-test'
+
+        """
         url = f'{base_url}/usda.gov.data.json'
-        config.SOURCE_URL = url
-        total = 0
-
-        config.LIMIT_DATASETS = 0
-        for dataset in get_data_json_from_url(url=url, validator_schema='federal-v1.1'):
-            self.assertIsInstance(dataset, dict)
-            total += 1
-            save_as_data_packages(dataset)
-
-        self.assertEqual(total, 1580)
+        hdj = HarvestDataJSON(name='Test Name',
+                              url=url,
+                              destination=self.destination)
+        res = hdj.download()
+        hdj.save_download_results(flow_results=res)
+        """
 
         # compare with fake results
         fake_rows = [
@@ -49,7 +54,14 @@ class Functions2TestClass(unittest.TestCase):
              'extras': [{'key': 'identifier', 'value': 'New unexpected identifier'}]},
         ]
 
-        for row in compare_resources(rows=fake_rows):
+        f = compare_resources(data_packages_path='tests/datajson/samples/compare_test')
+        # this files will be deleted after process, use a copy (in a external folder)
+        shutil.copyfile('tests/datajson/samples/data-json-0003.json',
+                        'tests/datajson/samples/compare_test/data-json-dXNkYS1vY2lvLTE1LTAx.json')
+        shutil.copyfile('tests/datajson/samples/data-json-0004.json',
+                        'tests/datajson/samples/compare_test/data-json-VVNEQS1ETS0wMDM=.json')
+
+        for row in f(rows=fake_rows):
             # I expect first resoults
 
             cr = row['comparison_results']

@@ -31,6 +31,7 @@ class HarvestDataJSON(HarvestSource):
     def __init__(self, name, *args, **kwargs):
         super().__init__(name, *args, **kwargs)
         self.validator_schema = self.config.get('validator_schema', DEFAULT_VALIDATOR_SCHEMA)
+        self.source_datasets = []
 
     def download(self):
         # donwload, validate and save as data packages
@@ -93,7 +94,7 @@ class HarvestDataJSON(HarvestSource):
 
     def get_data_json_from_url(self, validator_schema):
         logger.info(f'Geting data.json from {self.url}')
-
+        self.source_datasets = []
         datajson = DataJSON()
         datajson.url = self.url
 
@@ -134,6 +135,7 @@ class HarvestDataJSON(HarvestSource):
             dataset['headers'] = datajson.headers
             dataset['validator_schema'] = validator_schema
             yield(dataset)
+            self.source_datasets.append(dataset)
 
     def get_current_ckan_resources_from_api(self, harvest_source_id):
         save_results_json_path = self.get_ckan_results_cache_path()
