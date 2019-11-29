@@ -22,7 +22,7 @@ def decode_identifier(encoded_identifier):
 
 
 def hash_dataset(dataset):
-        # hash the dataset.
+        """ hash one dataset (a dict)."""
         dmp_dataset = json.dumps(dataset, sort_keys=True)
         str_to_hash = dmp_dataset.encode('utf-8')
         return hashlib.sha256(str_to_hash).hexdigest()

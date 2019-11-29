@@ -156,6 +156,7 @@ def write_results_to_ckan(rows):
 
 
 def build_validation_error_email(error_items=[]):
+    
     # json errors
     errors = {}
     json_errors_path = config.get_errors_path()

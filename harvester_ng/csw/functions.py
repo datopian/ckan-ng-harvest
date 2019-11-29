@@ -67,6 +67,7 @@ def clean_duplicated_identifiers(rows):
 
 
 def validate_datasets(row):
+    """ validate one dataset """
     # TODO check what to validate in this resources
     row['validation_errors'] = []
 

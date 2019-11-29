@@ -34,12 +34,12 @@ class HarvestSource(ABC):
     
     @abstractmethod
     def download(self):
-        # donwload, validate and save as data packages
-        # returns a DataFlows resource
+        """ donwload, validate and save as data packages
+        Returns a DataFlows resource """
         pass
 
     def save_download_results(self, flow_results):
-        # save results (data package and final datasets results)
+        """ save results (data package and final datasets results) """
         dest = self.get_download_result_path()
         logger.info(f'Saving downloaded results to {dest}')
         dmp = json.dumps(flow_results[0][0], indent=2)
@@ -52,7 +52,7 @@ class HarvestSource(ABC):
 
     @abstractmethod
     def compare(self):
-        # compare downloaded with destination
+        """ compare downloaded with destination and define if we need to create or update """
         pass
 
     def save_compare_results(self, flow_results):
@@ -68,11 +68,11 @@ class HarvestSource(ABC):
 
     @abstractmethod
     def write_destination(self):
-        # save changes to destination
+        """ save changes to destination """
         pass
 
     def save_write_results(self, flow_results):
-        # save results
+        """ save results """
         path = self.get_comparison_result_path()
         logger.info(f'Saving write results to {path}, res {flow_results[0][0]}')
         dmp = json.dumps(flow_results[0][0], indent=2)
@@ -96,8 +96,8 @@ class HarvestSource(ABC):
         hs.render_template(save=True)
 
     def get_base_path(self):
-        # get path for some resource (described as string)
-        # if none, retur the base folder
+        """ Get path for some resource (described as string).
+            If none, return the base folder """
         nice_name = slugify(self.name)
         base_path = os.path.join('data', nice_name)
 
@@ -166,7 +166,7 @@ class HarvestSource(ABC):
             return j
 
     def get_report_files(self):
-        # collect important files to write a final report
+        """ Collect important files to write a final report """
         data_file = self.get_data_cache_path(create=False)
         results_file = self.get_comparison_result_path(create=False)
         errors_file = self.get_errors_path(create=False)

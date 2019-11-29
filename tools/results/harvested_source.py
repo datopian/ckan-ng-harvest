@@ -86,7 +86,7 @@ class HarvestedSource:
         return data
 
     def render_template(self, save=True):
-        # redenr through harvest-report.html
+        """ Render through harvest-report.html """
         context = self.get_json_data()
         logger.info('Errors {}'.format(context['errors']))
         logger.info('Validation errors {}'.format(context['validation_errors']))

@@ -8,7 +8,7 @@ class TestCSWISOClass(object):
     iso_values_sample_2 = 'samples/iso_values_sample2.json'
 
     def test_transform_ISO(self):
-        # read XML and transform to ISO values
+        """ read XML and transform to ISO values """
 
         csw = CSWSource(url='http://fake.url')
         f = open(self.xml_sample_2, 'r')

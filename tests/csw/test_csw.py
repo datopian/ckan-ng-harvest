@@ -24,7 +24,7 @@ class TestCSWClass(object):
         assert url == new_url
 
     def test_base_service_csw(self):
-        # read https://github.com/geopython/OWSLib/blob/5d057e6b58c3a7ce873ac81c4e574df3c35ad6fa/tests/test_ows_interfaces.py#L26
+        """ Read https://github.com/geopython/OWSLib/blob/5d057e6b58c3a7ce873ac81c4e574df3c35ad6fa/tests/test_ows_interfaces.py#L26 """
         for url in self.url_services:
 
             csw = CSWSource(url=url)

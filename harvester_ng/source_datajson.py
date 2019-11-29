@@ -35,7 +35,7 @@ class HarvestDataJSON(HarvestSource):
         logger.debug('New HarvestDataJSON object')
 
     def download(self):
-        # donwload, validate and save as data packages
+        """ donwload, validate and save as data packages """
         logger.info(f'Downloading from data.json source {self.url}')
         save_to = self.get_data_packages_folder_path()
         res = Flow(
@@ -57,7 +57,7 @@ class HarvestDataJSON(HarvestSource):
         return res
 
     def compare(self):
-        # compare new vs previous resources
+        """ compare new vs previous resources """
         logger.info(f'Comparing resources')
         data_packages_path = self.get_data_packages_folder_path()
         res = Flow(
