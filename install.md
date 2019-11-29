@@ -18,7 +18,12 @@ If your CKAN instance needs to import harvest sources from another CKAN instance
 
 ```
 # for example import all CSW harvest sources from data.gov
-python3 import_harvest_sources.py --import_from_url https://catalog.data.gov --source_type csw --method GET
+python import_harvest_sources.py \
+    --import_from_url https://catalog.data.gov \
+    --source_type csw \
+    --method GET \
+    --destination_url http://nginx:8080 \
+    --destination_api_key xxxxxxxxx
 # --method GET is for older CKAN instances
 ```
 

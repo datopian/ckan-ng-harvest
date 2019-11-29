@@ -1,0 +1,45 @@
+{
+    "profile": "data-package",
+    "resources": [
+        {
+            "data": 
+            {
+                "identifier": "USDA-DM-003",
+                "accessLevel": "public",
+                "contactPoint": {
+                  "hasEmail": "mailto:Alexis.Graves@ocio.usda.gov",
+                  "@type": "vcard:Contact",
+                  "fn": "Alexi Graves"
+                },
+                "programCode": [
+                  "005:059"
+                ],
+                "description": "This dataset is a listing of the Secretary of Agriculture's public schedule.",
+                "title": "Department of Agriculture Secretary's Calendar Schedule",
+                "distribution": [
+                  {
+                    "@type": "dcat:Distribution",
+                    "downloadURL": "http://www.usda.gov/wps/portal/usda/usdahome?contentidonly=true&contentid=secretary-schedule.xml",
+                    "mediaType": "application/vnd.ms-excel",
+                    "title": "Department of Agriculture Secretary's Calendar Schedule"
+                  }
+                ],
+                "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "bureauCode": [
+                  "005:12"
+                ],
+                "modified": "2014-10-03",
+                "publisher": {
+                  "@type": "org:Organization",
+                  "name": "Department of Agriculture"
+                },
+                "keyword": [
+                  "FOIA"
+                ]
+              }
+            ,
+            "profile": "data-resource",
+            "name": "inline"
+        }
+    ]
+}
