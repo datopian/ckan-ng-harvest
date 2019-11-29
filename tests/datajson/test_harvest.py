@@ -184,11 +184,11 @@ class FunctionsTestClass(TestCase):
 
             if ckan_id == '0001':
                 self.assertEqual(cr['action'], 'error')
-                self.assertEqual(cr['reason'], 'The CKAN dataset does not '
+                self.assertEqual(cr['reason'], 'The CKAN dataset 0001 does not '
                                               'have the "extras" property')
             elif ckan_id == '0002':
                 self.assertEqual(cr['action'], 'error')
-                self.assertEqual(cr['reason'], 'The CKAN dataset does not have an "identifier"')
+                self.assertEqual(cr['reason'], 'The CKAN dataset 0002 does not have an "identifier"')
 
             elif ckan_id == '0003':
                 self.assertEqual(cr['action'], 'update')

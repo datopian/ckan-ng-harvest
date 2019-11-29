@@ -67,6 +67,92 @@ def save_as_data_packages(path):
 
     return f
 
+
+def compare_resources_validate(row):
+    """ validate a row while comparing resources.
+        Check for extras and identifier.
+    Returns: Boolean, Error """
+
+    ckan_id = row['id']
+    extras = row.get('extras', False)
+    if not extras:
+        error = f'The CKAN dataset {ckan_id} does not have the "extras" property'
+        logging.error(error)
+        return False, error
+    
+    identifier = None
+    for extra in extras:
+        if extra['key'] == 'identifier':
+            identifier = extra['value']
+
+    if identifier is None:
+        error = f'The CKAN dataset {ckan_id} does not have an "identifier"'
+        logging.error(error)
+        return False, error
+
+    return True, None
+
+
+def compare_resources_resource_exists(data_packages_path, identifier):
+    """ Check if a row is for detele
+    Returns: Boolean, expected file path """
+    encoded_identifier = helpers.encode_identifier(identifier)
+    expected_filename = f'data-json-{encoded_identifier}.json'
+    expected_path = os.path.join(data_packages_path, expected_filename)
+    logger.debug(f'Expected path {expected_path}')
+
+    file_exists = os.path.isfile(expected_path)
+    if not file_exists:
+        logger.info(f'Dataset: {identifier} not in DATA.JSON.')
+
+    return file_exists, expected_path
+
+
+def compare_resource_require_update(data_package_expected_path, row):
+    """ Check if a row require update or it's ok to ignore 
+    Returns: Boolean (if we need to update), new data readed from package """
+
+    default_tzinfo_for_naives_dates = pytz.UTC
+    expected_path = data_package_expected_path
+    datajson_package = Package(expected_path)
+            
+    data_json = datajson_package.get_resource('inline')
+    data_json_data = data_json.source
+    data_json_modified = parse(data_json_data['modified'])  # It's a naive date
+
+    ckan_json = row
+    ckan_json_modified = parse(ckan_json['metadata_modified'])
+
+    # un-naive datetimes
+    if data_json_modified.tzinfo is None:
+        data_json_modified = data_json_modified.replace(tzinfo=default_tzinfo_for_naives_dates)
+    if ckan_json_modified.tzinfo is None:
+        ckan_json_modified = ckan_json_modified.replace(tzinfo=default_tzinfo_for_naives_dates)
+
+    diff_times = data_json_modified - ckan_json_modified
+    seconds = diff_times.total_seconds()
+
+    os.remove(expected_path)
+
+    require_update = abs(seconds) > 86400        
+    return require_update, data_json_data
+
+
+def compare_resource_get_new_datasets(data_packages_path):
+    """ get new datesets,
+    Yield this datasets """
+    
+    for name in glob.glob(f'{data_packages_path}/data-json-*.json'):
+        package = Package(name)
+        data_json = package.get_resource('inline')
+        data_json_data = data_json.source
+
+        yield data_json_data
+
+        # Delete the data.json file
+        os.remove(name)
+
+
 def compare_resources(data_packages_path):
     """ read the previous resource (CKAN API results)
         and yield any comparison result with current rows
@@ -74,158 +160,85 @@ def compare_resources(data_packages_path):
     logger.info(f'Comparing resources at {data_packages_path}')
 
     def f(rows):
-        default_tzinfo_for_naives_dates = pytz.UTC
 
         # Calculate minimum statistics
         total = 0
 
-        no_extras = 0
-        no_identifier_key_found = 0
+        errors = []
         deleted = 0
         found_update = 0
         found_not_update = 0
 
         for row in rows:
             total += 1
-            # logger.info(f'Row: {total}')
-            # check for identifier
             ckan_id = row['id']
+            
+            valid, error = compare_resources_validate(row)
+            if not valid:
+                errors.append(error)
+                row['comparison_results'] = {'action': 'error', 'ckan_id': ckan_id, 'new_data': None, 'reason': error}
+                yield row
+                continue
+            
             extras = row.get('extras', False)
-            if not extras:
-                # TODO learn why.
-                logger.error(f'No extras! dataset: {ckan_id}')
-                result = {'action': 'error',
-                        'ckan_id': ckan_id,
-                        'new_data': None,
-                        'reason': 'The CKAN dataset does not '
-                                    'have the "extras" property'}
-                row.update({'comparison_results': result})
-                yield row
-                no_extras += 1
-                continue
+            identifier = [extra['value'] for extra in extras if extra['key'] == 'identifier'][0]
 
-            identifier = None
-            for extra in extras:
-                if extra['key'] == 'identifier':
-                    identifier = extra['value']
-
-            if identifier is None:
-                logger.error('No identifier '
-                            '(extras[].key.identifier not exists). '
-                            'Dataset.id: {}'.format(ckan_id))
-
-                no_identifier_key_found += 1
-                result = {'action': 'error',
-                        'ckan_id': ckan_id,
-                        'new_data': None,
-                        'reason': 'The CKAN dataset does not have an "identifier"'}
-                row.update({'comparison_results': result})
-                yield row
-                continue
-
-            # was parent in the previous harvest
-            # if extras.get('collection_metadata', None) is not None:
-
-            encoded_identifier = helpers.encode_identifier(identifier)
-            expected_filename = f'data-json-{encoded_identifier}.json'
-            expected_path = os.path.join(data_packages_path, expected_filename)
-            logger.debug(f'Expected path {expected_path}')
-
-            if not os.path.isfile(expected_path):
-                logger.info((f'Dataset: {ckan_id} not in DATA.JSON.'
-                            f'It was deleted?: {expected_path}'))
+            file_exists, expected_path = compare_resources_resource_exists(data_packages_path, identifier)
+            if not file_exists:
                 deleted += 1
-                result = {'action': 'delete',
-                        'ckan_id': ckan_id,
-                        'new_data': None,
-                        'reason': 'It no longer exists in the data.json source'}
-                row.update({'comparison_results': result})
+                row['comparison_results'] = {
+                        'action': 'delete', 
+                        'ckan_id': ckan_id, 
+                        'new_data': None, 
+                        'reason': 'It no longer exists in the data.json source'
+                        }
                 yield row
                 continue
 
-            datajson_package = Package(expected_path)
-            # logger.info(f'Dataset: {ckan_id}
-            # found as data package at {expected_path}')
-
-            # TODO analyze this: https://github.com/ckan/ckanext-harvest/blob/master/ckanext/harvest/harvesters/base.py#L229
-
-            # compare dates
-            # at data.json: "modified": "2019-06-27 12:41:27",
-            # at ckan results: "metadata_modified": "2019-07-02T17:20:58.334748",
-
-            data_json = datajson_package.get_resource('inline')
-            data_json_data = data_json.source
-            data_json_modified = parse(data_json_data['modified'])  # It's a naive date
-
-            ckan_json = row
-            ckan_json_modified = parse(ckan_json['metadata_modified'])
-
-            # un-naive datetimes
-            if data_json_modified.tzinfo is None:
-                data_json_modified = data_json_modified.replace(tzinfo=default_tzinfo_for_naives_dates)
-                # logger.warning('Modified date in data.json is naive: {}'.format(data_json_data['modified']))
-            if ckan_json_modified.tzinfo is None:
-                ckan_json_modified = ckan_json_modified.replace(tzinfo=default_tzinfo_for_naives_dates)
-                # logger.warning('Modified date in CKAN results is naive: {}'.format(ckan_json['metadata_modified']))
-
-            diff_times = data_json_modified - ckan_json_modified
-
-            seconds = diff_times.total_seconds()
-            # logger.info(f'Seconds: {seconds} data.json:{data_json_modified} ckan:{ckan_json_modified})')
-
-            # TODO analyze this since we have a Naive date we are not sure
-            if abs(seconds) > 86400:  # more than a day
-                warning = '' if seconds > 0 else 'Data.json is older than CKAN'
-                result = {'action': 'update',
+            require_update, data_json_data = compare_resource_require_update(expected_path, row)
+            if require_update:
+                row['comparison_results'] = {
+                        'action': 'update',
                         'ckan_id': ckan_id,
                         'new_data': data_json_data,
-                        'reason': f'Changed: ~{seconds} seconds difference. {warning}'
+                        'reason': f'The resource is older'
                         }
+                
                 found_update += 1
             else:
-                result = {'action': 'ignore',
+                row['comparison_results'] = {
+                        'action': 'ignore',
                         'ckan_id': ckan_id,
-                        'new_data': None,  # do not need this data_json_data
-                        'reason': 'Changed: ~{seconds} seconds difference'}
+                        'new_data': None,  # don't need this
+                        'reason': 'The resource is updated'
+                        }
                 found_not_update += 1
-            row.update({'comparison_results': result})
-            yield row
 
+            yield row
             
-            # Delete the data.json file
-            os.remove(expected_path)
-
+        # detect new datasets
         news = 0
-        for name in glob.glob(f'{data_packages_path}/data-json-*.json'):
+        for data_json_data in compare_resource_get_new_datasets(data_packages_path):
             total += 1
-            news += 1
-            package = Package(name)
-            data_json = package.get_resource('inline')
-            data_json_data = data_json.source
+            news += 1            
+            row['comparison_results'] = {
+                'action': 'create',
+                'ckan_id': None,
+                'new_data': data_json_data,
+                'reason': 'Not found in the CKAN results'}
 
-            result = {'action': 'create',
-                    'ckan_id': None,
-                    'new_data': data_json_data,
-                    'reason': 'Not found in the CKAN results'}
-
-            row = {'comparison_results': result}
             yield row
-
-            # Delete the data.json file
-            os.remove(name)
 
         found = found_not_update + found_update
 
-        stats = f"""Total processed: {total}.
-                    {no_extras} fail extras.
-                    {no_identifier_key_found} fail identifier key.
+        total_errors = len(errors)
+        stats = f"""Compare total processed: {total}.
+                    {total_errors} errors.
                     {deleted} deleted.
                     {found} datasets found
-                    ({found_update} needs update,
-                    {found_not_update} are the same),
+                    ({found_update} needs update, {found_not_update} are the same).
                     {news} new datasets."""
 
         logger.info(stats)
 
     return f
-    
