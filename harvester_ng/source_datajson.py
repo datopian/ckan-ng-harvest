@@ -9,8 +9,6 @@ from datetime import datetime
 from dataflows import Flow, add_field, load, update_resource, printer
 
 from harvesters.datajson.harvester import DataJSON
-from harvesters import config
-
 from harvester_ng.logs import logger
 from harvester_ng.harvest_source import HarvestSource
 from harvester_ng.datajson.flows import (clean_duplicated_identifiers,
