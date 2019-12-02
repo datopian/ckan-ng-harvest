@@ -12,6 +12,8 @@ from airflow.utils import dates
 from datetime import datetime, timedelta
 from harvester_adapters.ckan.api import CKANPortalAPI
 from harvesters.logs import logger
+
+# callables
 from harvest_datajson import harvest_datajson
 
 
@@ -124,14 +126,13 @@ for source_type in source_types:
                 task_id=dag_id,
                 python_callable=python_callable,
                 op_kwargs={
+                    'url': shlex.quote(url),
                     'name': name,
-                    'source_type': source_type,
-                    'data_json_url': shlex.quote(url),
                     'harvest_source_id': harvest_source['id'],  # check if this is the rigth ID
-                    'ckan_org_id': ckan_org_id,
+                    'ckan_owner_org_id': ckan_org_id,
                     'catalog_url': shlex.quote(catalog_url),
                     'ckan_api_key': catalog_api_key,
-                    'harverst_source_config': json.dumps(harverst_source_config)
+                    'config': json.dumps(harverst_source_config)
                     },
                 dag=new_dag,
             )

@@ -67,11 +67,11 @@ if __name__ == '__main__':
     # get Harvest Source config and set default schema for validation
     args = parser.parse_args()
 
-    harvest(url=args.url,
-            name=args.name,
-            harvest_source_id=args.harvest_source_id,
-            ckan_owner_org_id=args.ckan_owner_org_id,
-            catalog_url=args.catalog_url,
-            ckan_api_key=args.ckan_api_key,
-            limit_datasets=args.limit_datasets,
-            config=args.config)
+    harvest_datajson(url=args.url,
+                     name=args.name,
+                     harvest_source_id=args.harvest_source_id,
+                     ckan_owner_org_id=args.ckan_owner_org_id,
+                     catalog_url=args.catalog_url,
+                     ckan_api_key=args.ckan_api_key,
+                     limit_datasets=args.limit_datasets,
+                     config=args.config)
