@@ -29,7 +29,7 @@ Now you can see running:
 
 ## Create a Harvest Source
 
-You can create a Harvest source manually from http://ckan:5000/harvest/edit.  
+You can create a Harvest source manually from http://ckan:5000/harvest.  
 Airflow automatically get this source and create a DAG to process it.  
 
 ![Auto DAG loaded](docs/imgs/auto-dag-one.png)
