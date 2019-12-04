@@ -19,15 +19,17 @@ def clean_duplicated_identifiers(rows):
 
     logger.info('Cleaning duplicates')
     unique_identifiers = []
-    
+    c = 0
     for row in rows:
+        c += 1
         idf = row['identifier']
-        logger.info(f'Analyzing {idf}')
+        logger.info(f'Searching duplicates {c} {idf}')
         if idf not in unique_identifiers:
             unique_identifiers.append(idf)
             yield row
         else:
             row['is_duplicate'] = True
+            logger.info(f'{idf} is duplicated')
             yield row
 
 
