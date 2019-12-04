@@ -3,6 +3,8 @@
 This project is about harvesting from external sources to a CKAN (local or remote) instance.  
 This project uses a custom Python library ([ckan-harvesters](https://pypi.org/project/ckan-harvesters/))in order to read and validate different types of data sources.  
 
+Install locally
+
 ```
 python3 -m venv /path-to-harvester-env
 source /path-to-harvester-env/bin/activate
