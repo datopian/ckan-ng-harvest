@@ -16,8 +16,13 @@ This starts a group of docker containers including CKAN (and related services) a
 In the first run the local CKAN instance will be empty, there is no harvest sources to harvest from.  
 You can add harvest source by impoting them from another CKAN instance (e.g. catalog.data.gov).
 
+Now you can see running:
+ - Airflow: http://localhost:8081/ (without [DAGs](https://airflow.apache.org/docs/stable/concepts.html#dags) by now)
+ - CKAN: http://ckan:5000
+
 ## Import harvest sources
 
+Airflow is going to read all harvest sources and add them as DAGs.  
 We can import all the harvest sources from a productive CKAN instance with the command `import_harvest_sources`.  
 
 For example import all DataJSON harvest sources from _data.gov_.  
