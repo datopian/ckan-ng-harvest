@@ -68,10 +68,8 @@ services:
             - ./src:/srv/app/src_extensions
             - ckan_storage:/var/lib/ckan
             # debug extensions
-            # - /home/hudson/dev/datopian/ckan-and-exts/ckanext-harvest:/srv/app/src_extensions/ckanext-harvest
-            # - /home/hudson/dev/datopian/DepOfEd/ckanext-datajson:/srv/app/src_extensions/ckanext-datajson
+            # - /home/user/exts-folder/ckanext-xxx:/srv/app/src_extensions/ckanext-xxx
         
-    
     datapusher:
         container_name: datapusher
         build:

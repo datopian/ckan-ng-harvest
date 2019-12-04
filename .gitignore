@@ -19,3 +19,4 @@ env.harvester
 harvest_datasets_datagov_analysis.csv
 docker-compose-override.yml
 .env
+src/

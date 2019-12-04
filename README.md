@@ -6,7 +6,7 @@ This project uses a custom Python library ([ckan-harvesters](https://pypi.org/pr
 
 ## Run with CKAN 
 ```
-# add "ckan" into "webserver" container's hosts file
+# add "ckan" (to use ckan:5000) into "webserver" container's hosts file
 export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
 docker-compose up --build
 ```
@@ -36,15 +36,19 @@ python import_harvest_sources.py \
 Getting external harvest sources for https://catalog.data.gov
 Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest source_type:datajson)'}
 Search harvest packages via GET
-946 results
-**** Importing Organization {'description': 'The Arctic Landscape  ...
-**** Creating Organization 
-POST http://ckan:5000/api/3/action/package_create data:{'frequency': 'MANUAL', 'title': 'Alaska Datajson', 'name': 'alaska-datajson', 'type': 'harvest', 'source_type': 'datajson', 'url': 'http://metadata.arcticlcc.org/csw', 'notes': 'The CSW server for [Alaska-based Landscape Conservation Cooperatives](http://climate.arcticlcc.org/).', 'owner_org': 'alcc-fws-gov', 'private': False, 'state': 'active', 'active': True, 'tags': [{'name': 'harvest source'}], 'config': None, 'extras': []}
+149 results
+**** Importing Organization {'description': '', 'created': '2013-05-18T11:48:54.524965', 'title': 'Department of Agriculture', 'name': 'usda-gov', 'is_organization': True, 'state': 'active', ...
+
+POST http://ckan:5000/api/3/action/organization_create headers:{'User-Agent': 'ckan-portal-filter 0.01-alpha', 'X-CKAN-API-Key': 'fd6fbdfb-de4a-43bf-97d5-8f3d8e3fa18d', 'Content-Type': 'application/json'} data:{"description": "", "title": "Department of Agriculture", "name": "usda-gov", "is_organization": true, ...
+
+POST http://ckan:5000/api/3/action/package_create data:{'frequency': 'MANUAL', 'title': 'illinois json', ...
+
+Created illinois-json
 
 ...
 
 ----------------------------------------------
-Finished: 6 sources
+Finished: 149 sources
 ----------------------------------------------
 
 ```
