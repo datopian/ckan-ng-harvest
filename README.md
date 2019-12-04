@@ -3,39 +3,43 @@
 This project is about harvesting from external sources to a CKAN (local or remote) instance.  
 This project uses a custom Python library ([ckan-harvesters](https://pypi.org/project/ckan-harvesters/))in order to read and validate different types of data sources.  
 
-## data.json files
 
-[More info](harvester_ng/datajson/README.md)
+## Run with CKAN 
+```
+# add "ckan" into "webserver" container's hosts file
+export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
+docker-compose up --build
+```
 
-## CSW
+This starts a group of docker containers including CKAN (and related services) and the Harvester (with Airflow).
 
-[More info](harvester_ng/csw/README.md)
+In the first run the local CKAN instance will be empty, there is no harvest sources to harvest from.  
+You can add harvest source by impoting them from another CKAN instance (e.g. catalog.data.gov).
 
-## Harvest sources
+## Import harvest sources
 
-The _data.json_, _csw_ or other harvest sources are CKAN packages with an URL to the some resource.  
 We can import all the harvest sources from a productive CKAN instance with the command `import_harvest_sources`.  
 
-For example import all CSW harvest sources from _data.gov_.  
+For example import all DataJSON harvest sources from _data.gov_.  
 ```
 cd tools
 
 # for example import all CSW harvest sources from data.gov
 python import_harvest_sources.py \
     --import_from_url https://catalog.data.gov \
-    --source_type csw \
+    --source_type datajson \
     --method GET \
-    --destination_url http://nginx:8080 \
-    --destination_api_key d0ff7be9-4edf-41e8-87a8-ff80fb6b5dbc \
+    --destination_url http://ckan:5000 \
+    --destination_api_key xxxxxxxxxxxxxxxx \
     --method GET
 
 Getting external harvest sources for https://catalog.data.gov
-Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest source_type:csw)'}
+Searching https://catalog.data.gov/api/3/action/package_search PAGE:1 start:0, rows:1000 with params: {'start': 0, 'rows': 1000, 'fq': '+dataset_type:harvest', 'q': '(type:harvest source_type:datajson)'}
 Search harvest packages via GET
-6 results
+946 results
 **** Importing Organization {'description': 'The Arctic Landscape  ...
 **** Creating Organization 
-POST http://nginx:8080/api/3/action/package_create data:{'frequency': 'MANUAL', 'title': 'Alaska LCC CSW Server', 'name': 'alaska-lcc-csw-server', 'type': 'harvest', 'source_type': 'csw', 'url': 'http://metadata.arcticlcc.org/csw', 'notes': 'The CSW server for [Alaska-based Landscape Conservation Cooperatives](http://climate.arcticlcc.org/).', 'owner_org': 'alcc-fws-gov', 'private': False, 'state': 'active', 'active': True, 'tags': [{'name': 'harvest source'}], 'config': None, 'extras': []}
+POST http://ckan:5000/api/3/action/package_create data:{'frequency': 'MANUAL', 'title': 'Alaska Datajson', 'name': 'alaska-datajson', 'type': 'harvest', 'source_type': 'datajson', 'url': 'http://metadata.arcticlcc.org/csw', 'notes': 'The CSW server for [Alaska-based Landscape Conservation Cooperatives](http://climate.arcticlcc.org/).', 'owner_org': 'alcc-fws-gov', 'private': False, 'state': 'active', 'active': True, 'tags': [{'name': 'harvest source'}], 'config': None, 'extras': []}
 
 ...
 
@@ -45,6 +49,15 @@ Finished: 6 sources
 
 ```
 This also import and create _organizations_.  
+
+## data.json files
+
+[More info](harvester_ng/datajson/README.md)
+
+## CSW
+
+[More info](harvester_ng/csw/README.md)
+
 
 ### Some tools
 

@@ -1,4 +1,5 @@
 version: '3.2'
+
 services:
     postgres:
         image: postgres:9.6
@@ -13,15 +14,17 @@ services:
         command: webserver
         depends_on:
             - postgres
+            - ckan-dev
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
             - POSTGRES_DB=airflow
+            - SQLALCHEMY_URL=postgres://ckan:ckan@db/ckan
             # CKAN instance to write harvested packages
-            - CKAN_API_KEY=XXXXXXXX
-            - CKAN_BASE_URL=http://nginx:8080
+            - CKAN_API_KEY=READ_FROM_DB
+            - CKAN_BASE_URL=http://ckan:5000
             - CKAN_VALID_USER_ID=admin
             - HARVESTER_APP_PATH=/app
             - AIRFLOW__CORE__DAGS_FOLDER=/app/automate-tasks/airflow/dags
@@ -39,9 +42,66 @@ services:
         extra_hosts:
             # just if you have a local CKAN instance running in _nginx_ host in you local machine
             # export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
-            - "nginx:${HOST_IP}"
+            - "ckan:${HOST_IP}"
         healthcheck:
             test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
             interval: 30s
             timeout: 30s
             retries: 3
+
+    ckan-dev:
+        build:
+            context: ckan/
+            dockerfile: Dockerfile.dev
+            args:
+                - TZ=${TZ}
+        env_file:
+            - .env
+        links:
+            - db
+            - solr
+            - redis
+            - datapusher
+        ports:
+            - "0.0.0.0:${CKAN_PORT}:5000"
+        volumes:
+            - ./src:/srv/app/src_extensions
+            - ckan_storage:/var/lib/ckan
+            # debug extensions
+            # - /home/hudson/dev/datopian/ckan-and-exts/ckanext-harvest:/srv/app/src_extensions/ckanext-harvest
+            # - /home/hudson/dev/datopian/DepOfEd/ckanext-datajson:/srv/app/src_extensions/ckanext-datajson
+        
+    
+    datapusher:
+        container_name: datapusher
+        build:
+            context: datapusher/
+        ports:
+            - "8800:8800"
+    
+    db:
+        container_name: db
+        env_file:
+            - .env
+        build:
+            context: postgresql/
+        volumes:
+            - pg_data:/var/lib/postgresql/data
+    
+    solr:
+        container_name: solr
+        build:
+            context: solr/
+        ports:
+            - "8983:8983"
+        volumes:
+            - solr_data:/opt/solr/server/solr/ckan/data/index
+    
+    redis:
+        container_name: redis
+        image: redis:alpine
+    
+volumes:
+    ckan_storage:
+    pg_data:
+    solr_data:
