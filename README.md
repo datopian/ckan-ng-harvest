@@ -3,6 +3,11 @@
 This project is about harvesting from external sources to a CKAN (local or remote) instance.  
 This project uses a custom Python library ([ckan-harvesters](https://pypi.org/project/ckan-harvesters/))in order to read and validate different types of data sources.  
 
+```
+python3 -m venv /path-to-harvester-env
+source /path-to-harvester-env/bin/activate
+pip install -r requirements.txt
+```
 
 ## Run with CKAN 
 ```
@@ -19,6 +24,13 @@ You can add harvest source by impoting them from another CKAN instance (e.g. cat
 Now you can see running:
  - Airflow: http://localhost:8081/ (without [DAGs](https://airflow.apache.org/docs/stable/concepts.html#dags) by now)
  - CKAN: http://ckan:5000
+
+## Create a Harvest Source
+
+You can create a Harvest source manually from http://ckan:5000/harvest/edit.  
+Airflow automatically get this source and create a DAG to process it.  
+
+![Auto DAG loaded](docs/imgs/auto-dag-one.png)
 
 ## Import harvest sources
 
