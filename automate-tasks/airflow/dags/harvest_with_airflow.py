@@ -31,7 +31,7 @@ if api_key_from_db:
         try:
             with open('/etc/ckan-conf/secrets/secrets.sh') as secrets_file:
                 secrets = secrets_file.readlines()
-                psql_ckan_conn = list(filter(lambda l: 'SQLALCHEMY_URL' in l, lines))[0].split('=')[1].strip()
+                psql_ckan_conn = list(filter(lambda l: 'SQLALCHEMY_URL' in l, secrets))[0].split('=')[1].strip()
         except Exception as e:
             logger.error(repr(e))
             raise
