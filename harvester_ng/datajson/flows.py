@@ -221,11 +221,13 @@ def compare_resources(data_packages_path):
         for data_json_data in compare_resource_get_new_datasets(data_packages_path):
             total += 1
             news += 1            
-            row['comparison_results'] = {
-                'action': 'create',
-                'ckan_id': None,
-                'new_data': data_json_data,
-                'reason': 'Not found in the CKAN results'}
+            row = {
+                'comparison_results': {
+                    'action': 'create',
+                    'ckan_id': None,
+                    'new_data': data_json_data,
+                    'reason': 'Not found in the CKAN results'}
+                }
 
             yield row
 
