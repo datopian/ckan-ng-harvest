@@ -6,7 +6,9 @@ We have many tests:
  - Several (optional) tests that requires a local instance of CKAN running.
 
 
+
 ```
+python -m pytest tests/datajson
 ***************************
 Test data.json
 ======================== test session starts ========================
@@ -21,31 +23,17 @@ tests/test_functions.py ......         [ 98%]
 tests/test_functions2.py .             [100%]
 
 =============================== 53 passed in 98.14 seconds ===
-***************************
-Test csw
-========================= test session starts =========================
-platform linux -- Python 3.6.8, pytest-5.0.1, py-1.8.0, pluggy-0.12.0
-rootdir: /home/hudson/dev/datopian/harvesting-data-json-v2/harvest/csw
-plugins: cov-2.7.1, celery-4.3.0
-collected 2 items
 
-tests/test_csw.py .. [100%]
+# REQUEIRE UPGRADE 
+# python -m pytest tests/csw
 
-===================== 2 passed in 124.96 seconds =====================
-***************************
-Test package
-===================== test session starts =====================
-platform linux -- Python 3.6.8, pytest-5.0.1, py-1.8.0, pluggy-0.12.0
-rootdir: /home/hudson/dev/datopian/harvesting-data-json-v2/libs
-plugins: cov-2.7.1, celery-4.3.0
-collected 13 items                                                                                    
-tests/test_ckan_dataset_adapters.py ....[ 46%]
-tests/test_data_json.py .......         [100%]
-
-==================== 13 passed in 65.07 seconds ========================================
 ```
 
 
 # Tests with local CKAN instance
 
 The script _test_with_ckan.sh_ contains other test with CKAN running loically.  
+
+```
+python -m pytest tests_with_ckan
+```
