@@ -38,7 +38,7 @@ You can start this containers, get inside and run the tests:
 ```
 docker-compose exec webserver bash
 pip install -r dev-requirements.txt
-python -m pytest tests_with_ckan
+python -m pytest -s tests_with_ckan
 ```
 
 We use [pytest-vcr](https://pytest-vcr.readthedocs.io/en/latest/) based on [VCRpy](https://vcrpy.readthedocs.io/en/latest/), to mock http requests. In this way, we don't need to hit the real internet to run our test (which is very fragile and slow), because there is a mocked version of a each response needed by tests, in vcr's *cassettes* format. 
