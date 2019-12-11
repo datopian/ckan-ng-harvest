@@ -2,6 +2,8 @@ import os
 import pytest
 from harvesters.logs import logger
 from harvester_adapters.ckan.api import CKANPortalAPI
+from harvester_ng.source_datajson import HarvestDataJSON
+from harvester_ng.harvest_destination import CKANHarvestDestination
 from harvester_ng import helpers
 from dotenv import load_dotenv
 
@@ -40,13 +42,37 @@ def test_update_dataset():
             'state': 'active'
             }
     res = cpa.create_organization(organization=organization)
-
     harvest_source = cpa.create_harvest_source(title="Test harvest source",
                                                url=harvest_from,
-                                               owner_org_id='test-organization',
+                                               owner_org_id=organization['name'],
                                                source_type='datajson',
                                                notes='Test harvest source',
-                                               frequency='WEEKLY')
+                                               frequency='WEEKLY',
+                                               on_delete='SKIP')
+    hsi = harvest_source['results']['id']
+
+    destination = CKANHarvestDestination(catalog_url=catalog_url,
+                                     api_key=catalog_api_key,
+                                     organization_id=organization['name'],
+                                     harvest_source_id=hsi)
+
+    
+    hdj = HarvestDataJSON(name='Test harvest',
+                          url=harvest_from,
+                          destination=destination)
+
+    logger.info('Downloading from source')
+    res = hdj.download()
+    hdj.save_download_results(flow_results=res)
+    logger.info('Comparing data')
+    res = hdj.compare()
+    hdj.save_compare_results(flow_results=res)
+    logger.info('Writting results at destination')
+    res = hdj.write_destination()
+    hdj.save_write_results(flow_results=res)
+    logger.info('Writting final report')
+    hdj.write_final_report()
+
 
     
 
