@@ -85,7 +85,8 @@ services:
             context: postgresql/
         volumes:
             - pg_data:/var/lib/postgresql/data
-    
+        ports:
+            - "5490:5432"
     solr:
         container_name: solr
         build:
