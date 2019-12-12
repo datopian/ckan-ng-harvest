@@ -1,14 +1,13 @@
-#Description
+# Description
 
 NG Harvester summary of work completed and to be done
 
-## Benefits of NG Harvester
+### Benefits of NG Harvester
 
  - Easier to manage harvesters and data pipelines
  - Easier to debug when things go wrong (logs not written to CKAN logs, logs are understandable to a non-tech user
 
 Tech: Deculpled so run on a seperate machine, simplified prod code
-ing system I want to get an overall report of how it is going, how many datasets are harvested etc so that I can tell them
 
 
 # Acceptance criteria 
