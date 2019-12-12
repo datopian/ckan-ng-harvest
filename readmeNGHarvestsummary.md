@@ -20,11 +20,17 @@ Tech: Deculpled from CKAN so run on a seperate machine, simplified prod code
  - [x] Deployed in the sandbox
  - [x] NG Harvester for one source
  - [ ] Functional but not pretty UI front-end work (1/2 days work)
- - [ ] Define API to UI (estimate: needs to be investigated) 
+ - [ ] Define API to UI (estimate: needs to be investigated) - would prefer in CKAN 
  - [ ] Making logs readable for non-tech user (1 day for v1.0)
+ 
+ Just using airflow? 
+
+What's the work required to be using the new harvesters?  
 
 Future work: 
 Additional reporting, improved design of UI, new sources?
+
+
 
 
 # Check-list of sources types
