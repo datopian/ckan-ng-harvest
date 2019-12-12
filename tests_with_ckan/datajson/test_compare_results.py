@@ -48,7 +48,7 @@ def test_update_dataset():
                                                source_type='datajson',
                                                notes='Test harvest source',
                                                frequency='WEEKLY',
-                                               on_delete='SKIP')
+                                               on_duplicated='SKIP')
     hsi = harvest_source['results']['id']
 
     destination = CKANHarvestDestination(catalog_url=catalog_url,
@@ -61,16 +61,12 @@ def test_update_dataset():
                           url=harvest_from,
                           destination=destination)
 
-    logger.info('Downloading from source')
     res = hdj.download()
     hdj.save_download_results(flow_results=res)
-    logger.info('Comparing data')
     res = hdj.compare()
     hdj.save_compare_results(flow_results=res)
-    logger.info('Writting results at destination')
     res = hdj.write_destination()
     hdj.save_write_results(flow_results=res)
-    logger.info('Writting final report')
     hdj.write_final_report()
 
 
