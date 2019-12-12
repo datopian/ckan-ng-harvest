@@ -6,8 +6,9 @@ NG Harvester summary of work completed and to be done
 
  - Easier to manage harvesters and data pipelines
  - Easier to debug when things go wrong (logs not written to CKAN logs, logs are understandable to a non-tech user
+ - Easier to maintain
 
-Tech: Deculpled so run on a seperate machine, simplified prod code
+Tech: Deculpled from CKAN so run on a seperate machine, simplified prod code
 
 
 # Acceptance criteria 
