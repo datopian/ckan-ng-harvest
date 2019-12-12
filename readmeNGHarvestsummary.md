@@ -1,21 +1,14 @@
-Description: NG Harvester summary of work completed and to be done
+#Description
 
-Benefits of NG Harvester
+NG Harvester summary of work completed and to be done
+
+## Benefits of NG Harvester
+
  - Easier to manage harvesters and data pipelines
  - Easier to debug when things go wrong (logs not written to CKAN logs, logs are understandable to a non-tech user
 
 Tech: Deculpled so run on a seperate machine, simplified prod code
-
-WIP Job stories: 
-
-When a Harvest Run is initiated by an (Expert) Harvest Operator they want to see it is running and be notified of application and (meta)data errors as soon as possible, especially “halts” so that they can debug and re-run
- 
-If there are a lot of (data) errors I want to examine these in a system that allows me to analyse / view easily (i.e. don’t have my page crash as it tries to load 100k error messages)
-I don’t want to receive 100k error emails … 
- 
-When a scheduled Harvest Run happens as a Harvest Operator (Sysadmin), I want to be notified afterwards (with a report?) if something went wrong, so that I can fix it. 
- 
-When I need to report to my colleagues about the Harvesting system I want to get an overall report of how it is going, how many datasets are harvested etc so that I can tell them
+ing system I want to get an overall report of how it is going, how many datasets are harvested etc so that I can tell them
 
 
 # Acceptance criteria 
@@ -43,6 +36,20 @@ Additional reporting, improved design of UI, new sources?
  - [ ] DOC Harvester #106
  - [ ] geo portal #107
  - [ ] Z3950 #108
+ 
+ 
+ 
+ 
+## WIP Job stories: 
+
+When a Harvest Run is initiated by an (Expert) Harvest Operator they want to see it is running and be notified of application and (meta)data errors as soon as possible, especially “halts” so that they can debug and re-run
+ 
+If there are a lot of (data) errors I want to examine these in a system that allows me to analyse / view easily (i.e. don’t have my page crash as it tries to load 100k error messages)
+I don’t want to receive 100k error emails … 
+ 
+When a scheduled Harvest Run happens as a Harvest Operator (Sysadmin), I want to be notified afterwards (with a report?) if something went wrong, so that I can fix it. 
+ 
+When I need to report to my colleagues about the Harvest
 
 
 
