@@ -21,28 +21,28 @@ Tech: Deculpled from CKAN so run on a seperate machine, simplified prod code
  - [x] NG Harvester for one source
  - [ ] Functional but not pretty UI front-end work (1/2 days work)
  - [ ] Define API to UI (estimate: needs to be investigated) - would prefer in CKAN 
- - [ ] Making logs readable for non-tech user (1 day for v1.0)
- 
- Just using airflow? 
+    - [ ] The [Airflow API](https://airflow.apache.org/docs/stable/api.html) is in an experimental status. We think that [Airflow rest API plugin](https://github.com/teamclairvoyant/airflow-rest-api-plugin) could be useful.It's a plugin for Apache Airflow that exposes rest end points for the [Command Line Interfaces](http://airflow.apache.org/cli.html). Also we could use [serve_logs](http://airflow.apache.org/cli.html#serve_logs) from Airflow which add the [/log URL]( https://github.com/apache/airflow/blob/master/airflow/bin/cli.py#L1137). We need to define this and implement. This API could be used by a single UI or a CKAN extension. We already installed Airflow API plugin. We need to define which endpoint we are going to use (maybe half a day) and then define the UI to start using it.
 
-What's the work required to be using the new harvesters?  
+ - [ ] Making logs readable for non-tech user (1 day for v1.0)
+    - [ ] Analyze the actual logs and its HTML version. Show it inside some UI we define. Analyze this and improve.
 
 Future work: 
 Additional reporting, improved design of UI, new sources?
 
-
-
+# Architecture
+Are we going to use one repo for all harvester or one repo for each?  
+This definition will help to know how each new harvester will be built.
+Before to create any new harvester we need some definitions here.
 
 # Check-list of sources types
  - [x] data.json
- - [ ] csw #103
- - [ ] arcgis #104
- - [ ] WAF #105
- - [ ] WAF Collections #109
- - [ ] DOC Harvester #106
- - [ ] geo portal #107
- - [ ] Z3950 #108
- 
+ - [ ] csw #103: Worked with the previous harvester version. We need to update it after our refactor. We need maybe 2 days for this.
+ - [ ] arcgis #104: Not started. We need to analyze it. Difficult to estimate. We are going to need at least 3 days for create this new harvester.
+ - [ ] WAF #105: Not started. We need to analyze it. Difficult to estimate. We are going to need at least 3 days for create this new harvester.
+ - [ ] WAF Collections #109: We do some work with this at legacy geodatagov ext. Seems easy to migrate to new harvester. Maybe 2 or 3 days.
+ - [ ] DOC Harvester #106: Not started. We need to analyze it. Difficult to estimate. We are going to need at least 3 days for create this new harvester.
+ - [ ] geo portal #107: Not started. We need to analyze it. Difficult to estimate. We are going to need at least 3 days for create this new harvester.
+ - [ ] Z3950 #108: Not started. We need to analyze it. Difficult to estimate. We are going to need at least 3 days for create this new harvester.
  
  
  
