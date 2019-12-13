@@ -49,7 +49,8 @@ def test_update_dataset():
                                                notes='Test harvest source',
                                                frequency='WEEKLY',
                                                on_duplicated='SKIP')
-    hsi = harvest_source['results']['id']
+    
+    hsi = harvest_source['result']['id']
 
     destination = CKANHarvestDestination(catalog_url=catalog_url,
                                      api_key=catalog_api_key,

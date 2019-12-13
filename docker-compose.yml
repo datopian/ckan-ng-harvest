@@ -67,8 +67,6 @@ services:
         volumes:
             - ./src:/srv/app/src_extensions
             - ckan_storage:/var/lib/ckan
-            # debug extensions
-            # - /home/user/exts-folder/ckanext-xxx:/srv/app/src_extensions/ckanext-xxx
         
     ckan_db:
         container_name: ckan_db
