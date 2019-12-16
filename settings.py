@@ -8,5 +8,5 @@ CKAN_VALID_USER_ID = ''  # string, something like 13373386-636f-420f-aff0-010208
 # replace with you local values in this ignored file
 try:
   from .local_settings import *
-except:
+except ImportError:
   pass
