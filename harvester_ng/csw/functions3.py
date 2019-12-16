@@ -1,12 +1,15 @@
-from harvesters.logs import logger
+import hashlib
+import json
+import os.path
+from datetime import datetime
+
+import pytz
+
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvester_ng import helpers
 from harvesters import config
 from harvesters.csw.ckan.dataset import CSWDataset
-from harvester_adapters.ckan.api import CKANPortalAPI
-import json
-from datetime import datetime
-import pytz
-import hashlib
-import os.path
+from harvesters.logs import logger
 
 
 def write_results_to_ckan(rows):
@@ -56,8 +59,7 @@ def write_results_to_ckan(rows):
 
         if action in ['update', 'create']:
             csw_dataset = comparison_results['new_data']
-            # TODO where is variable hash_dataset coming from?
-            #csw_dataset['source_hash'] = hash_dataset(datasetdict=csw_dataset)
+            csw_dataset['source_hash'] = helpers.hash_dataset(datasetdict=csw_dataset)
 
             # harvest extras
             # check if a local harvest source is required
