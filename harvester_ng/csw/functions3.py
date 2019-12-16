@@ -56,7 +56,8 @@ def write_results_to_ckan(rows):
 
         if action in ['update', 'create']:
             csw_dataset = comparison_results['new_data']
-            csw_dataset['source_hash'] = hash_dataset(datasetdict=csw_dataset)
+            # TODO where is variable hash_dataset coming from?
+            #csw_dataset['source_hash'] = hash_dataset(datasetdict=csw_dataset)
 
             # harvest extras
             # check if a local harvest source is required
