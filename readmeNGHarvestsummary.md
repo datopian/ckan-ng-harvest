@@ -27,13 +27,14 @@ Tech: Deculpled from CKAN so run on a seperate machine, simplified prod code
  - [ ] Making logs readable for non-tech user [1 day for MVP and then iterated based on feedback]
     - [ ] Analyze the actual logs and its HTML version. Show it inside some UI we define. Analyze this and improve.
 
+### Repos for each repo?
+Are we going to use one repo for all harvester or one repo for each?  > Yes, different repo and have a registry to have auto installed. 
+
 Future work: 
 Additional reporting, improved design of UI, new sources? Create a proper backend for config and db outstide CKAN. 
 
-# Architecture
-Are we going to use one repo for all harvester or one repo for each?  > Yes, different repo and have a registry to have auto installed. 
-This definition will help to know how each new harvester will be built.
-Before to create any new harvester we need some definitions here.
+
+
 
 # Check-list of sources types
  - [x] data.json
