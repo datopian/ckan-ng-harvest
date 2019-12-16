@@ -5,8 +5,8 @@ import json
 import unittest
 
 from harvester_adapters.ckan.api import CKANPortalAPI
-from harvester_ng.csw.functions3 import (assing_collection_pkg_id,
-                                         write_results_to_ckan)
+from harvester_ng.csw.functions3 import write_results_to_ckan
+from harvester_ng.datajson.flows_ckan import assing_collection_pkg_id
 from harvesters import config
 from harvesters.logs import logger
 from settings import (CKAN_API_KEY, CKAN_BASE_URL, CKAN_ORG_ID,
