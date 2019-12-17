@@ -14,7 +14,7 @@ RUN echo $TZ > /etc/timezone
 # to get them mounted in this image at runtime
 
 ADD https://raw.githubusercontent.com/ckan/ckanext-harvest/master/pip-requirements.txt /src/harvest-reqs.txt
-ADD https://raw.githubusercontent.com/GSA/ckanext-datajson/50_upgrade_to_CKAN_28/requirements.txt /src/datajson-reqs.txt
+ADD https://raw.githubusercontent.com/GSA/ckanext-datajson/datagov/requirements.txt /src/datajson-reqs.txt
 
 RUN pip install --upgrade pip && \
     pip install -r /src/harvest-reqs.txt && \

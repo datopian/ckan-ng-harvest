@@ -1,7 +1,8 @@
 version: '3.2'
 
 services:
-    postgres:
+    airflow_db:
+        container_name: postgres
         image: postgres:9.6
         environment:
             - POSTGRES_USER=airflow
@@ -13,7 +14,7 @@ services:
         restart: always
         command: webserver
         depends_on:
-            - postgres
+            - airflow_db
             - ckan-dev
         environment:
             - LOAD_EX=n
@@ -21,7 +22,7 @@ services:
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
             - POSTGRES_DB=airflow
-            - SQLALCHEMY_URL=postgres://ckan:ckan@db/ckan
+            - SQLALCHEMY_URL=postgres://ckan:ckan@ckan_db/ckan
             # CKAN instance to write harvested packages
             - CKAN_API_KEY=READ_FROM_DB
             - CKAN_BASE_URL=http://ckan:5000
@@ -51,14 +52,14 @@ services:
 
     ckan-dev:
         build:
-            context: ckan/
+            context: docker-extras/ckan/
             dockerfile: Dockerfile.dev
             args:
                 - TZ=${TZ}
         env_file:
             - .env
         links:
-            - db
+            - ckan_db
             - solr
             - redis
             - datapusher
@@ -73,23 +74,23 @@ services:
     datapusher:
         container_name: datapusher
         build:
-            context: datapusher/
+            context: docker-extras/datapusher/
         ports:
             - "8800:8800"
     
-    db:
-        container_name: db
+    ckan_db:
+        container_name: ckan_db
         env_file:
             - .env
         build:
-            context: postgresql/
+            context: docker-extras/postgresql/
         volumes:
             - pg_data:/var/lib/postgresql/data
     
     solr:
         container_name: solr
         build:
-            context: solr/
+            context: docker-extras/solr/
         ports:
             - "8983:8983"
         volumes:
