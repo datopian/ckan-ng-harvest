@@ -71,7 +71,7 @@ class MockCatalogueServiceWeb:
             if len(recs.keys()) > maxrecords:
                 break
             rec = mock.Mock()
-            f = open('samples/sample2.xml', 'rb')
+            f = open('harvester_ng/csw/samples/sample2.xml', 'rb')
             rec.xml = f.read()
             f.close()
 
