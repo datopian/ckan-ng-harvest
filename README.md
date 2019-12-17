@@ -13,11 +13,14 @@ pip install -r requirements.txt
 
 ## Run with CKAN 
 
-First copy `.env.example` to `.env` file
-
+First copy `.env.example` to `.env` file.  
+Add "ckan" (to use ckan:5000) into _webserver_ container's hosts file:
 ```
-# add "ckan" (to use ckan:5000) into "webserver" container's hosts file
 export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
+```
+
+Ready to start 
+```
 docker-compose up --build
 ```
 
