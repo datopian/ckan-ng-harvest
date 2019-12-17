@@ -1,12 +1,15 @@
+import base64
 import json
-from harvesters.logs import logger
 import os
+
 import requests
-from harvesters.csw.harvester import CSWSource
 from datapackage import Package, Resource
 from slugify import slugify
+
+from harvester_ng.helpers import encode_identifier
 from harvesters import config
-import base64
+from harvesters.csw.harvester import CSWSource
+from harvesters.logs import logger
 
 
 def get_csw_from_url(url):
@@ -70,16 +73,6 @@ def validate_datasets(row):
     """ validate one dataset """
     # TODO check what to validate in this resources
     row['validation_errors'] = []
-
-
-# we need a way to save as file using an unique identifier
-# TODO check if base64 is the best idea
-def encode_identifier(identifier):
-    bytes_identifier = identifier.encode('utf-8')
-    encoded = base64.b64encode(bytes_identifier)
-    encoded_identifier = str(encoded, 'utf-8')
-
-    return encoded_identifier
 
 
 def decode_identifier(encoded_identifier):

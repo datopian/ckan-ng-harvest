@@ -27,10 +27,7 @@ with_configs = 0
 with_config_filters = 0
 with_config_defaults = 0
 
-for results in cpa.search_harvest_packages(harvest_type='harvest',
-                                           method='GET'
-                                           #,source_type='datajson'
-                                          ):
+for results in cpa.search_harvest_packages(harvest_type='harvest', method='GET'):
     for local_harvest_source in results:
 
         url = local_harvest_source['url']
@@ -98,7 +95,7 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
             try:
                 dj.fetch()
                 ret = True
-            except Exception as e:
+            except Exception:
                 ret = False
 
             result['download_ok'] = ret
@@ -141,7 +138,7 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
 
                 resources = dataset['distribution'] if 'distribution' in dataset else []
                 if type(resources) == dict:
-                    resources = [resource]
+                    resources = [resources]
                 elif type(resources) == list:
                     pass
                 else:
