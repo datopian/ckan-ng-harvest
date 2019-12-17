@@ -19,9 +19,9 @@ Add "ckan" (to use ckan:5000) into _webserver_ container's hosts file:
 export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
 ```
 
-Ready to start 
+Ready to start
 ```
-docker-compose up --build
+docker-compose up
 ```
 
 This starts a group of docker containers including CKAN (and related services) and the Harvester (with Airflow).
