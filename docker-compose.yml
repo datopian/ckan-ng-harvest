@@ -15,7 +15,7 @@ services:
         command: webserver
         depends_on:
             - airflow_db
-            - ckan-dev
+            - ckan
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
@@ -50,7 +50,7 @@ services:
             timeout: 30s
             retries: 3
 
-    ckan-dev:
+    ckan:
         build:
             context: docker-extras/ckan/
             dockerfile: Dockerfile.dev
