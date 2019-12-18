@@ -62,7 +62,6 @@ services:
             - ckan_db
             - solr
             - redis
-            - datapusher
         ports:
             - "0.0.0.0:${CKAN_PORT}:5000"
         volumes:
@@ -71,13 +70,6 @@ services:
             # debug extensions
             # - /home/user/exts-folder/ckanext-xxx:/srv/app/src_extensions/ckanext-xxx
         
-    datapusher:
-        container_name: datapusher
-        build:
-            context: docker-extras/datapusher/
-        ports:
-            - "8800:8800"
-    
     ckan_db:
         container_name: ckan_db
         env_file:
