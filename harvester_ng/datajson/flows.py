@@ -121,7 +121,7 @@ def compare_resource_require_update(data_package_expected_path, row):
     data_json = datajson_package.get_resource('inline')
     data_json_data = data_json.source
     data_json_modified = parse(data_json_data['modified'])  # It's a naive date
-
+    
     ckan_json = row
     ckan_json_modified = parse(ckan_json['metadata_modified'])
 
@@ -131,12 +131,17 @@ def compare_resource_require_update(data_package_expected_path, row):
     if ckan_json_modified.tzinfo is None:
         ckan_json_modified = ckan_json_modified.replace(tzinfo=default_tzinfo_for_naives_dates)
 
+    logger.info(f'data_json_modified: {data_json_modified}. ckan_json_modified: {ckan_json_modified}')
+
     diff_times = data_json_modified - ckan_json_modified
     seconds = diff_times.total_seconds()
 
     os.remove(expected_path)
 
-    require_update = abs(seconds) > 86400        
+    # requires update if the data.json date is newer.
+    # We ask for a day of differente because some dates are naives.
+    require_update = seconds > 86400
+    logger.info(f'Comparing times: {seconds}>86400 = {require_update}')
     return require_update, data_json_data
 
 
@@ -194,6 +199,7 @@ def compare_resources(data_packages_path):
                         'new_data': None, 
                         'reason': 'It no longer exists in the data.json source'
                         }
+                logger.info(f'Mark for delete: ID {ckan_id}')
                 yield row
                 continue
 
@@ -205,7 +211,7 @@ def compare_resources(data_packages_path):
                         'new_data': data_json_data,
                         'reason': f'The resource is older'
                         }
-                
+                logger.info(f'Mark for update: ID {ckan_id}')
                 found_update += 1
             else:
                 row['comparison_results'] = {
@@ -215,7 +221,7 @@ def compare_resources(data_packages_path):
                         'reason': 'The resource is updated'
                         }
                 found_not_update += 1
-
+                logger.info(f'Mark for ignore: ID {ckan_id}')
             yield row
             
         # detect new datasets
