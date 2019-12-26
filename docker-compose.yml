@@ -41,7 +41,7 @@ services:
         ports:
             - "8081:8080"
         extra_hosts:
-            # just if you have a local CKAN instance running in _nginx_ host in you local machine
+            # just if you have a local CKAN instance running in _ckan_ host in you local machine
             # export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
             - "ckan:${HOST_IP}"
         healthcheck:
