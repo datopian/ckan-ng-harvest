@@ -20,7 +20,7 @@ RUN pip install --upgrade pip && \
     pip install -r /src/harvest-reqs.txt && \
     pip install -r /src/datajson-reqs.txt && \
     pip install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest && \
-    pip install -e git+https://github.com/gsa/ckanext-datajson.git@50_upgrade_to_CKAN_28#egg=ckanext-datajson
+    pip install -e git+https://github.com/gsa/ckanext-datajson.git@datagov#egg=ckanext-datajson
 
 # Apply any patches needed to CKAN core or any of the built extensions (not the
 # runtime mounted ones)
