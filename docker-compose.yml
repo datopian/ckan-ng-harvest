@@ -57,7 +57,7 @@ services:
             args:
                 - TZ=${TZ}
         env_file:
-            - .env
+            - docker-extras/.env
         links:
             - ckan_db
             - solr
@@ -71,7 +71,7 @@ services:
     ckan_db:
         container_name: ckan_db
         env_file:
-            - .env
+            - docker-extras/.env
         build:
             context: docker-extras/postgresql/
         volumes:
