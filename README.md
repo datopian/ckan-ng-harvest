@@ -13,12 +13,7 @@ pip install -r requirements.txt
 
 ## Run with CKAN 
 
-First copy `.env.example` to `.env` file.  
-We need to link containers internally. Add "ckan" (to use ckan:5000) into _webserver_ container's hosts file:
-For example, linux users should use this before to start.
-```
-export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
-```
+First copy `docker-extras/.env.example` to `docker-extras/.env` file.  
 
 Ready to start
 ```

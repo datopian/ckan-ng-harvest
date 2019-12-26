@@ -3,9 +3,8 @@ FROM openknowledge/ckan-dev:2.8
 MAINTAINER Andres Vazquez <andres.vazquez@datopian.com>
 
 # Set timezone
-ARG TZ
-RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
-RUN echo $TZ > /etc/timezone
+RUN cp /usr/share/zoneinfo/UTC /etc/localtime
+RUN echo UTC > /etc/timezone
 
 # Install any extensions needed by your CKAN instance
 # (Make sure to add the plugins to CKAN__PLUGINS in the .env file)
