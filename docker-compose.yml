@@ -2,8 +2,9 @@ version: '3.2'
 
 services:
     airflow_db:
-        container_name: postgres
         image: postgres:9.6
+        expose:
+            - "5432"
         environment:
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
@@ -17,12 +18,13 @@ services:
             - airflow_db
             - ckan
         environment:
+            - POSTGRES_HOST=airflow_db
             - LOAD_EX=n
             - EXECUTOR=Local
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
             - POSTGRES_DB=airflow
-            - SQLALCHEMY_URL=postgres://ckan:ckan@ckan_db/ckan
+            - SQLALCHEMY_URL=postgresql://ckan:123456@ckan_db/ckan # ex ckan_db
             # CKAN instance to write harvested packages
             - CKAN_API_KEY=READ_FROM_DB
             - CKAN_BASE_URL=http://ckan:5000
@@ -42,45 +44,66 @@ services:
             - "8081:8080"
 
     ckan:
-        build:
-            context: docker-extras/ckan/
-            dockerfile: Dockerfile.dev
-        env_file:
-            - docker-extras/.env
-        links:
+        image: viderum/ckan-cloud-docker:ckan-latest-datagov-theme
+        restart: always
+        volumes:
+            - ./docker-extras/docker-compose/ckan-secrets.sh:/etc/ckan-conf/secrets/secrets.sh
+            - ./docker-extras/docker-compose/ckan-conf-templates:/etc/ckan-conf/templates
+            - ckan-data:/var/lib/ckan
+        environment:
+            - CKAN_STORAGE_PATH=/var/lib/ckan/data
+            - CKAN_K8S_SECRETS=/etc/ckan-conf/secrets/secrets.sh
+            - CKAN_K8S_TEMPLATES=/etc/ckan-conf/templates
+            - GUNICORN_WORKERS=2
+            - CKAN_CONFIG_TEMPLATE_PREFIX=datagov-theme-
+            # - DEBUG_MODE=TRUE
+            - SQLALCHEMY_URL=postgresql://ckan:123456@ckan_db/ckan
+        depends_on:
             - ckan_db
-            - solr
             - redis
+            - solr
+            - datastore-db
         ports:
             - "5000:5000"
-        volumes:
-            - ./src:/srv/app/src_extensions
-            - ckan_storage:/var/lib/ckan
         
     ckan_db:
-        container_name: ckan_db
-        env_file:
-            - docker-extras/.env
-        build:
-            context: docker-extras/postgresql/
+        image: viderum/ckan-cloud-docker:db-latest
+        restart: always
+        expose:
+            - "5432"
+        environment: 
+            - POSTGRES_PASSWORD=123456
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=ckan
         volumes:
-            - pg_data:/var/lib/postgresql/data
-        ports:
-            - "5490:5432"
+            - db:/var/lib/postgresql/data    
+        
+    datastore-db:
+        image: viderum/ckan-cloud-docker:db-latest
+        restart: always
+        expose:
+            - "5432"
+        environment: 
+            - DATASTORE_PASSWORD=123456
+            - DATASTORE_RO_PASSWORD=123456
+            - DATASTORE_RO_USER=readonly
+            - DATASTORE_PUBLIC_RO_PASSWORD=123456
+        volumes:
+            - datastore-db:/var/lib/postgresql/data
+        
     solr:
-        container_name: solr
-        build:
-            context: docker-extras/solr/
-        ports:
-            - "8983:8983"
-        volumes:
-            - solr_data:/opt/solr/server/solr/ckan/data/index
+        image: viderum/ckan-cloud-docker:solr-latest
+        restart: always
+        expose:
+            - "8983"
     
     redis:
-        container_name: redis
         image: redis:alpine
-    
+        restart: always
+        expose:
+            - "6379"
+
 volumes:
-    ckan_storage:
-    pg_data:
-    solr_data:
+    db:
+    datastore-db:
+    ckan-data:

@@ -13,7 +13,13 @@ pip install -r requirements.txt
 
 ## Run with CKAN 
 
-First copy `docker-extras/.env.example` to `docker-extras/.env` file.  
+First we need to set up the local CKAN instance
+
+```
+docker-compose up -d ckan
+docker-compose exec ckan ckan-paster --plugin=ckan sysadmin add -c /etc/ckan/production.ini admin password=12345678 email=admin@localhost
+docker-compose down
+```
 
 Ready to start
 ```
