@@ -1,4 +1,4 @@
-https://travis-ci.org/datopian/ckan-ng-harvest.svg?branch=develop
+[![Build Status](https://travis-ci.org/datopian/ckan-ng-harvest.svg?branch=develop)](https://travis-ci.org/datopian/ckan-ng-harvest)
 
 # Harvesting 
 
