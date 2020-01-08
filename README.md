@@ -33,11 +33,11 @@ You can add harvest source by impoting them from another CKAN instance (e.g. cat
 
 Now you can see running:
  - Airflow: http://localhost:8081/ (without [DAGs](https://airflow.apache.org/docs/stable/concepts.html#dags) by now)
- - CKAN: http://ckan:5000
+ - CKAN: http://localhost:5000
 
 ## Create a Harvest Source
 
-You can create a Harvest source manually from http://ckan:5000/harvest.  
+You can create a Harvest source manually from http://localhost:5000/harvest.  
 Airflow automatically get this source and create a DAG to process it.  
 
 ![Auto DAG loaded](docs/imgs/auto-dag-one.png)
