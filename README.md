@@ -56,7 +56,7 @@ python import_harvest_sources.py \
     --import_from_url https://catalog.data.gov \
     --source_type datajson \
     --method GET \
-    --destination_url http://ckan:5000 \
+    --destination_url http://localhost:5000 \
     --destination_api_key xxxxxxxxxxxxxxxx \
     --method GET
 
