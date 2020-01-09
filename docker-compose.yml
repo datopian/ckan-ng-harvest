@@ -46,16 +46,12 @@ services:
         image: viderum/ckan-cloud-docker:ckan-latest-datagov-theme
         restart: always
         volumes:
-            - ./docker-extras/docker-compose/ckan-secrets.sh:/etc/ckan-conf/secrets/secrets.sh
-            - ./docker-extras/docker-compose/ckan-conf-templates:/etc/ckan-conf/templates
+            - ./ckan-conf/:/etc/ckan-conf/
             - ckan-data:/var/lib/ckan
         environment:
             - CKAN_STORAGE_PATH=/var/lib/ckan/data
             - CKAN_K8S_SECRETS=/etc/ckan-conf/secrets/secrets.sh
             - CKAN_K8S_TEMPLATES=/etc/ckan-conf/templates
-            - GUNICORN_WORKERS=2
-            - CKAN_CONFIG_TEMPLATE_PREFIX=datagov-theme-
-            # - DEBUG_MODE=TRUE
             - SQLALCHEMY_URL=postgresql://ckan:123456@ckan_db/ckan
         depends_on:
             - ckan_db
