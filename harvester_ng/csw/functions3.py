@@ -1,3 +1,4 @@
+# flake8: noqa
 from harvesters.logs import logger
 from harvesters import config
 from harvesters.csw.ckan.dataset import CSWDataset

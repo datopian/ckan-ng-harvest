@@ -1,3 +1,4 @@
+# flake8: noqa
 import pytest
 from harvesters.csw.harvester import CSWSource
 from owslib.csw import CatalogueServiceWeb

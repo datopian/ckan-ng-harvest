@@ -1,3 +1,4 @@
+# flake8: noqa
 import json
 from harvesters.logs import logger
 import os
