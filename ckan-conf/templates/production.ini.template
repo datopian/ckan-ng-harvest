@@ -78,17 +78,7 @@ ckan.redis.url = {{CKAN_REDIS_URL}}
 #		Add ``resource_proxy`` to enable resorce proxying and get around the
 #		same origin policy
 
-ckan.plugins = datastore 
-    stats text_view image_view recline_view 
-    xloader archiver report structured_data 
-    datajson_harvest datajson datagovtheme
-    dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface 
-    harvest ckan_harvester 
-    spatial_metadata spatial_query spatial_harvest_metadata_api
-    geodatagov geodatagov_miscs z3950_harvester 
-    arcgis_harvester geodatagov_geoportal_harvester waf_harvester_collection 
-    geodatagov_csw_harvester geodatagov_doc_harvester geodatagov_waf_harvester
-
+ckan.plugins = harvest datajson_harvest
 
 # Define which views should be created by default
 # (plugins must be loaded in ckan.plugins)
