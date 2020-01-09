@@ -13,7 +13,6 @@ services:
     webserver:
         build: .
         restart: always
-        command: webserver
         depends_on:
             - airflow_db
             - ckan

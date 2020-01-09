@@ -33,4 +33,5 @@ RUN wget https://github.com/teamclairvoyant/airflow-rest-api-plugin/archive/v1.0
 
 RUN echo ${AIRFLOW_HOME}/plugins && ls -la ${AIRFLOW_HOME}/plugins
 
+CMD ["webserver"]
 
