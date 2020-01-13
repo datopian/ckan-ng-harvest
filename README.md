@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/datopian/ckan-ng-harvest.svg?branch=develop)](https://travis-ci.org/datopian/ckan-ng-harvest)
+
 # Harvesting 
 
 This project is about harvesting from external sources to a CKAN (local or remote) instance.  

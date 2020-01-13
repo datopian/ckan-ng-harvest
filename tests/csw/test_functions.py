@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 Tests all functions used in flow file
 """

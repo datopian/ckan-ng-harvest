@@ -5,6 +5,6 @@ python-slugify==3.0.2
 requests==2.22.0
 datapackage==1.6.2
 pytz
-apache-airflow==1.10.4
+apache-airflow==1.10.6
 Jinja2==2.10.1
 OWSLib>=0.18.0

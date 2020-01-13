@@ -56,7 +56,8 @@ def read_ckan_api_key_from_db(sql_alchemy_url, user='admin'):
         return None, error
     
     conn = engine.connect()
-    result = conn.execute(f"select apikey from public.user where name='{user}'")
+    result = conn.execute("select apikey from public.user where name = %(username)s", {'username': user})
+    
     try:
         row = result.fetchone()
     except Exception as e:

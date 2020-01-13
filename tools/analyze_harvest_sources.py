@@ -141,7 +141,7 @@ for results in cpa.search_harvest_packages(harvest_type='harvest',
 
                 resources = dataset['distribution'] if 'distribution' in dataset else []
                 if type(resources) == dict:
-                    resources = [resource]
+                    resources = [resources]
                 elif type(resources) == list:
                     pass
                 else:

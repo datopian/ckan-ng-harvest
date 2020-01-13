@@ -1,0 +1,31 @@
+language: python
+python:
+- 3.6
+before_install:
+- python --version
+- pip install -U pip
+- pip install -U pytest
+- pip install codecov
+- pip install flake8
+install:
+- pip install -r requirements.txt
+- pip install -r dev-requirements.txt
+script:
+- flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+- flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+- python -m pytest --vcr-record=none tests/datajson
+- safety check --full-report
+- bandit -c bandit.yml -ll -r .
+after_success:
+- codecov
+deploy:
+  script:
+  - docker build -t viderum/ckan-ng-harvest .
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push viderum/ckan-ng-harvest
+  on:
+    branch: master
+env:
+  global:
+  - secure: utmQctvmYr7Rcc1KnP7jsRsVeeRqQbh5uXeGKboRUsvynAIVcaRefCT20M06jNu3Tn4FgL5q9VH48N3ID47+3qGMz6lrXUT+ujxpCluh6j/tGAZM0vi4ECNWuwwWNviwNlNfpeoKZZ4AbZ5Y6QuioNegQJDekW3N3SvRGv/jTnxvrEYSPdOFQsqzRH7CLHSEDz+btHp7Lq6N6VwGiBFZum+LEAikSTvn3wkdEyrfBQYMJ0a1GLQVzd+yZD27MneY4K00u9X+yn/VSY3RmxX2sxB2vL7MZrocnyn33MXqbBzGUIkyQq4RzeU8O3nzY9GwZnGVLwHkNr03YgB+v7Z5oeMrHaAa04zcX1CWSpjEOWc3fYz1+rUwau0r3aPwqipti+pkCTyG8aMmGCTEORthXilKLSbF4b9Y7Gw1g4rFeFWD7Gx7mTG+wp1zWnG0LpUtEQGnqqhlJYICllYUiTqFJv+nu1vj8Ky9WhWq8ZS1d76F3ITwWJ5r7nVaSEa/Ftk2IDD+2fORNsihgu/ZEL9ejP/EXhozDS2MnBtVMHIJoY90QoEcpZ8hCr5r5D3urN3n8VMTfN21jZg7gnan8EVCJifkyU6OidAZ6OxwQ4haTtq5Af9veqHUwUMoKDbcG7sQUTg9Ht3IoQNUedDe/uYnOQK5lmP68eNixdpMlVpK6Qg=
+  - secure: mmhdI/9hL4+u0cI+HJUV7s5XGvKzfIyj75XC+bijkUVmq96JVy0q1lE1jaoBMBgxBchF+Rdo/2AG+yqRdwar3FG8OcgfbPHfJ09KIlZi4VelYhEGhDteA/R+Gb531Ah80eRpG0voejM7VXmx05tSiLfhDRXeTtg08PC+3uF5LUcKaFLIkYLgHukJzoCZcdByegt8OYyWuCPI2Ho9H6MjLYmsdHqEmIeqOq57QFwcoGD03mLWAFteeHhJtDFDqlg9QDQFOvzhEjFczs/ZYZbsUqZvZpImH/KKpaoGMo9gLBH4R2RUdK6DtdhlQHvjRJqrp73Fq3l6TyLECeAzrNdeCzYuZqB4cCM67/GBDU93wRHBzyE1VXgUnoVJijIHF1NvjISGPecr6+TVexSp4EFmjHaPw3Kql4xs6RE+V1p6zHXvMPMo9MTd1heJOIVJZCzZJ7yFjc7QMiB3gIsOyrKHzg3ME14t+Qnp9hgAKkTT/InW+ajkj15zHVhYsBlf11Tvz5X+WfoXzbln+lFhSfXl3EV6Zzf3IB4eivAbcs7iMlLiyM9lFdQRgVS7HTxqdDZwnzVAjkseZOhtstt3cSmhoAjtG9owB4xXNyTdI40wckOSYwQuiuEnT+9AjHKRKPUZeNGi0vCR6QVP5DnjbwKtbw9o3Vlhpi6ihDqlnhVAido=
