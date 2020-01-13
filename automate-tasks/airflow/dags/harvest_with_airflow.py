@@ -27,6 +27,14 @@ if api_key_from_db:
     # string connection to CKAN psql, like: postgresql://ckan:123456@ckan_db/ckan
     # readed from CKAN secrets in CKAN CLOUD DOCKER or defined locally
     psql_ckan_conn = os.environ.get('SQLALCHEMY_URL', None)
+    if not psql_ckan_conn:
+        try:
+            with open('/etc/ckan-conf/secrets/secrets.sh') as secrets_file:
+                secrets = secrets_file.readlines()
+                psql_ckan_conn = list(filter(lambda l: 'SQLALCHEMY_URL' in l, secrets))[0].split('=')[1].strip()
+        except Exception as e:
+            logger.error(repr(e))
+            raise
     try:
         engine = db.create_engine(psql_ckan_conn)
     except Exception as e:

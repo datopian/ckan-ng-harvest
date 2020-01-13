@@ -1,18 +1,19 @@
 # flake8: noqa
 import os
 import glob
-import pytz
-import base64
-import requests
-from slugify import slugify
-from dateutil.parser import parse
-from datapackage import Package, Resource
+import os
 
-from harvesters.logs import logger
+import pytz
+import requests
+from datapackage import Package, Resource
+from dateutil.parser import parse
+from slugify import slugify
+
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvester_ng.helpers import encode_identifier
 from harvesters import config
 from harvesters.csw.harvester import CSWSource
-from harvester_adapters.ckan.api import CKANPortalAPI
-from functions import encode_identifier
+from harvesters.logs import logger
 
 
 def get_current_ckan_resources_from_api(harvest_source_id):

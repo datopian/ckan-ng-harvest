@@ -5,8 +5,8 @@ from harvesters.csw.harvester import CSWSource
 
 class TestCSWISOClass(object):
 
-    xml_sample_2 = 'samples/sample2.xml'
-    iso_values_sample_2 = 'samples/iso_values_sample2.json'
+    xml_sample_2 = 'harvester_ng/csw/samples/sample2.xml'
+    iso_values_sample_2 = 'harvester_ng/csw/samples/iso_values_sample2.json'
 
     def test_transform_ISO(self):
         """ read XML and transform to ISO values """

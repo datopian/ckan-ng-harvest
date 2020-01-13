@@ -16,7 +16,7 @@ class MockCatalogueServiceWeb:
         else:  # defaults
             raise Exception('unknown URL')
 
-    def load_fom_file(self, path_file='samples/csw_sample.json'):
+    def load_fom_file(self, path_file='harvester_ng/csw/samples/csw_sample.json'):
         d = json.load(open(path_file))
         self.data = d
 
@@ -72,7 +72,7 @@ class MockCatalogueServiceWeb:
             if len(recs.keys()) > maxrecords:
                 break
             rec = mock.Mock()
-            f = open('samples/sample2.xml', 'rb')
+            f = open('harvester_ng/csw/samples/sample2.xml', 'rb')
             rec.xml = f.read()
             f.close()
 

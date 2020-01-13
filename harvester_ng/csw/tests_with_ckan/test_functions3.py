@@ -2,12 +2,15 @@
 """
 Tests all functions used in flow file
 """
-import unittest
-from harvesters import config
-from harvester_adapters.ckan.api import CKANPortalAPI
-from functions3 import write_results_to_ckan
-from harvesters.logs import logger
 import json
+import unittest
+
+from harvester_adapters.ckan.api import CKANPortalAPI
+from harvester_ng.csw.functions3 import write_results_to_ckan
+from harvesters import config
+from harvesters.logs import logger
+from settings import (CKAN_API_KEY, CKAN_BASE_URL, CKAN_ORG_ID,
+                      HARVEST_SOURCE_ID)
 
 
 class Functions3TestClass(unittest.TestCase):

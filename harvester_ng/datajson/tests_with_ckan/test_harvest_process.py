@@ -6,6 +6,7 @@ from subprocess import call, check_output, Popen, PIPE
 
 from harvesters.logs import logger
 from harvester_adapters.ckan.api import CKANPortalAPI
+from settings import CKAN_BASE_URL, CKAN_API_KEY, CKAN_ORG_ID
 
 
 class HarvestTestClass(unittest.TestCase):
