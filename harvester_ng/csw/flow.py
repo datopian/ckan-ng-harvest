@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 Get updated list of resources from a CSW source
 """

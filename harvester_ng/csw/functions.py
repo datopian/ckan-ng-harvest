@@ -1,4 +1,4 @@
-import base64
+# flake8: noqa
 import json
 import os
 

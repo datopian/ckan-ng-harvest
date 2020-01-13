@@ -1,4 +1,5 @@
-import base64
+# flake8: noqa
+import os
 import glob
 import os
 

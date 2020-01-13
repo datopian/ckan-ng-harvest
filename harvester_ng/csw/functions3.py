@@ -1,4 +1,8 @@
-import hashlib
+# flake8: noqa
+from harvesters.logs import logger
+from harvesters import config
+from harvesters.csw.ckan.dataset import CSWDataset
+from harvester_adapters.ckan.api import CKANPortalAPI
 import json
 import os.path
 from datetime import datetime

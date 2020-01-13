@@ -1,7 +1,10 @@
 version: '3.2'
+
 services:
-    postgres:
+    airflow_db:
         image: postgres:9.6
+        expose:
+            - "5432"
         environment:
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
@@ -10,18 +13,20 @@ services:
     webserver:
         build: .
         restart: always
-        command: webserver
         depends_on:
-            - postgres
+            - airflow_db
+            - ckan
         environment:
+            - POSTGRES_HOST=airflow_db
             - LOAD_EX=n
             - EXECUTOR=Local
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
             - POSTGRES_DB=airflow
+            - SQLALCHEMY_URL=postgresql://ckan:123456@ckan_db/ckan # ex ckan_db
             # CKAN instance to write harvested packages
-            - CKAN_API_KEY=XXXXXXXX
-            - CKAN_BASE_URL=http://nginx:8080
+            - CKAN_API_KEY=READ_FROM_DB
+            - CKAN_BASE_URL=http://ckan:5000
             - CKAN_VALID_USER_ID=admin
             - HARVESTER_APP_PATH=/app
             - AIRFLOW__CORE__DAGS_FOLDER=/app/automate-tasks/airflow/dags
@@ -36,12 +41,64 @@ services:
             - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
         ports:
             - "8081:8080"
-        extra_hosts:
-            # just if you have a local CKAN instance running in _nginx_ host in you local machine
-            # export HOST_IP=`ip -4 addr show scope global dev docker0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
-            - "nginx:${HOST_IP}"
-        healthcheck:
-            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
-            interval: 30s
-            timeout: 30s
-            retries: 3
+
+    ckan:
+        image: viderum/ckan-cloud-docker:ckan-latest-datagov-theme
+        restart: always
+        volumes:
+            - ./ckan-conf/:/etc/ckan-conf/
+            - ckan-data:/var/lib/ckan
+        environment:
+            - CKAN_STORAGE_PATH=/var/lib/ckan/data
+            - CKAN_K8S_SECRETS=/etc/ckan-conf/secrets/secrets.sh
+            - CKAN_K8S_TEMPLATES=/etc/ckan-conf/templates
+            - SQLALCHEMY_URL=postgresql://ckan:123456@ckan_db/ckan
+        depends_on:
+            - ckan_db
+            - redis
+            - solr
+            - datastore-db
+        ports:
+            - "5000:5000"
+        
+    ckan_db:
+        image: viderum/ckan-cloud-docker:db-latest
+        restart: always
+        expose:
+            - "5432"
+        environment: 
+            - POSTGRES_PASSWORD=123456
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=ckan
+        volumes:
+            - db:/var/lib/postgresql/data    
+        
+    datastore-db:
+        image: viderum/ckan-cloud-docker:db-latest
+        restart: always
+        expose:
+            - "5432"
+        environment: 
+            - DATASTORE_PASSWORD=123456
+            - DATASTORE_RO_PASSWORD=123456
+            - DATASTORE_RO_USER=readonly
+            - DATASTORE_PUBLIC_RO_PASSWORD=123456
+        volumes:
+            - datastore-db:/var/lib/postgresql/data
+        
+    solr:
+        image: viderum/ckan-cloud-docker:solr-latest
+        restart: always
+        expose:
+            - "8983"
+    
+    redis:
+        image: redis:alpine
+        restart: always
+        expose:
+            - "6379"
+
+volumes:
+    db:
+    datastore-db:
+    ckan-data:

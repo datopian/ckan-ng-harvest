@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 analyze some CSW sources for test CSW library
 """

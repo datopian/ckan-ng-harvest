@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 Full harvest process. Include task in flow, flow2 and flow3
 """

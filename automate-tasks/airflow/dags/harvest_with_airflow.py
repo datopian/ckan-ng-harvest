@@ -24,7 +24,7 @@ logger.info(f'{strs}\nStarting Harvest DAGs\n{catalog_url}\n{catalog_api_key}\n{
 api_key_from_db = catalog_api_key == 'READ_FROM_DB'
 if api_key_from_db:
     import sqlalchemy as db
-    # string connection to CKAN psql, like: postgresql://ckan:123456@db/ckan
+    # string connection to CKAN psql, like: postgresql://ckan:123456@ckan_db/ckan
     # readed from CKAN secrets in CKAN CLOUD DOCKER or defined locally
     psql_ckan_conn = os.environ.get('SQLALCHEMY_URL', None)
     if not psql_ckan_conn:
