@@ -68,7 +68,7 @@ services:
             - "5432"
         environment: 
             - POSTGRES_PASSWORD=123456
-            - POSTGRES_USER=postgres
+            - POSTGRES_USER=ckan
             - POSTGRES_DB=ckan
         volumes:
             - db:/var/lib/postgresql/data    
